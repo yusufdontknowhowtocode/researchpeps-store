@@ -1,0 +1,30 @@
+{
+  "name": "researchpeps-live-backend-starter",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Backend-ready ResearchPeps storefront with accounts, hashed passwords, sessions, server-side orders, and optional Stripe payment-link scaffolding.",
+  "scripts": {
+    "dev": "nodemon server.js",
+    "start": "node server.js",
+    "seed": "node scripts/seed-admin.js",
+    "mark-crypto-paid": "node scripts/mark-crypto-paid.js"
+  },
+  "dependencies": {
+    "bcryptjs": "^2.4.3",
+    "better-sqlite3": "^11.8.1",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "express-session": "^1.18.1",
+    "helmet": "^8.0.0",
+    "morgan": "^1.10.0",
+    "nodemailer": "^6.9.16",
+    "stripe": "^17.5.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.9"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

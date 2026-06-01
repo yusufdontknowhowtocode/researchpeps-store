@@ -1,0 +1,81 @@
+{
+  "defaultRate": 80,
+  "rates": [
+    {
+      "country": "United States",
+      "code": "US",
+      "rate": 15,
+      "note": "Domestic shipping from PA"
+    },
+    {
+      "country": "Canada",
+      "code": "CA",
+      "rate": 35
+    },
+    {
+      "country": "Mexico",
+      "code": "MX",
+      "rate": 40
+    },
+    {
+      "country": "United Kingdom",
+      "code": "GB",
+      "rate": 55
+    },
+    {
+      "country": "Germany",
+      "code": "DE",
+      "rate": 60
+    },
+    {
+      "country": "France",
+      "code": "FR",
+      "rate": 60
+    },
+    {
+      "country": "Italy",
+      "code": "IT",
+      "rate": 60
+    },
+    {
+      "country": "Spain",
+      "code": "ES",
+      "rate": 60
+    },
+    {
+      "country": "Netherlands",
+      "code": "NL",
+      "rate": 60
+    },
+    {
+      "country": "Switzerland",
+      "code": "CH",
+      "rate": 65
+    },
+    {
+      "country": "Australia",
+      "code": "AU",
+      "rate": 70
+    },
+    {
+      "country": "New Zealand",
+      "code": "NZ",
+      "rate": 70
+    },
+    {
+      "country": "Singapore",
+      "code": "SG",
+      "rate": 65
+    },
+    {
+      "country": "United Arab Emirates",
+      "code": "AE",
+      "rate": 70
+    },
+    {
+      "country": "Rest of World",
+      "code": "ROW",
+      "rate": 80
+    }
+  ]
+}

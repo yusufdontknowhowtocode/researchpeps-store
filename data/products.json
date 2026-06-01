@@ -1,0 +1,1258 @@
+[
+  {
+    "name": "Retatrutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Triple-acting research peptide commonly studied for weight loss, appetite control, blood sugar balance, and overall metabolic health.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "RT5",
+        "spec": "5mg*10 vials",
+        "price": "$82.50"
+      },
+      {
+        "code": "RT10",
+        "spec": "10mg*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "RT15",
+        "spec": "15mg*10 vials",
+        "price": "$157.50"
+      },
+      {
+        "code": "RT20",
+        "spec": "20mg*10 vials",
+        "price": "$195.00"
+      },
+      {
+        "code": "RT30",
+        "spec": "30mg*10 vials",
+        "price": "$255.00"
+      },
+      {
+        "code": "RT40",
+        "spec": "40mg*10 vials",
+        "price": "$315.00"
+      },
+      {
+        "code": "RT50",
+        "spec": "50mg*10 vials",
+        "price": "$382.50"
+      },
+      {
+        "code": "RT60",
+        "spec": "60mg*10 vials",
+        "price": "$435.00"
+      }
+    ]
+  },
+  {
+    "name": "Semaglutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "GLP-1 research peptide commonly studied for weight loss, appetite control, slower stomach emptying, and blood sugar support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "SM05",
+        "spec": "5mg*10 vials",
+        "price": "$52.50"
+      },
+      {
+        "code": "SM10",
+        "spec": "10mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "SM15",
+        "spec": "15mg*10 vials",
+        "price": "$90.00"
+      },
+      {
+        "code": "SM20",
+        "spec": "20mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "SM30",
+        "spec": "30mg*10 vials",
+        "price": "$135.00"
+      }
+    ]
+  },
+  {
+    "name": "Tirzepatide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Dual-action research peptide commonly studied for weight loss, appetite control, improved glucose balance, and broader metabolic support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "TR5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "TR10",
+        "spec": "10mg*10 vials",
+        "price": "$75.00"
+      },
+      {
+        "code": "TR15",
+        "spec": "15mg*10 vials",
+        "price": "$97.50"
+      },
+      {
+        "code": "TR20",
+        "spec": "20mg*10 vials",
+        "price": "$112.50"
+      },
+      {
+        "code": "TR30",
+        "spec": "30mg*10 vials",
+        "price": "$142.50"
+      },
+      {
+        "code": "TR40",
+        "spec": "40mg*10 vials",
+        "price": "$172.50"
+      },
+      {
+        "code": "TR50",
+        "spec": "50mg*10 vials",
+        "price": "$217.50"
+      },
+      {
+        "code": "TR60",
+        "spec": "60mg*10 vials",
+        "price": "$255.00"
+      }
+    ]
+  },
+  {
+    "name": "Semax",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for focus, memory, mental clarity, and broader cognitive support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "XA5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "XA11",
+        "spec": "10mg*10 vials",
+        "price": "$75.00"
+      }
+    ]
+  },
+  {
+    "name": "HGH",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research hormone product commonly studied for growth, recovery, body composition, and performance-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "H10",
+        "spec": "10iu*10 vials",
+        "price": "$75.00"
+      },
+      {
+        "code": "H15",
+        "spec": "15iu*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "H24",
+        "spec": "24iu*10 vials",
+        "price": "$165.00"
+      },
+      {
+        "code": "H36",
+        "spec": "36iu*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "IGF-1LR3",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth factor research peptide commonly studied for muscle growth, recovery, and cell-signaling activity.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "IG01",
+        "spec": "0.1mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "IG1",
+        "spec": "1mg*10 vials",
+        "price": "$282.00"
+      }
+    ]
+  },
+  {
+    "name": "BPC-157",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for recovery, gut health, tissue repair, and joint support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BC5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "BC10",
+        "spec": "10mg*10 vials",
+        "price": "$105.00"
+      }
+    ]
+  },
+  {
+    "name": "TB-500",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for recovery, tissue repair, flexibility, and injury-support pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BT5",
+        "spec": "5mg*10 vials",
+        "price": "$112.50"
+      }
+    ]
+  },
+  {
+    "name": "GHK-CU",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Copper peptide researched for skin repair, collagen support, hair-related studies, and overall tissue recovery.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CU50",
+        "spec": "50mg*10 vials",
+        "price": "$45.00"
+      },
+      {
+        "code": "CU100",
+        "spec": "100mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "NAD+",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Cellular coenzyme commonly studied for energy production, healthy aging research, and cellular repair pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "NJ100",
+        "spec": "100mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "NJ500",
+        "spec": "500mg*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "NJ1000",
+        "spec": "1000mg*10 vials",
+        "price": "$195.00"
+      }
+    ]
+  },
+  {
+    "name": "Ipamorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep support, and lean-mass related research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "IP5",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "IP10",
+        "spec": "10mg*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 WO/Dac",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and body-composition support.",
+    "aliases": [
+      "CJC-1295 No DAC",
+      "CJC No DAC",
+      "cjc-1295 no dac",
+      "cjc wo dac",
+      "cjc without dac",
+      "cjc no dac",
+      "no dac"
+    ],
+    "options": [
+      {
+        "code": "NO DAC",
+        "spec": "2mg*10 vials",
+        "price": "$45.00"
+      },
+      {
+        "code": "CND5",
+        "spec": "5mg*10 vials",
+        "price": "$127.50"
+      },
+      {
+        "code": "CND10",
+        "spec": "10mg*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 DAC + Ipamorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Peptide blend commonly studied for recovery, sleep support, growth hormone pathways, and body-composition goals.",
+    "aliases": [
+      "cjc dac ipamorelin",
+      "CJC DAC ipamorelin",
+      "cjc-1295 dac ipamorelin",
+      "cjc ipo",
+      "dac ip",
+      "CJC-1295 DAC 5mg + Ipamorelin 5mg"
+    ],
+    "options": [
+      {
+        "code": "DAC+ip5",
+        "spec": "CJC-1295 DAC 5mg + Ipamorelin 5mg*10 vials",
+        "price": "$140.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 WO/Dac 5mg + Ipamorelin 5mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Peptide blend commonly studied for growth hormone support, recovery, sleep quality, and body-composition goals.",
+    "aliases": [
+      "cjc no dac ipamorelin",
+      "CJC no dac ipa",
+      "1295 ip5",
+      "CJC-1295 No DAC 5mg + Ipamorelin 5mg",
+      "cjc-1295 no dac ipamorelin"
+    ],
+    "options": [
+      {
+        "code": "CP10",
+        "spec": "10mg*10 vials",
+        "price": "$142.50"
+      }
+    ]
+  },
+  {
+    "name": "Sermorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and healthy hormone support.",
+    "aliases": [
+      "sermorelin",
+      "Semorelin Acetate",
+      "Sermorelin Acetate",
+      "semorelin acetate",
+      "sermorelin acetate"
+    ],
+    "options": [
+      {
+        "code": "SE2",
+        "spec": "2mg*10 vials",
+        "price": "$35.00"
+      },
+      {
+        "code": "SM05A",
+        "spec": "5mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "SM010A",
+        "spec": "10mg*10 vials",
+        "price": "$180.00"
+      }
+    ]
+  },
+  {
+    "name": "GHRP-2",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth hormone secretagogue commonly studied for appetite increase, hormone release, and recovery support.",
+    "aliases": [
+      "GHRP2",
+      "ghrp2",
+      "ghrp-2"
+    ],
+    "options": [
+      {
+        "code": "G25",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "G210",
+        "spec": "10mg*10 vials",
+        "price": "$105.00"
+      }
+    ]
+  },
+  {
+    "name": "GHRP-6",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth hormone secretagogue commonly studied for appetite support, hormone release, and recovery-related effects.",
+    "aliases": [
+      "GHRP-6 Acetate",
+      "ghrp-6 acetate",
+      "ghrp6",
+      "GHRP6"
+    ],
+    "options": [
+      {
+        "code": "G65",
+        "spec": "5mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "G610",
+        "spec": "10mg*10 vials",
+        "price": "$141.00"
+      }
+    ]
+  },
+  {
+    "name": "Cagrilintide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for weight loss, appetite control, and metabolic health support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CGL5",
+        "spec": "5mg*10 vials",
+        "price": "$157.50"
+      },
+      {
+        "code": "CGL10",
+        "spec": "10mg*10 vials",
+        "price": "$277.50"
+      }
+    ]
+  },
+  {
+    "name": "Cagrilintide 5mg + Semaglutide 5mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Dual peptide blend commonly studied for weight loss, appetite control, and stronger metabolic support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CS10",
+        "spec": "10mg*10 vials",
+        "price": "$285.00"
+      }
+    ]
+  },
+  {
+    "name": "AOD",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for fat loss, body-composition support, and metabolism-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "5AD",
+        "spec": "5mg*10 vials",
+        "price": "$157.50"
+      }
+    ]
+  },
+  {
+    "name": "5-amino-1mq",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research compound commonly studied for fat loss, metabolism, and body-composition support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "5AM",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "MOTS-C",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Mitochondrial research peptide commonly studied for metabolism, energy use, insulin sensitivity, and exercise support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MS10",
+        "spec": "10mg*10 vials",
+        "price": "$97.50"
+      },
+      {
+        "code": "MS40",
+        "spec": "40mg*10 vials",
+        "price": "$277.50"
+      }
+    ]
+  },
+  {
+    "name": "IGF-DES",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth factor research peptide often studied for muscle cell activity, tissue repair, and localized growth signaling.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "IGD",
+        "spec": "2mg*10 vials",
+        "price": "$82.50"
+      }
+    ]
+  },
+  {
+    "name": "Selank",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for stress support, anxiety-related behavior, mood balance, and mental clarity.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "SK5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "SK11",
+        "spec": "10mg*10 vials",
+        "price": "$75.00"
+      }
+    ]
+  },
+  {
+    "name": "Tesamorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth hormone releasing peptide studied for body-composition changes, fat loss research, and hormone-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "TSM5",
+        "spec": "5mg*10 vials",
+        "price": "$165.00"
+      },
+      {
+        "code": "TSM10",
+        "spec": "10mg*10 vials",
+        "price": "$277.50"
+      }
+    ]
+  },
+  {
+    "name": "Mazdutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide studied for weight loss, appetite control, blood sugar balance, and metabolic health.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MDT10",
+        "spec": "10mg*10 vials",
+        "price": "$292.50"
+      }
+    ]
+  },
+  {
+    "name": "Survodutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for weight loss, appetite control, and cardiometabolic health markers.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "SUR10",
+        "spec": "10mg*10 vials",
+        "price": "$405.00"
+      }
+    ]
+  },
+  {
+    "name": "KPV",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for gut health, inflammation support, and skin-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "KPV5",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "KPV10",
+        "spec": "10mg*10 vials",
+        "price": "$90.00"
+      }
+    ]
+  },
+  {
+    "name": "Thymosin Alpha-1",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for immune support, inflammation balance, and overall immune function.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "TA5",
+        "spec": "5mg*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "TA10",
+        "spec": "10mg*10 vials",
+        "price": "$217.50"
+      }
+    ]
+  },
+  {
+    "name": "KissPeptin-10",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide mainly studied for hormone signaling, reproductive function, and fertility-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "KS5",
+        "spec": "5mg*10 vials",
+        "price": "$75.00"
+      },
+      {
+        "code": "KS10",
+        "spec": "10mg*10 vials",
+        "price": "$127.50"
+      }
+    ]
+  },
+  {
+    "name": "Lemon Bottle",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research product often discussed in body-composition and fat-targeting studies, especially around localized fat reduction models.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LB",
+        "spec": "10ml*10 vials",
+        "price": "$150.00"
+      }
+    ]
+  },
+  {
+    "name": "Vasoactive Intestinal Peptide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide studied for inflammation, immune signaling, blood vessel function, and gut-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "VIP5",
+        "spec": "5mg*10 vials",
+        "price": "$112.50"
+      },
+      {
+        "code": "VIP10",
+        "spec": "10mg*10 vials",
+        "price": "$217.50"
+      }
+    ]
+  },
+  {
+    "name": "Bacteriostatic Water 0.9%",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Lab supply commonly used for peptide mixing and dilution in research settings.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BA3",
+        "spec": "3ml*10 vials",
+        "price": "$7.50"
+      },
+      {
+        "code": "BA10",
+        "spec": "10ml*10 vials",
+        "price": "$15.00"
+      }
+    ]
+  },
+  {
+    "name": "BPC-157 5mg + TB-500 5mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Peptide blend commonly studied for recovery, tissue repair, joint support, and healing-related research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BB10",
+        "spec": "10mg*10 vials",
+        "price": "$142.50"
+      }
+    ]
+  },
+  {
+    "name": "AICAR",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research compound commonly studied for energy use, endurance, metabolism, and exercise-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "AR50",
+        "spec": "50mg*10 vials",
+        "price": "$93.00"
+      }
+    ]
+  },
+  {
+    "name": "SS-31",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Mitochondrial research peptide studied for cellular energy, oxidative stress, and heart or muscle support pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "2S10",
+        "spec": "10mg*10 vials",
+        "price": "$129.00"
+      },
+      {
+        "code": "2S50",
+        "spec": "50mg*10 vials",
+        "price": "$427.50"
+      }
+    ]
+  },
+  {
+    "name": "Glutathione",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Antioxidant research compound commonly studied for detox support, oxidative stress, and cellular protection.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "GTT",
+        "spec": "1500mg*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "HMG",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research hormone product commonly studied for fertility support and reproductive hormone function.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "G75",
+        "spec": "75iu*10 vials",
+        "price": "$90.00"
+      }
+    ]
+  },
+  {
+    "name": "Lipo-C with vitamins B12",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research blend commonly studied for metabolism, fat-burning support, energy, and vitamin B12 support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LC216",
+        "spec": "10ml*10 vials",
+        "price": "$112.50"
+      }
+    ]
+  },
+  {
+    "name": "HCG",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research hormone product commonly studied for fertility, hormone balance, and reproductive support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "G5K",
+        "spec": "5000iu*10 vials",
+        "price": "$127.50"
+      },
+      {
+        "code": "G10K",
+        "spec": "10000iu*10 vials",
+        "price": "$240.00"
+      }
+    ]
+  },
+  {
+    "name": "BPC-157 10mg + TB-500 10mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Higher-strength peptide blend commonly studied for recovery, tissue repair, and joint or muscle support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BB20",
+        "spec": "20mg*10 vials",
+        "price": "$255.00"
+      }
+    ]
+  },
+  {
+    "name": "FOXO4",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide studied in longevity and senescence models, especially for aging-related cell pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "F410",
+        "spec": "10mg*10 vials",
+        "price": "$495.00"
+      }
+    ]
+  },
+  {
+    "name": "LL37",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Antimicrobial research peptide commonly studied for immune defense, skin repair, and inflammation-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "3710",
+        "spec": "10mg*10 vials",
+        "price": "$142.50"
+      }
+    ]
+  },
+  {
+    "name": "Dermorphin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide mainly studied for pain-signaling pathways and receptor-binding activity.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "DR5",
+        "spec": "5mg*10 vials",
+        "price": "$82.50"
+      }
+    ]
+  },
+  {
+    "name": "L-Carnitine 600mg/ml",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research compound commonly studied for fat metabolism, energy production, and exercise performance support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LC600",
+        "spec": "10ml*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "Acetic Acid Water 0.6%",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Lab supply commonly used for peptide mixing and reconstitution in research settings.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "AA3",
+        "spec": "3ml*10 vials",
+        "price": "$7.50"
+      },
+      {
+        "code": "AA10",
+        "spec": "10ml*10 vials",
+        "price": "$15.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 W/Dac",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Longer-acting growth hormone releasing peptide studied for recovery, hormone support, and body-composition research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CD5",
+        "spec": "5mg*10 vials",
+        "price": "$240.00"
+      }
+    ]
+  },
+  {
+    "name": "Cerebrolysin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research compound commonly studied for brain support, nerve health, memory, and recovery-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CBL60",
+        "spec": "60mg*10 vials",
+        "price": "$43.50"
+      }
+    ]
+  },
+  {
+    "name": "Epithalon",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for healthy aging, sleep patterns, and cellular longevity pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "ET10",
+        "spec": "10mg*10 vials",
+        "price": "$72.00"
+      },
+      {
+        "code": "ET50",
+        "spec": "50mg*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "LC120",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research wellness blend commonly studied for energy support, metabolism, and body-composition goals.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LC120",
+        "spec": "10ml*10 vials",
+        "price": "$90.00"
+      }
+    ]
+  },
+  {
+    "name": "Hexarelin Acetate",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Growth hormone secretagogue commonly studied for recovery, muscle support, and hormone-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "HX5",
+        "spec": "5mg*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "Pinealon",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for brain health, memory support, and healthy aging pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "PI5",
+        "spec": "5mg*10 vials",
+        "price": "$82.50"
+      },
+      {
+        "code": "PI10",
+        "spec": "10mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "PI20",
+        "spec": "20mg*10 vials",
+        "price": "$150.00"
+      }
+    ]
+  },
+  {
+    "name": "Melanotan",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for skin pigmentation and tanning-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MT1",
+        "spec": "10mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "Snap-8",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied in cosmetic and skin-care research for expression lines and wrinkle-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "NPB10",
+        "spec": "10mg*10 vials",
+        "price": "$60.00"
+      }
+    ]
+  },
+  {
+    "name": "Phosphate Buffered Saline (PBS)",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Lab buffer commonly used for dilution, washing, and general peptide research preparation.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "WA3",
+        "spec": "3ml*10 vials",
+        "price": "$7.50"
+      },
+      {
+        "code": "WA10",
+        "spec": "10ml*10 vials",
+        "price": "$15.00"
+      }
+    ]
+  },
+  {
+    "name": "Adipotide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide mainly studied for fat loss and body-composition related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "AP2",
+        "spec": "2mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "AP5",
+        "spec": "5mg*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research blend commonly studied for skin repair, tissue recovery, joint support, and healing-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BBG70",
+        "spec": "70mg*10 vials",
+        "price": "$240.00"
+      }
+    ]
+  },
+  {
+    "name": "Oxytocin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for social bonding, mood, stress response, and behavioral pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "OT2",
+        "spec": "2mg*10 vials",
+        "price": "$37.50"
+      }
+    ]
+  },
+  {
+    "name": "B12 1mg/ml",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Vitamin B12 research product commonly studied for energy support, metabolism, and nutrient-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "B12",
+        "spec": "10ml*10 vials",
+        "price": "$52.50"
+      }
+    ]
+  },
+  {
+    "name": "Melatonin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research hormone commonly studied for sleep support, circadian rhythm balance, and recovery.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MT10",
+        "spec": "10mg*10 vials",
+        "price": "$82.50"
+      }
+    ]
+  },
+  {
+    "name": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg + KPV 10mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Advanced peptide blend commonly studied for skin repair, gut support, inflammation balance, and full-body recovery research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "KLOW80",
+        "spec": "80mg*10 vials",
+        "price": "$292.50"
+      }
+    ]
+  },
+  {
+    "name": "SLU-PP-322",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research compound being explored for metabolism, energy use, and weight-management related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "322",
+        "spec": "5mg*10 vials",
+        "price": "$150.00"
+      }
+    ]
+  },
+  {
+    "name": "MT-2 (melanotan 2 acetate)",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for skin pigmentation, tanning response, and melanin-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "ML10",
+        "spec": "10mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "DSIP",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "\ud83e\uddec",
+    "description": "Research peptide commonly studied for sleep support, stress balance, and nervous-system related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "DS5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "DS15",
+        "spec": "15mg*10 vials",
+        "price": "$127.50"
+      }
+    ]
+  }
+]

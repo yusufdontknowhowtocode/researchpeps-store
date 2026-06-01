@@ -1,0 +1,5203 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>researchpeps Peptide Catalog</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --font-body: "Inter", "Avenir Next", "Segoe UI", sans-serif;
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --bg-1: #020617;
+  --bg-2: #07152f;
+  --bg-3: #000000;
+  --line: rgba(255,255,255,.035);
+  --border: rgba(148,163,184,.20);
+  --text: #f8fafc;
+  --muted: #aab7cf;
+  --gold: #d6b66a;
+  --blue: #1e5eff;
+}
+
+html { scroll-behavior: smooth; }
+body {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at top left, rgba(28, 88, 255, 0.35), transparent 360px),
+    radial-gradient(circle at top right, rgba(214, 182, 106, 0.16), transparent 320px),
+    linear-gradient(135deg, var(--bg-1) 0%, var(--bg-2) 50%, var(--bg-3) 100%);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+  padding-top: 116px;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 46px 46px;
+  opacity: .45;
+}
+
+a { color: inherit; text-decoration: none; }
+button { font: inherit; }
+
+header {
+  position: fixed;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(1180px, calc(100% - 36px));
+  z-index: 100;
+  background: #000;
+  border: 1px solid rgba(255,255,255,.08);
+  border-radius: 999px;
+  box-shadow: 0 18px 55px rgba(0,0,0,.42), 0 0 70px rgba(30,94,255,.10);
+}
+
+.nav {
+  width: 100%;
+  padding: 18px 30px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 18px;
+}
+
+.logo {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+  letter-spacing: .09em;
+  color: white;
+  justify-self: start;
+}
+
+.nav-links { display: flex; align-items: center; justify-content: center; gap: 28px; }
+.nav-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+
+.nav-link {
+  border: none;
+  background: transparent;
+  color: rgba(255,255,255,.58);
+  border-radius: 999px;
+  padding: 8px 6px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: 500;
+  transition: .2s ease;
+}
+.nav-link:hover,
+.nav-link.active-link { color: #fff; }
+
+.icon-btn {
+  position: relative;
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: #fff;
+  cursor: pointer;
+  transition: .2s ease;
+}
+.icon-btn:hover { background: rgba(255,255,255,.09); }
+.icon-btn svg { width: 26px; height: 26px; stroke: currentColor; }
+
+.cart-count {
+  position: absolute;
+  top: 4px;
+  right: 2px;
+  min-width: 18px;
+  height: 18px;
+  display: none;
+  place-items: center;
+  padding: 0 5px;
+  border-radius: 999px;
+  background: var(--blue);
+  color: white;
+  font-size: 11px;
+  font-weight: 900;
+}
+.cart-count.show { display: grid; }
+
+.btn {
+  border: 1px solid rgba(219, 234, 254, .22);
+  background: rgba(255,255,255,.065);
+  color: #eef5ff;
+  border-radius: 999px;
+  padding: 12px 16px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: .095em;
+  text-transform: uppercase;
+  transition: .22s ease;
+}
+.btn:hover {
+  transform: translateY(-2px);
+  border-color: rgba(79, 140, 255, .7);
+  box-shadow: 0 16px 36px rgba(30,94,255,.22);
+}
+.btn.primary {
+  background: linear-gradient(135deg, #1e5eff, #0b3aa6);
+  border-color: rgba(147,197,253,.75);
+  box-shadow: 0 20px 60px rgba(30,94,255,.34);
+}
+
+.search-panel {
+  position: absolute;
+  top: calc(100% + 12px);
+  left: 50%;
+  width: min(760px, calc(100vw - 36px));
+  transform: translateX(-50%) translateY(-8px);
+  opacity: 0;
+  pointer-events: none;
+  transition: .2s ease;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 28px;
+  background: rgba(3, 7, 18, .96);
+  backdrop-filter: blur(18px);
+  box-shadow: 0 28px 90px rgba(0,0,0,.55);
+  padding: 16px;
+}
+.search-panel.open {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateX(-50%) translateY(0);
+}
+.search-input-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 999px;
+  background: rgba(255,255,255,.06);
+  padding: 12px 16px;
+}
+.search-input-row svg { width: 22px; height: 22px; color: var(--gold); }
+.search-input-row input {
+  width: 100%;
+  border: none;
+  outline: none;
+  background: transparent;
+  color: white;
+  font-size: 16px;
+}
+.search-input-row input::placeholder { color: rgba(255,255,255,.46); }
+.search-results {
+  margin-top: 14px;
+  max-height: 360px;
+  overflow: auto;
+  display: grid;
+  gap: 10px;
+}
+.search-result {
+  width: 100%;
+  display: grid;
+  grid-template-columns: 44px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  text-align: left;
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 18px;
+  background: rgba(255,255,255,.045);
+  color: white;
+  padding: 12px;
+  cursor: pointer;
+  transition: .2s ease;
+}
+.search-result:hover {
+  border-color: rgba(79,140,255,.60);
+  background: rgba(30,94,255,.13);
+}
+.search-result-icon,
+.cart-item-icon,
+.standard-number {
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+}
+.search-result-icon,
+.cart-item-icon {
+  background: rgba(30,94,255,.14);
+  font-size: 22px;
+}
+.search-result strong { display: block; margin-bottom: 4px; }
+.search-result small,
+.search-result span,
+.empty-search { color: var(--muted); }
+.empty-search { line-height: 1.6; padding: 12px 4px 4px; }
+
+.screen-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 105;
+  background: rgba(0,0,0,.48);
+  opacity: 0;
+  pointer-events: none;
+  transition: .2s ease;
+}
+.screen-overlay.open { opacity: 1; pointer-events: auto; }
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: 0;
+  width: min(420px, calc(100vw - 24px));
+  height: 100vh;
+  z-index: 110;
+  background: rgba(3,7,18,.98);
+  border-left: 1px solid rgba(148,163,184,.22);
+  box-shadow: -30px 0 90px rgba(0,0,0,.5);
+  transform: translateX(105%);
+  transition: .25s ease;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+}
+.cart-drawer.open { transform: translateX(0); }
+.cart-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 18px;
+  border-bottom: 1px solid rgba(148,163,184,.18);
+}
+.cart-head h2 {
+  font-family: var(--font-display);
+  font-size: 28px;
+  font-weight: 700;
+}
+.close-cart {
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 999px;
+  background: rgba(255,255,255,.08);
+  color: white;
+  cursor: pointer;
+  font-size: 24px;
+}
+.cart-items {
+  flex: 1;
+  overflow: auto;
+  display: grid;
+  align-content: start;
+  gap: 12px;
+  padding: 18px 0;
+}
+.cart-item {
+  display: grid;
+  grid-template-columns: 62px 1fr auto;
+  align-items: center;
+  gap: 12px;
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 18px;
+  background: rgba(255,255,255,.045);
+  padding: 12px;
+}
+.cart-item button {
+  border: none;
+  color: var(--muted);
+  background: transparent;
+  cursor: pointer;
+  font-size: 13px;
+}
+.cart-item-photo {
+  position: relative;
+  width: 58px;
+  height: 58px;
+  overflow: hidden;
+  border-radius: 16px;
+  border: 1px solid rgba(148,163,184,.20);
+  background: linear-gradient(135deg, #eef5ff, #cfe2ff);
+  display: block;
+}
+.cart-item-photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
+}
+.cart-item-photo .cart-mini-label {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 48%;
+  min-height: 38%;
+  transform: translate(-50%, -40%);
+  display: grid;
+  place-items: center;
+  gap: 2px;
+  padding: 4px 3px;
+  border-radius: 5px;
+  background: rgba(255,255,255,.94);
+  color: #111827;
+  text-align: center;
+  box-shadow: 0 1px 4px rgba(15,23,42,.10);
+}
+.cart-item-photo .cart-mini-label strong {
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 5.5px;
+  line-height: 1;
+  font-family: var(--font-body);
+  font-weight: 900;
+  letter-spacing: -.03em;
+  text-transform: uppercase;
+}
+.cart-item-photo .cart-mini-label small {
+  display: inline-grid;
+  place-items: center;
+  padding: 2px 4px;
+  border-radius: 999px;
+  background: #1e5eff;
+  color: white;
+  font-size: 6px;
+  font-weight: 900;
+  line-height: 1;
+}
+.cart-item-photo.image-missing::before {
+  content: "🧬";
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: rgba(30,94,255,.14);
+  font-size: 22px;
+}
+.cart-note {
+  border: 1px solid rgba(214,182,106,.34);
+  background: rgba(214,182,106,.10);
+  color: #d6e2f5;
+  border-radius: 18px;
+  padding: 14px;
+  line-height: 1.6;
+  font-size: 14px;
+}
+
+.page { display: none; }
+.page.active { display: block; }
+.container { width: min(1180px, calc(100% - 36px)); margin: auto; }
+
+.kicker {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .34em;
+  font-size: 11px;
+  font-weight: 700;
+  margin-bottom: 18px;
+}
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+h1 {
+  color: white;
+  font-size: clamp(46px, 5.8vw, 78px);
+  line-height: .96;
+}
+.lead {
+  max-width: 760px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.9;
+}
+.actions {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 32px;
+}
+
+.hero { padding: 80px 0 56px; }
+.hero-grid {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 44px;
+  align-items: center;
+}
+.hero h1 {
+  max-width: none;
+  width: max-content;
+  white-space: nowrap;
+  text-wrap: nowrap;
+  font-size: clamp(34px, 4.1vw, 58px);
+  line-height: .9;
+  margin-bottom: 8px;
+}
+.hero-art {
+  --tiltX: 0deg;
+  --tiltY: 0deg;
+  min-height: 430px;
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+.hero-art::before,
+.hero-art::after {
+  content: "";
+  position: absolute;
+  border-radius: 999px;
+  pointer-events: none;
+}
+.hero-art::before {
+  width: 360px;
+  height: 360px;
+  background: radial-gradient(circle, rgba(30,94,255,.22), rgba(30,94,255,0) 68%);
+  filter: blur(10px);
+}
+.hero-art::after {
+  width: 520px;
+  height: 520px;
+  border: 1px solid rgba(214,182,106,.14);
+  opacity: .55;
+}
+.scene-orb,
+.scene-ring,
+.floating-chip {
+  position: absolute;
+  pointer-events: none;
+}
+.scene-orb {
+  border-radius: 999px;
+  filter: blur(12px);
+}
+.scene-orb.orb-1 {
+  width: 170px;
+  height: 170px;
+  top: 40px;
+  left: 55px;
+  background: radial-gradient(circle, rgba(79,140,255,.42), rgba(79,140,255,0) 70%);
+}
+.scene-orb.orb-2 {
+  width: 130px;
+  height: 130px;
+  right: 60px;
+  bottom: 80px;
+  background: radial-gradient(circle, rgba(214,182,106,.24), rgba(214,182,106,0) 72%);
+}
+.scene-ring {
+  border: 1px solid rgba(255,255,255,.10);
+  border-radius: 999px;
+}
+.scene-ring.ring-1 {
+  width: 320px;
+  height: 320px;
+  animation: ringFloat 8s ease-in-out infinite;
+}
+.scene-ring.ring-2 {
+  width: 240px;
+  height: 240px;
+  border-color: rgba(214,182,106,.18);
+  animation: ringFloat 6s ease-in-out infinite reverse;
+}
+.vial-stage {
+  position: relative;
+  z-index: 2;
+  transform-style: preserve-3d;
+  transform: perspective(1200px) rotateX(var(--tiltX)) rotateY(var(--tiltY));
+  transition: transform .22s ease, filter .22s ease;
+}
+.vial-rotor {
+  position: relative;
+  transform: rotate(0deg);
+  transform-origin: 50% 50%;
+  animation: spinVial 24s linear .8s infinite;
+  animation-fill-mode: backwards;
+}
+.vial-shadow {
+  position: absolute;
+  left: 50%;
+  bottom: -30px;
+  width: 170px;
+  height: 30px;
+  transform: translateX(-50%);
+  border-radius: 999px;
+  background: radial-gradient(circle, rgba(0,0,0,.55), rgba(0,0,0,0) 70%);
+  filter: blur(8px);
+}
+.vial {
+  width: 180px;
+  height: 300px;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.vial-cap {
+  width: 112px;
+  height: 44px;
+  border-radius: 18px 18px 10px 10px;
+  background: linear-gradient(180deg, #edf3ff 0%, #b7c6e5 48%, #7f94ba 100%);
+  box-shadow: inset 0 3px 10px rgba(255,255,255,.55), 0 8px 14px rgba(0,0,0,.24);
+}
+.vial-cap::after {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 78px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.52);
+}
+.vial-neck {
+  width: 84px;
+  height: 22px;
+  border-radius: 0 0 18px 18px;
+  background: linear-gradient(180deg, rgba(230,238,255,.95), rgba(132,154,196,.7));
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.24);
+}
+.vial-glass {
+  position: relative;
+  width: 154px;
+  height: 216px;
+  margin-top: -2px;
+  border-radius: 30px 30px 40px 40px;
+  background: linear-gradient(180deg, rgba(255,255,255,.16) 0%, rgba(204,223,255,.08) 24%, rgba(100,130,180,.12) 72%, rgba(255,255,255,.06) 100%);
+  border: 1px solid rgba(220,235,255,.36);
+  box-shadow: inset 0 0 22px rgba(255,255,255,.10), inset 0 -20px 24px rgba(53,82,146,.18), 0 16px 36px rgba(0,0,0,.24);
+  overflow: hidden;
+  backdrop-filter: blur(4px);
+}
+.vial-glass::before {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border-radius: 24px 24px 34px 34px;
+  border: 1px solid rgba(255,255,255,.12);
+}
+.vial-glass::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(255,255,255,.38) 0%, rgba(255,255,255,0) 28%, rgba(255,255,255,.12) 58%, rgba(255,255,255,0) 100%);
+  mix-blend-mode: screen;
+}
+.vial-fill {
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  height: 20px;
+  border-radius: 0 0 28px 28px;
+  background: linear-gradient(180deg, rgba(182,205,255,.20), rgba(135,165,220,.12));
+  border-top: 1px solid rgba(255,255,255,.22);
+}
+.vial-label {
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  bottom: 40px;
+  padding: 15px 8px 13px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(244,248,255,.92), rgba(212,225,250,.88));
+  color: #17315f;
+  text-align: center;
+  box-shadow: 0 10px 18px rgba(0,0,0,.12);
+}
+.vial-label strong {
+  display: block;
+  font-family: var(--font-display);
+  font-size: 18px;
+  line-height: 1.0;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+.vial-label span {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .24em;
+  text-transform: uppercase;
+  color: #4967a7;
+}
+.vial-label small {
+  display: block;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .16em;
+  color: #7185b6;
+}
+.floating-chip {
+  z-index: 3;
+  padding: 10px 14px;
+  border: 1px solid rgba(255,255,255,.12);
+  border-radius: 999px;
+  background: rgba(7, 21, 47, .72);
+  backdrop-filter: blur(12px);
+  color: #eaf1ff;
+  box-shadow: 0 12px 28px rgba(0,0,0,.18);
+}
+.floating-chip strong {
+  font-size: 14px;
+  font-weight: 800;
+}
+.floating-chip small {
+  display: none;
+}
+.floating-chip.chip-left {
+  left: 36px;
+  top: 122px;
+  animation: chipFloat 4.8s ease-in-out infinite;
+}
+.hero-art .stat-number {
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 900;
+  letter-spacing: -0.045em;
+}
+@keyframes spinVial {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes ringFloat {
+  0%, 100% { transform: translateY(0px) scale(1); opacity: .5; }
+  50% { transform: translateY(-10px) scale(1.03); opacity: .8; }
+}
+@keyframes chipFloat {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+.section,
+.peptide-home-section,
+.faq-section { padding: 54px 0 88px; }
+
+.page-head {
+  padding: 58px 0 32px;
+  border-bottom: 1px solid rgba(148,163,184,.18);
+  margin-bottom: 34px;
+}
+.back { display: inline-block; margin-bottom: 20px; }
+.notice {
+  margin-bottom: 34px;
+  padding: 22px 24px;
+  border-radius: 24px;
+  border: 1px solid rgba(214,182,106,.34);
+  background: linear-gradient(135deg, rgba(214,182,106,.12), rgba(30,94,255,.09));
+  color: #d6e2f5;
+  line-height: 1.75;
+}
+.notice strong { color: #f5d988; }
+
+.second-page-head,
+.catalog-head {
+  max-width: 760px;
+  margin-bottom: 28px;
+}
+.second-page-head h2,
+.catalog-head h2,
+.faq-section h2 {
+  color: white;
+  font-size: clamp(38px, 4.6vw, 64px);
+  line-height: .98;
+  margin-bottom: 16px;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 22px;
+}
+.card {
+  overflow: hidden;
+  border-radius: 30px;
+  border: 1px solid var(--border);
+  background: linear-gradient(180deg, rgba(12,25,55,.90), rgba(3,7,18,.96));
+  box-shadow: 0 26px 70px rgba(0,0,0,.36);
+  transition: .24s ease;
+}
+.card:hover {
+  transform: translateY(-6px);
+  border-color: rgba(79,140,255,.64);
+  box-shadow: 0 34px 90px rgba(0,0,0,.50), 0 0 45px rgba(30,94,255,.20);
+}
+.product-card,
+.catalog-card { cursor: pointer; }
+.pic {
+  min-height: 190px;
+  display: grid;
+  place-items: center;
+  text-align: center;
+  background:
+    radial-gradient(circle at 30% 20%, rgba(30,94,255,.32), transparent 210px),
+    linear-gradient(145deg, #020617, #071832 60%, #000);
+  border-bottom: 1px solid rgba(148,163,184,.16);
+}
+.pic span {
+  display: block;
+  font-size: 68px;
+  margin-bottom: 8px;
+}
+.pic small {
+  color: var(--gold);
+  text-transform: uppercase;
+  letter-spacing: .26em;
+  font-weight: 900;
+  font-size: 11px;
+}
+.card-text { padding: 24px; }
+.card h3 {
+  color: white;
+  font-size: 25px;
+  line-height: 1.2;
+  margin-bottom: 14px;
+}
+.card h3::after {
+  content: "";
+  display: block;
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, var(--gold), rgba(30,94,255,.2));
+  margin-top: 12px;
+}
+.card p {
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 15px;
+}
+.product-card-actions {
+  display: flex;
+  justify-content: flex-start;
+  margin-top: 14px;
+}
+.catalog-cart-btn {
+  padding: 9px 14px;
+  font-size: 11px;
+  letter-spacing: .08em;
+}
+.product-price {
+  margin-top: 14px;
+  color: #78b5ff;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: .02em;
+}
+
+.product-detail-card {
+  display: grid;
+  grid-template-columns: .9fr 1.1fr;
+  gap: 28px;
+  align-items: stretch;
+  border: 1px solid var(--border);
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(12,25,55,.90), rgba(3,7,18,.96));
+  box-shadow: 0 30px 80px rgba(0,0,0,.42);
+  overflow: hidden;
+}
+.product-detail-pic { min-height: 470px; }
+.product-detail-pic span { font-size: 110px; }
+.product-detail-content {
+  padding: 42px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.product-detail-content h1 { font-size: clamp(36px, 4.8vw, 64px); margin-bottom: 18px; }
+.product-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 24px 0 30px;
+}
+.product-tags span {
+  border: 1px solid rgba(214,182,106,.35);
+  border-radius: 999px;
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  padding: 9px 12px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.product-detail-content .product-tags { display: none; }
+.bundle-savings-note {
+  margin-top: 12px;
+  border: 1px solid rgba(214,182,106,.32);
+  border-radius: 18px;
+  background: rgba(214,182,106,.09);
+  color: #f5d988;
+  padding: 12px 14px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.catalog-single-note {
+  color: rgba(170,183,207,.92);
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.45;
+  margin-top: 6px;
+}
+
+.faq-shell {
+  display: grid;
+  grid-template-columns: .82fr 1.18fr;
+  gap: 42px;
+  align-items: start;
+}
+.faq-list { display: grid; gap: 14px; }
+.faq-item {
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 22px;
+  background: rgba(255,255,255,.045);
+  overflow: hidden;
+}
+.faq-question {
+  width: 100%;
+  border: none;
+  background: transparent;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 22px 24px;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.faq-plus {
+  width: 28px;
+  height: 28px;
+  flex: 0 0 28px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--gold);
+  font-size: 24px;
+  transition: .2s ease;
+}
+.faq-answer {
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height .25s ease;
+}
+.faq-answer p {
+  color: var(--muted);
+  line-height: 1.75;
+  padding: 0 24px 22px;
+  font-size: 15px;
+}
+.faq-item.open {
+  border-color: rgba(214,182,106,.35);
+  background: linear-gradient(135deg, rgba(214,182,106,.08), rgba(30,94,255,.07));
+}
+.faq-item.open .faq-answer { max-height: 220px; }
+.faq-item.open .faq-plus { transform: rotate(45deg); }
+
+.legal-page-card {
+  border: 1px solid var(--border);
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(12,25,55,.90), rgba(3,7,18,.96));
+  box-shadow: 0 30px 80px rgba(0,0,0,.34);
+  padding: 34px;
+}
+.legal-page-card h2 {
+  color: white;
+  font-size: 28px;
+  margin: 28px 0 12px;
+}
+.legal-page-card h2:first-child { margin-top: 0; }
+.legal-page-card p,
+.legal-page-card li {
+  color: var(--muted);
+  line-height: 1.8;
+  font-size: 16px;
+}
+.legal-page-card ul { padding-left: 22px; margin-top: 10px; }
+.rules-card { display: grid; gap: 0; padding: 0; overflow: hidden; }
+.legal-section { padding: 28px 34px; border-bottom: 1px solid rgba(148,163,184,.14); }
+.legal-section:last-child { border-bottom: none; }
+.legal-intro-section { background: linear-gradient(135deg, rgba(214,182,106,.12), rgba(30,94,255,.08)); }
+.legal-section h2 { color: white; font-size: 26px; margin: 0 0 12px; }
+.legal-section p + p { margin-top: 12px; }
+
+
+.site-footer {
+  border-top: 1px solid rgba(15, 23, 42, .14);
+  background: #f4f5f8;
+  padding: 76px 0 54px;
+  color: #5f5b53;
+}
+.footer-grid {
+  width: min(1180px, calc(100% - 36px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 62px;
+  align-items: start;
+}
+.footer-col { text-align: center; }
+.footer-col h4 {
+  color: #9d968d;
+  letter-spacing: .42em;
+  text-transform: uppercase;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 28px;
+}
+.footer-col button {
+  display: block;
+  width: fit-content;
+  margin: 0 auto 17px;
+  border: none;
+  background: transparent;
+  color: #5f5b53;
+  cursor: pointer;
+  padding: 0;
+  line-height: 1.35;
+  font-size: 17px;
+  font-weight: 500;
+  transition: .2s ease;
+}
+.footer-col button:hover { color: #111827; transform: translateY(-1px); }
+.footer-contact-lines {
+  display: grid;
+  gap: 13px;
+  justify-items: center;
+}
+.footer-contact-lines p {
+  color: #5f5b53;
+  line-height: 1.45;
+  font-size: 17px;
+  font-weight: 500;
+}
+.footer-contact-lines strong {
+  color: #3f3b36;
+  font-weight: 700;
+}
+.footer-bottom {
+  width: min(1180px, calc(100% - 36px));
+  margin: 54px auto 0;
+  color: #aaa39b;
+  text-align: center;
+  letter-spacing: .34em;
+  font-size: 12px;
+  text-transform: uppercase;
+}
+
+.variant-select {
+  width: 100%;
+  margin-top: 16px;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 16px;
+  background: rgba(255,255,255,.075);
+  color: #f8fafc;
+  padding: 12px 14px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.variant-select option {
+  background: #07152f;
+  color: #f8fafc;
+}
+.product-price {
+  margin-top: 14px;
+  color: #78b5ff;
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: .02em;
+}
+.product-code {
+  margin-top: 6px;
+  color: rgba(214,182,106,.86);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.variant-block {
+  width: min(520px, 100%);
+  margin-top: 22px;
+  padding: 18px;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 22px;
+  background: rgba(255,255,255,.045);
+}
+.variant-block label {
+  display: block;
+  color: #f8fafc;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+.variant-detail-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 14px;
+}
+.variant-pill {
+  border: 1px solid rgba(214,182,106,.30);
+  border-radius: 999px;
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+@media (max-width: 820px) {
+  body { padding-top: 104px; }
+  header { top: 14px; width: calc(100% - 20px); border-radius: 32px; }
+  .nav { grid-template-columns: 1fr auto; padding: 14px 16px; gap: 10px; }
+  .logo { font-size: 20px; }
+  .nav-links {
+    grid-column: 1 / -1;
+    order: 3;
+    width: 100%;
+    justify-content: center;
+    gap: 22px;
+    padding-top: 4px;
+  }
+  .nav-actions { justify-self: end; }
+  .nav-link { font-size: 15px; }
+  .icon-btn { width: 40px; height: 40px; }
+  .icon-btn svg { width: 23px; height: 23px; }
+  .btn { font-size: 12px; padding: 10px 12px; }
+  .hero-grid,
+  .product-detail-card,
+  .faq-shell,
+  .footer-grid { grid-template-columns: 1fr; }
+  .hero-art { order: -1; }
+  .hero { padding-top: 30px; }
+  .hero h1 {
+    width: auto;
+    white-space: normal;
+    text-wrap: balance;
+    font-size: clamp(38px, 12vw, 56px);
+    line-height: .95;
+  }
+  .product-detail-pic { min-height: 260px; }
+  .product-detail-content { padding: 28px; }
+  .faq-section,
+  .peptide-home-section,
+  .section { padding: 44px 0 62px; }
+  .faq-question { font-size: 16px; padding: 20px; }
+  .faq-answer p { padding: 0 20px 20px; }
+  .site-footer { padding: 56px 0 42px; }
+  .footer-grid { gap: 42px; }
+  .footer-bottom { line-height: 1.9; letter-spacing: .22em; }
+}
+
+/* Product vial photo template + dynamic label overlay
+   Your image file must be here: images/pep.png
+   The same photo is reused for every product, while JS changes the label name + mg automatically. */
+.product-art {
+  position: relative;
+  overflow: hidden;
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  background: #f4f6fb;
+  border-bottom: 1px solid rgba(174,184,204,.62);
+}
+
+.product-vial-photo {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center center;
+  display: block;
+}
+
+/* This covers the original BPC-157 label on pep.png and replaces it dynamically */
+.photo-vial-label {
+  position: absolute;
+  z-index: 4;
+  left: 50%;
+  top: 40.1%;
+  width: 34.6%;
+  height: 34.2%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 5.2% 2.6% 4%;
+  overflow: hidden;
+  border-radius: 3.8% / 4.2%;
+  background: linear-gradient(180deg, rgba(255,255,255,.995), rgba(247,249,254,.99));
+  color: #111827;
+  box-shadow: 0 1px 2px rgba(15,23,42,.05);
+  pointer-events: none;
+}
+
+.photo-vial-label::after {
+  content: "";
+  position: absolute;
+  z-index: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 28%;
+  background: linear-gradient(135deg, rgba(239,246,255,.98), rgba(185,213,255,.95));
+  clip-path: polygon(0 36%, 50% 72%, 100% 36%, 100% 100%, 0 100%);
+}
+
+.photo-vial-label .brand,
+.photo-vial-label .name,
+.photo-vial-label .dose,
+.photo-vial-label .use {
+  position: relative;
+  z-index: 2;
+}
+
+.photo-vial-label .brand {
+  display: block;
+  width: 100%;
+  margin-bottom: 11%;
+  color: #234f9f;
+  font-family: var(--font-display);
+  font-size: clamp(7px, 1.05vw, 13px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: -.02em;
+  text-transform: lowercase;
+}
+
+.photo-vial-label .name {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  width: 100%;
+  margin-bottom: 11%;
+  color: #151515;
+  font-family: var(--font-body);
+  font-size: var(--label-size, clamp(8px, 1.45vw, 17px));
+  font-weight: 900;
+  line-height: 1.03;
+  letter-spacing: -.045em;
+  text-transform: uppercase;
+  word-break: break-word;
+}
+
+.photo-vial-label .dose {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 46%;
+  padding: 5.7% 9%;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #8bbcff 0%, #1d54c9 100%);
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: clamp(7px, 1.05vw, 13px);
+  font-weight: 900;
+  line-height: 1;
+  box-shadow: inset 0 1px 1px rgba(255,255,255,.25);
+}
+
+.photo-vial-label .use {
+  display: block;
+  width: 100%;
+  margin-top: auto;
+  margin-bottom: 6.4%;
+  color: #234f9f;
+  font-family: var(--font-body);
+  font-size: clamp(4.5px, .55vw, 7px);
+  font-weight: 900;
+  letter-spacing: .16em;
+  line-height: 1.15;
+  text-transform: uppercase;
+}
+
+.product-card h3,
+.product-detail-content h1,
+.search-result strong,
+.cart-item strong {
+  font-family: var(--font-body);
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+.product-card h3 { font-size: 22px; line-height: 1.28; }
+
+.product-card p,
+.product-detail-content .lead {
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.7;
+  letter-spacing: 0;
+}
+
+.product-code {
+  color: rgba(170,183,207,.86);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: .02em;
+  text-transform: none;
+}
+
+.product-detail-pic {
+  min-height: 0;
+  padding: 0;
+  background: #eef5ff;
+  display: grid;
+  place-items: center;
+}
+
+.product-detail-pic .product-art {
+  width: 100%;
+  max-width: 560px;
+  height: auto;
+  min-height: 0;
+  aspect-ratio: 4 / 5;
+  border-bottom: none;
+  background: #eef5ff;
+}
+
+.product-detail-pic .product-vial-photo {
+  object-fit: cover;
+  object-position: center center;
+}
+
+.product-detail-pic .photo-vial-label {
+  top: 40.1%;
+  width: 34.6%;
+  height: 34.2%;
+}
+
+.product-detail-pic .photo-vial-label .brand {
+  font-size: clamp(7px, 1.05vw, 13px);
+}
+
+.product-detail-pic .photo-vial-label .name {
+  font-size: var(--label-size, clamp(8px, 1.45vw, 17px));
+}
+
+.product-detail-pic .photo-vial-label .dose {
+  font-size: clamp(7px, 1.05vw, 13px);
+}
+
+.product-detail-pic .photo-vial-label .use {
+  font-size: clamp(4.5px, .55vw, 7px);
+}
+
+@media (max-width: 820px) {
+  .product-art { aspect-ratio: 4 / 5; }
+  .product-detail-pic { min-height: 0; }
+  .product-detail-pic .product-art { min-height: 0; max-width: 100%; }
+}
+
+/* Age verification popup */
+body.age-locked {
+  overflow: hidden;
+}
+body.age-locked .vial-rotor {
+  animation: none;
+  transform: rotate(0deg);
+}
+.age-gate {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  background:
+    radial-gradient(circle at top left, rgba(30,94,255,.30), transparent 340px),
+    radial-gradient(circle at top right, rgba(214,182,106,.18), transparent 320px),
+    rgba(2,6,23,.88);
+  backdrop-filter: blur(14px);
+}
+.age-gate.hidden {
+  display: none;
+}
+.age-gate-card {
+  width: min(560px, 100%);
+  border: 1px solid rgba(148,163,184,.26);
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(12,25,55,.97), rgba(3,7,18,.99));
+  box-shadow: 0 34px 110px rgba(0,0,0,.58), 0 0 70px rgba(30,94,255,.16);
+  padding: 38px;
+  text-align: center;
+}
+.age-gate-card h2 {
+  color: white;
+  font-size: clamp(34px, 5vw, 58px);
+  line-height: .95;
+  margin-bottom: 18px;
+}
+.age-gate-card p {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.75;
+}
+.age-gate-actions {
+  display: flex;
+  justify-content: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 28px;
+}
+.age-gate-message {
+  min-height: 0;
+  margin-top: 18px;
+  color: #f5d988 !important;
+  font-weight: 700;
+}
+.age-gate-denied .age-gate-actions {
+  display: none;
+}
+.age-gate-denied .age-gate-leave {
+  display: inline-flex;
+}
+.age-gate-leave {
+  display: none;
+  margin-top: 24px;
+}
+@media (max-width: 820px) {
+  .age-gate-card {
+    padding: 28px 22px;
+    border-radius: 26px;
+  }
+}
+
+
+/* Account, checkout, and order history flow */
+.account-status {
+  min-width: 70px;
+  height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 12px;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 999px;
+  color: rgba(255,255,255,.75);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.cart-footer {
+  display: grid;
+  gap: 12px;
+  padding-top: 16px;
+  border-top: 1px solid rgba(148,163,184,.18);
+}
+.cart-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: #fff;
+  font-size: 16px;
+  font-weight: 900;
+}
+.cart-total-row span:last-child { color: #78b5ff; }
+.cart-help-text {
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.cart-line-actions {
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 8px;
+}
+.qty-btn {
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(148,163,184,.22) !important;
+  border-radius: 999px;
+  background: rgba(255,255,255,.07) !important;
+  color: #fff !important;
+  font-size: 16px !important;
+  font-weight: 900;
+  line-height: 1;
+}
+.qty-count {
+  min-width: 22px;
+  color: #fff;
+  font-size: 13px;
+  font-weight: 900;
+  text-align: center;
+}
+
+.checkout-grid,
+.account-grid {
+  display: grid;
+  grid-template-columns: 1.05fr .95fr;
+  gap: 24px;
+  align-items: start;
+}
+.checkout-panel,
+.account-panel,
+.order-card {
+  border: 1px solid var(--border);
+  border-radius: 30px;
+  background: linear-gradient(180deg, rgba(12,25,55,.90), rgba(3,7,18,.96));
+  box-shadow: 0 26px 70px rgba(0,0,0,.34);
+  padding: 26px;
+}
+.checkout-panel h2,
+.account-panel h2,
+.order-card h3 {
+  color: white;
+  font-size: 30px;
+  margin-bottom: 16px;
+}
+.form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.form-field { display: grid; gap: 7px; align-self: start; align-content: start; }
+.form-field.full { grid-column: 1 / -1; }
+.form-field label,
+.check-row {
+  color: #e7eefc;
+  font-size: 13px;
+  font-weight: 800;
+}
+.form-field input,
+.form-field textarea,
+.form-field select {
+  width: 100%;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 16px;
+  background: rgba(255,255,255,.075);
+  color: #f8fafc;
+  padding: 13px 14px;
+  outline: none;
+  font-size: 14px;
+  font-family: var(--font-body);
+}
+.form-field input,
+.form-field select { height: 48px; min-height: 48px; }
+.form-field textarea { min-height: 96px; resize: vertical; }
+#checkoutPhone { height: 48px !important; min-height: 48px !important; }
+.form-field select option { background: #07152f; color: #fff; }
+.check-row {
+  display: flex;
+  gap: 10px;
+  align-items: flex-start;
+  line-height: 1.55;
+  margin-top: 14px;
+}
+.check-row input { margin-top: 4px; }
+.checkout-message,
+.account-message {
+  display: none;
+  border: 1px solid rgba(214,182,106,.34);
+  border-radius: 18px;
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  padding: 14px;
+  line-height: 1.55;
+  margin-bottom: 18px;
+  font-weight: 700;
+}
+.checkout-message.show,
+.account-message.show { display: block; }
+.thank-you-card {
+  border: 1px solid var(--border);
+  border-radius: 34px;
+  background: linear-gradient(180deg, rgba(12,25,55,.92), rgba(3,7,18,.96));
+  box-shadow: 0 30px 80px rgba(0,0,0,.34);
+  padding: 34px;
+  display: grid;
+  gap: 18px;
+}
+.thank-you-card h2 {
+  color: white;
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1;
+}
+.thank-you-card p {
+  color: var(--muted);
+  line-height: 1.75;
+  font-size: 16px;
+}
+.thank-you-details {
+  display: grid;
+  gap: 12px;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 22px;
+  background: rgba(255,255,255,.045);
+  padding: 18px;
+}
+.thank-you-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  color: var(--muted);
+  line-height: 1.55;
+}
+.thank-you-row strong { color: #fff; text-align: right; }
+.crypto-confirm-box {
+  border: 1px solid rgba(214,182,106,.34);
+  background: rgba(214,182,106,.10);
+  color: #d6e2f5;
+  border-radius: 18px;
+  padding: 16px;
+  line-height: 1.65;
+}
+.crypto-confirm-box strong { color: #f5d988; }
+.crypto-confirm-box code {
+  display: block;
+  margin-top: 10px;
+  padding: 12px;
+  border-radius: 14px;
+  background: rgba(0,0,0,.24);
+  color: white;
+  overflow-wrap: anywhere;
+}
+.email-note {
+  color: #f5d988 !important;
+  font-weight: 800;
+}
+
+.summary-list,
+.order-items { display: grid; gap: 12px; }
+.summary-item,
+.order-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  border-bottom: 1px solid rgba(148,163,184,.13);
+  padding-bottom: 12px;
+}
+.summary-item strong,
+.order-item strong { color: #fff; }
+.summary-item small,
+.order-item small,
+.order-meta { color: var(--muted); line-height: 1.55; }
+.summary-total {
+  display: flex;
+  justify-content: space-between;
+  color: white;
+  font-size: 20px;
+  font-weight: 900;
+  padding-top: 18px;
+  margin-top: 8px;
+  border-top: 1px solid rgba(148,163,184,.18);
+}
+.summary-total span:last-child { color: #78b5ff; }
+.summary-line { display: flex; justify-content: space-between; gap: 16px; color: var(--muted); padding: 10px 0; border-top: 1px solid rgba(148,163,184,.12); font-weight: 700; }
+.summary-line span:last-child { color: #f8fafc; }
+.account-dashboard-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+  margin-bottom: 22px;
+}
+.account-dashboard-head h2 {
+  font-size: clamp(34px, 4vw, 56px);
+  line-height: 1;
+}
+.order-history-list { display: grid; gap: 16px; }
+.order-status {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgba(214,182,106,.35);
+  border-radius: 999px;
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.auth-note {
+  color: var(--muted);
+  line-height: 1.65;
+  font-size: 14px;
+  margin-top: 14px;
+}
+
+@media (max-width: 820px) {
+  .account-status { display: none; }
+  .checkout-grid,
+  .account-grid,
+  .form-grid { grid-template-columns: 1fr; }
+  .checkout-panel,
+  .account-panel,
+  .order-card { padding: 22px; border-radius: 24px; }
+}
+
+/* Final checkout/pricing additions */
+#accountStatusPill,
+.account-status { display: none !important; }
+
+.option-field {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.option-field:last-of-type {
+  margin-bottom: 12px;
+}
+
+.mini-label {
+  display: block;
+  margin: 0;
+  color: #f8fafc;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.option-field .variant-select {
+  margin-top: 0;
+}
+
+.crypto-wallet-box {
+  margin-top: 12px;
+  border: 1px solid rgba(214,182,106,.34);
+  background: rgba(214,182,106,.10);
+  color: #d6e2f5;
+  border-radius: 18px;
+  padding: 14px;
+  display: grid;
+  gap: 10px;
+}
+.crypto-wallet-box strong { color: #f5d988; font-size: 14px; }
+.crypto-wallet-box p { color: var(--muted); line-height: 1.5; margin: 0; }
+.crypto-wallet-box code {
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+  color: #fff;
+  padding: 12px;
+  font-size: 13px;
+}
+
+.crypto-amount-box {
+  border-top: 1px solid rgba(148,163,184,.18);
+  padding-top: 12px;
+  display: grid;
+  gap: 8px;
+}
+.crypto-amount-box strong {
+  color: #f5d988;
+  font-size: 14px;
+}
+.crypto-amount-box code {
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+  color: #fff;
+  padding: 12px;
+  font-size: 14px;
+  font-weight: 900;
+}
+.crypto-amount-box p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.5;
+  font-size: 13px;
+}
+
+.order-card h3,
+.order-id,
+.checkout-message,
+.checkout-message strong {
+  font-family: var(--font-body) !important;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "lnum" 1, "tnum" 1;
+  letter-spacing: 0.01em;
+}
+
+</style>
+</head>
+<body class="age-locked">
+
+<div id="ageGate" class="age-gate" role="dialog" aria-modal="true" aria-labelledby="ageGateTitle">
+  <div id="ageGateCard" class="age-gate-card">
+    <p class="kicker">Age Verification</p>
+    <h2 id="ageGateTitle">Are you 21 or older?</h2>
+    <p>This website is intended only for visitors who are 21 years of age or older. By selecting yes, you confirm that you meet the age requirement and understand this website is for research-use information only.</p>
+
+    <div class="age-gate-actions">
+      <button class="btn primary" onclick="confirmAgeGate()">Yes, I am 21+</button>
+      <button class="btn" onclick="denyAgeGate()">No</button>
+    </div>
+
+    <p id="ageGateMessage" class="age-gate-message"></p>
+    <button class="btn age-gate-leave" onclick="leaveAgeGate()">Leave Site</button>
+  </div>
+</div>
+
+
+<header>
+  <div class="nav">
+    <a class="logo" href="#" onclick="showPage('home')">researchpeps</a>
+
+    <div class="nav-links">
+      <button class="nav-link active-link" data-nav="home" onclick="showPage('home')">Home</button>
+      <button class="nav-link" data-nav="peptides" onclick="showPage('peptides')">Peptides</button>
+      <button class="nav-link" data-nav="faq" onclick="showHomeSection('faq')">FAQ</button>
+    </div>
+
+    <div class="nav-actions">
+      <button class="icon-btn" onclick="toggleSearch()" aria-label="Search products">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="7"></circle>
+          <path d="M20 20l-3.5-3.5"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="openAccount()" aria-label="Account login and order history">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="8" r="4"></circle>
+          <path d="M4 21c1.7-4 4.4-6 8-6s6.3 2 8 6"></path>
+        </svg>
+      </button>
+      <button class="icon-btn" onclick="toggleCart()" aria-label="Shopping cart">
+        <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="9" cy="20" r="1.6"></circle>
+          <circle cx="18" cy="20" r="1.6"></circle>
+          <path d="M3 4h2l2.2 10.2a1 1 0 0 0 1 .8h9.7a1 1 0 0 0 1-.8L21 7H7"></path>
+        </svg>
+        <span id="cartCount" class="cart-count">0</span>
+      </button>
+    </div>
+  </div>
+
+  <div id="searchPanel" class="search-panel">
+    <div class="search-input-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="11" cy="11" r="7"></circle>
+        <path d="M20 20l-3.5-3.5"></path>
+      </svg>
+      <input id="productSearch" type="search" placeholder="Search peptides, e.g. semaglutide, tirzepatide, BPC..." oninput="renderSearchResults()">
+    </div>
+    <div id="searchResults" class="search-results"></div>
+  </div>
+</header>
+
+<div id="screenOverlay" class="screen-overlay" onclick="closeOverlays()"></div>
+
+<aside id="cartDrawer" class="cart-drawer" aria-label="Shopping cart">
+  <div class="cart-head">
+    <h2>Cart</h2>
+    <button class="close-cart" onclick="closeOverlays()" aria-label="Close cart">×</button>
+  </div>
+  <div id="cartItems" class="cart-items"></div>
+  <div class="cart-footer">
+    <div class="cart-total-row"><span>Subtotal</span><span id="cartDrawerTotal">$0.00</span></div>
+    <button class="btn primary" onclick="startCheckout()">Checkout</button>
+    <p class="cart-help-text">Checkout places an order and saves it to your backend account history.</p>
+  </div>
+</aside>
+
+<main>
+  <section id="home" class="page active">
+    <div class="container hero">
+      <div class="hero-grid">
+        <div>
+          <p class="kicker">Premium peptide catalog</p>
+          <h1>Research grade peptides.</h1>
+          <h1>Clear value.</h1>
+          <h1>Trusted standards.</h1>
+          <p class="lead">Shop the highest quality research compounds with below market rates.</p>
+          <div class="actions">
+            <button class="btn primary" onclick="showPage('peptides')">View Peptides</button>
+            <button class="btn" onclick="showHomeSection('featured-peptides')">Featured Peptides</button>
+          </div>
+        </div>
+        <div class="hero-art" id="heroVialScene">
+          <div class="scene-orb orb-1"></div>
+          <div class="scene-orb orb-2"></div>
+          <div class="scene-ring ring-1"></div>
+          <div class="scene-ring ring-2"></div>
+
+          <div class="floating-chip chip-left">
+            <strong><span class="stat-number">99%</span> Purity</strong>
+          </div>
+
+          <div class="vial-stage">
+            <div class="vial-rotor">
+              <div class="vial-shadow"></div>
+              <div class="vial">
+                <div class="vial-cap"></div>
+                <div class="vial-neck"></div>
+                <div class="vial-glass">
+                  <div class="vial-fill"></div>
+                  <div class="vial-label">
+                    <strong>researchpeps</strong>
+                    <span>Research Series</span>
+                    <small>Empty Vial</small>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <div id="featured-peptides" class="container peptide-home-section">
+      <div class="catalog-head">
+        <p class="kicker">Peptide catalog</p>
+        <h2>Our Most Popular Compounds.</h2>
+        <p class="lead"></p>
+      </div>
+
+      <div id="featuredPeptideGrid" class="grid"></div>
+    </div>
+
+    <div id="faq" class="container faq-section">
+      <div class="faq-shell">
+        <div>
+          <p class="kicker">FAQ</p>
+          <h2>Frequently asked questions.</h2>
+          <p class="lead"></p>
+        </div>
+
+        <div class="faq-list">
+          <article class="faq-item open">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What does researchpeps offer?</span>
+              <span class="faq-plus">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>ResearchPeps offers high-quality peptides, research chemicals, and analytical compounds with a focus on purity, reliability, and highly competitive pricing designed to stay below typical market rates.</p>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>What are the risks?</span>
+              <span class="faq-plus">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>All listed products are quality-tested and reviewed for available product information before being offered through researchpeps. However, risks can still exist when purchasing research compounds, even with strong quality control in place. Testing helps reduce concerns around purity, accuracy, and supplier reliability, but it cannot guarantee that every risk is eliminated.</p>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Where do the products get tested?</span>
+              <span class="faq-plus">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>researchpeps products are tested through Janoshik. Customers who would like to request testing certificates or lab documentation can contact us by email for the available records.</p>
+            </div>
+          </article>
+
+          <article class="faq-item">
+            <button class="faq-question" onclick="toggleFaq(this)">
+              <span>Can I get non-listen products?</span>
+              <span class="faq-plus">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Yes, depending on the product. If you are looking for a compound that is not currently listed in our catalog, please contact us by email with the product name and details. Our team will review availability and let you know if it can be sourced.
+</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="peptides" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="showPage('home')">← Home</button>
+        <p class="kicker">Peptides catalog</p>
+        <h1>Peptides</h1>
+        <p class="lead"></p>
+      </div>
+      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 39% compared with buying the same vials one at a time.</div>
+      <div id="peptideCatalogGrid" class="grid"></div>
+    </div>
+  </section>
+
+  <section id="product-detail" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button id="productBackButton" class="btn back" onclick="showPage('peptides')">← Back to Peptides</button>
+        <p id="productDetailKicker" class="kicker">Product detail</p>
+        <h1 id="productDetailTitle">Product</h1>
+        <p id="productDetailLead" class="lead">Select a peptide from search to view details.</p>
+      </div>
+
+      <div class="product-detail-card">
+        <div id="productDetailPic" class="pic product-detail-pic">
+          <span id="productDetailIcon">◆</span>
+          <small id="productDetailCategory">Peptide</small>
+        </div>
+
+        <div class="product-detail-content">
+          <p id="productDetailCategoryKicker" class="kicker">Catalog item</p>
+          <h1 id="productDetailName">Product</h1>
+          <p id="productDetailDescription" class="lead">Search for a peptide to open its individual product page.</p>
+
+          <div id="productOptionsBlock" class="variant-block"></div>
+
+
+          <div class="actions">
+            <button class="btn primary" onclick="addCurrentProductToCart()">Save to Cart</button>
+            <button class="btn" onclick="showPage('peptides')">View Catalog</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <section id="account" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="showPage('home')">← Home</button>
+        <p id="accountPageKicker" class="kicker">Customer account</p>
+        <h1 id="accountPageTitle">Login &amp; Orders</h1>
+        <p id="accountPageLead" class="lead">Customers can create an account, sign in, and view past orders from checkout.</p>
+      </div>
+
+      <div id="accountMessage" class="account-message"></div>
+      <div id="accountContent"></div>
+    </div>
+  </section>
+
+  <section id="checkout" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="openCart()">← Back to Cart</button>
+        <p class="kicker">Secure checkout</p>
+        <h1>Checkout</h1>
+        <p class="lead">Enter shipping details and place an order for research-use products.</p>
+      </div>
+
+      <div id="checkoutMessage" class="checkout-message"></div>
+
+      <div class="checkout-grid">
+        <div class="checkout-panel">
+          <h2>Order details</h2>
+          <div class="form-grid">
+            <div class="form-field">
+              <label for="checkoutName">Full name</label>
+              <input id="checkoutName" autocomplete="name" placeholder="Customer name">
+            </div>
+            <div class="form-field">
+              <label for="checkoutEmail">Email</label>
+              <input id="checkoutEmail" type="email" autocomplete="email" placeholder="email@example.com">
+            </div>
+            <div class="form-field">
+              <label for="checkoutPhone">Phone</label>
+              <input id="checkoutPhone" autocomplete="tel" placeholder="Phone number">
+            </div>
+            <div class="form-field">
+              <label for="checkoutPaymentMethod">Payment method</label>
+              <select id="checkoutPaymentMethod" onchange="updateCryptoWalletBox()">
+                <option value="stripe">Credit card</option>
+                <option value="btc">Bitcoin (BTC)</option>
+                <option value="sol">Solana (SOL)</option>
+                <option value="usdc">USDC</option>
+              </select>
+              <div id="cryptoWalletBox" class="crypto-wallet-box" style="display:none;">
+                <strong id="cryptoWalletTitle">Crypto payment</strong>
+                <p id="cryptoWalletNetwork"></p>
+                <code id="cryptoWalletAddress"></code>
+                <button type="button" class="btn" onclick="copyCryptoWalletAddress()">Copy address</button>
+                <div class="crypto-amount-box">
+                  <strong>Amount to send</strong>
+                  <code id="cryptoAmountDue">Select crypto to calculate amount.</code>
+                  <p id="cryptoQuoteNote">Crypto quote updates from the current market rate.</p>
+                </div>
+              </div>
+              <small class="auth-note">Credit card redirects to your processor when configured. For BTC, SOL, or USDC, send payment to the wallet shown and type your order number in the payment note/reference if your wallet allows it. If there is no note field, send us the transaction hash with your order number.</small>
+            </div>
+            <div class="form-field full">
+              <label for="checkoutAddress">Shipping address</label>
+              <input id="checkoutAddress" autocomplete="street-address" placeholder="Street address">
+            </div>
+            <div class="form-field">
+              <label for="checkoutCity">City</label>
+              <input id="checkoutCity" autocomplete="address-level2" placeholder="City">
+            </div>
+            <div class="form-field">
+              <label for="checkoutState">State</label>
+              <input id="checkoutState" autocomplete="address-level1" placeholder="State">
+            </div>
+            <div class="form-field">
+              <label for="checkoutZip">ZIP</label>
+              <input id="checkoutZip" autocomplete="postal-code" placeholder="ZIP code">
+            </div>
+            <div class="form-field">
+              <label for="checkoutCountry">Country</label>
+              <select id="checkoutCountry" autocomplete="country-name" onchange="renderCheckoutPage()">
+                <option value="United States">United States — $15 shipping</option>
+                <option value="Canada">Canada</option>
+                <option value="Mexico">Mexico</option>
+                <option value="United Kingdom">United Kingdom</option>
+                <option value="Germany">Germany</option>
+                <option value="France">France</option>
+                <option value="Italy">Italy</option>
+                <option value="Spain">Spain</option>
+                <option value="Netherlands">Netherlands</option>
+                <option value="Switzerland">Switzerland</option>
+                <option value="Australia">Australia</option>
+                <option value="New Zealand">New Zealand</option>
+                <option value="Singapore">Singapore</option>
+                <option value="United Arab Emirates">United Arab Emirates</option>
+                <option value="Rest of World">Rest of World</option>
+              </select>
+            </div>
+            <div class="form-field full">
+              <label for="checkoutNotes">Order notes</label>
+              <textarea id="checkoutNotes" placeholder="Optional notes for this order"></textarea>
+            </div>
+          </div>
+
+          <label class="check-row">
+            <input id="checkoutResearchOnly" type="checkbox">
+            <span>I confirm these products are being requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</span>
+          </label>
+
+          <div class="actions">
+            <button class="btn primary" onclick="placeOrder()">Place Order</button>
+            <button class="btn" onclick="openAccount()">View Account</button>
+          </div>
+        </div>
+
+        <div class="checkout-panel">
+          <h2>Cart summary</h2>
+          <div id="checkoutCartSummary" class="summary-list"></div>
+          <div class="summary-line"><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
+          <div class="summary-line"><span>Shipping</span><span id="checkoutShipping">$0.00</span></div>
+          <div class="summary-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
+          <p class="auth-note">Orders are placed after the customer accepts the research-use-only confirmation. Credit card uses your configured payment processor; BTC, SOL, and USDC orders are saved as awaiting crypto payment.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="thank-you" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <p class="kicker">Order placed</p>
+        <h1>Thank you.</h1>
+        <p class="lead">Your order has been saved to your account history.</p>
+      </div>
+
+      <div class="thank-you-card">
+        <p class="kicker">Order confirmation</p>
+        <h2>Your order is in.</h2>
+        <p id="thankYouIntro">We saved your order and sent confirmation details if email is configured.</p>
+
+        <div class="thank-you-details">
+          <div class="thank-you-row"><span>Order number</span><strong id="thankYouOrderId">—</strong></div>
+          <div class="thank-you-row"><span>Status</span><strong id="thankYouStatus">—</strong></div>
+          <div class="thank-you-row"><span>Payment</span><strong id="thankYouPayment">—</strong></div>
+          <div class="thank-you-row"><span>Shipping</span><strong id="thankYouShipping">$0.00</strong></div>
+          <div class="thank-you-row"><span>Total</span><strong id="thankYouTotal">$0.00</strong></div>
+        </div>
+
+        <div id="thankYouCryptoBox" class="crypto-confirm-box" style="display:none;"></div>
+        <p class="email-note">A confirmation email will be sent automatically once SMTP email is configured in your backend environment.</p>
+
+        <div class="actions">
+          <button class="btn primary" onclick="viewLastOrder()">View Order</button>
+          <button class="btn" onclick="showPage('home')">Back to Home</button>
+          <button class="btn" onclick="showPage('peptides')">Continue Shopping</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="rules-regulations" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="showPage('home')">← Home</button>
+        <p class="kicker">Legal</p>
+        <h1>Rules &amp; Regulations</h1>
+        <p class="lead">Research-use terms, customer responsibilities, safety restrictions, order policies, product disclaimers, and dispute guidelines for researchpeps.</p>
+      </div>
+
+      <div class="legal-page-card rules-card">
+        <div class="legal-section legal-intro-section">
+          <h2>1. Intended Use &amp; Buyer Acknowledgment</h2>
+          <p>By purchasing or receiving research chemicals from researchpeps, the Customer confirms that the products are being obtained strictly for lawful research, laboratory, analytical, or scientific purposes only.</p>
+          <p>These products are not intended for human consumption, veterinary use, medical use, or any unauthorized application.</p>
+          <p>The Customer understands and agrees that:</p>
+          <ul>
+            <li>Research chemicals may present hazards if mishandled, misused, or stored improperly.</li>
+            <li>Products are supplied only for research-related use in appropriate settings.</li>
+            <li>researchpeps does not provide instructions, guidance, or recommendations for use beyond the stated research purpose.</li>
+          </ul>
+        </div>
+
+        <div class="legal-section">
+          <h2>2. Customer Duties &amp; Risk Responsibility</h2>
+          <p>The Customer accepts full responsibility for the safe and lawful handling of all products purchased from researchpeps, including:</p>
+          <ul>
+            <li><strong>Handling and Storage:</strong> Following proper safety procedures for handling, storage, transport, and disposal.</li>
+            <li><strong>Legal Compliance:</strong> Ensuring full compliance with all applicable local, state, and federal laws relating to research chemical possession and use.</li>
+            <li><strong>Health and Safety Risks:</strong> Understanding that research chemicals may carry unknown or unpredictable risks, and that researchpeps is not responsible for injuries, damages, adverse effects, or losses caused by improper handling, misuse, or unauthorized use.</li>
+          </ul>
+          <p>The Customer agrees to release researchpeps from claims related to:</p>
+          <ul>
+            <li>Toxicity, contamination, accidental exposure, or unsafe handling.</li>
+            <li>Harm, injury, or liability caused by improper use.</li>
+            <li>Any unauthorized transfer, resale, or third-party use of purchased products.</li>
+          </ul>
+        </div>
+
+        <div class="legal-section">
+          <h2>3. No Medical, Health, or Therapeutic Representation</h2>
+          <p>researchpeps does not market, recommend, or promote its products for:</p>
+          <ul>
+            <li>Human or animal consumption.</li>
+            <li>Medical, therapeutic, diagnostic, or cosmetic purposes.</li>
+            <li>Use in supplements, pharmaceuticals, recreational substances, or personal applications.</li>
+          </ul>
+          <p>The Customer agrees not to use researchpeps products in any way that conflicts with their intended research-only purpose.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2>4. Acceptance of Risk &amp; Indemnification</h2>
+          <p>The Customer agrees to assume all risks associated with purchasing, receiving, handling, storing, and disposing of research chemicals.</p>
+          <p>The Customer also agrees to indemnify, defend, and hold harmless researchpeps, including its owners, employees, contractors, agents, affiliates, and partners, from any claims, damages, liabilities, costs, or legal actions resulting from misuse, unlawful use, improper handling, third-party involvement, or violation of these terms.</p>
+          <p>The Customer accepts full legal and financial responsibility for any consequences connected to their purchase, possession, handling, or use of research chemicals.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2>5. Order Acceptance, Refusal, and Restrictions</h2>
+          <p>researchpeps reserves the right to refuse, cancel, or reject any order at its discretion.</p>
+          <p>researchpeps may also:</p>
+          <ul>
+            <li>Request additional information or documentation to verify the Customer’s intent, eligibility, or legal compliance.</li>
+            <li>Refuse sales to individuals, businesses, organizations, or locations where the purchase or possession of these products may be restricted or prohibited.</li>
+            <li>Cancel orders that appear suspicious, non-compliant, incomplete, or inconsistent with research-use requirements.</li>
+          </ul>
+          <p>By placing an order, the Customer confirms that they are of legal age, legally permitted to purchase the products, and allowed to possess research chemicals in their jurisdiction.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2>6. Product Disclaimer</h2>
+          <p>All products are provided for research purposes only and should be handled only by qualified individuals in appropriate research or laboratory settings.</p>
+          <p>researchpeps makes reasonable efforts to provide accurate product information, but buyers are responsible for reviewing all product details, verifying suitability for their intended research use, and following proper safety procedures.</p>
+          <p>researchpeps does not provide medical, therapeutic, dosage, or usage guidance of any kind.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2>7. Dispute Resolution</h2>
+          <p>If an issue arises with an order, the Customer agrees to contact researchpeps first so the matter can be reviewed in good faith.</p>
+          <p>researchpeps will review order concerns, product issues, shipping problems, and refund eligibility according to its posted policies. Any resolution will depend on the available order records, product information, supporting evidence, and applicable policy terms.</p>
+        </div>
+
+        <div class="legal-section">
+          <h2>8. Customer Confirmation &amp; Agreement</h2>
+          <p>By completing a purchase, the Customer confirms that they:</p>
+          <ul>
+            <li>Have read and understood this agreement.</li>
+            <li>Agree to follow all stated terms, restrictions, and conditions.</li>
+            <li>Accept responsibility for the lawful purchase, handling, storage, and research use of products obtained through researchpeps.</li>
+            <li>Understand that the products are not intended for human consumption, medical use, veterinary use, or any unauthorized purpose.</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="disclaimers" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="showPage('home')">← Home</button>
+        <p class="kicker">Legal</p>
+        <h1>Disclaimers</h1>
+        <p class="lead">Important information about how researchpeps content should be understood. Full marketplace terms are available on the Rules &amp; Regulations page.</p>
+      </div>
+
+      <div class="legal-page-card">
+        <h2>Research Use Only</h2>
+        <p>All products offered by ResearchPeps are sold strictly for laboratory research purposes only. These products are not intended for human consumption, medical use, veterinary use, diagnosis, treatment, injection, ingestion, or application to the body in any form.</p>
+
+        <h2>Not for Human Consumption</h2>
+        <p>ResearchPeps products are not food, drugs, supplements, cosmetics, or medical products. They have not been evaluated or approved for human use by the FDA or any other regulatory authority.</p>
+
+        <h2>Final Sale Policy</h2>
+        <p>All sales are final once an order has been submitted. We do not accept returns, cancellations, exchanges, or refunds due to buyer error, change of mind, incorrect product selection, shipping delays, or misuse of the product.</p>
+        <h2>Damaged Shipment Policy</h2>
+        <p>If a product arrives damaged during shipment, the buyer must contact ResearchPeps within a reasonable time and provide clear proof, including photos of the damaged item, packaging, shipping label, and order details.
+
+After review, eligible damaged-shipment claims may be approved for replacement or store credit at ResearchPeps’ discretion. Claims without sufficient proof may be denied.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="privacy" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="showPage('home')">← Home</button>
+        <p class="kicker">Legal</p>
+        <h1>Privacy Policy</h1>
+        <p class="lead">How researchpeps collects, uses, protects, and handles information connected to this website.</p>
+      </div>
+
+      <div class="legal-page-card">
+        <h2>Last Updated</h2>
+        <p>May 29, 2026</p>
+
+        <h2>1. Overview</h2>
+        <p>researchpeps respects visitor privacy and is committed to handling personal information responsibly. This Privacy Policy explains what information may be collected when you visit our website, contact us, browse our catalog, or interact with any future forms or services connected to researchpeps.</p>
+        <p>This website is intended for lawful research-related informational and catalog purposes only. It is not intended for minors, human-consumption guidance, medical advice, or therapeutic recommendations.</p>
+
+        <h2>2. Information We May Collect</h2>
+        <p>We may collect information that you choose to provide, such as your name, email address, phone number, business information, shipping or billing details, messages, research-use inquiries, or other information submitted through contact forms, email, account tools, quote requests, or order-related communications if those features are added.</p>
+        <p>We may also collect limited technical information automatically, such as IP address, browser type, device type, operating system, pages visited, referring pages, time spent on the website, approximate location derived from technical data, and other standard website analytics information.</p>
+
+        <h2>3. Catalog Search, Cart, and Local Website Tools</h2>
+        <p>The product search and saved cart features are designed to help visitors browse and organize catalog items. These tools do not create a purchase, checkout, prescription, medical request, or dosing instruction. Depending on the final website setup, some preferences may be stored locally on your device through browser storage or cookies.</p>
+
+        <h2>4. How We Use Information</h2>
+        <p>researchpeps may use collected information to respond to inquiries, provide customer support, maintain website functionality, improve website performance, protect against fraud or misuse, comply with legal obligations, enforce our policies, and communicate important updates.</p>
+        <p>We do not use visitor information to provide medical, therapeutic, dosage, or personal-use guidance.</p>
+
+        <h2>5. Cookies and Analytics</h2>
+        <p>Our website may use cookies, browser storage, analytics tools, or similar technologies to remember preferences, measure traffic, understand page performance, improve navigation, and protect website security. Visitors can usually adjust cookie settings through their browser, although some website features may not function properly if cookies or browser storage are disabled.</p>
+
+        <h2>6. How Information May Be Shared</h2>
+        <p>We do not sell personal information. We may share information only when reasonably necessary with service providers, website hosts, analytics providers, payment processors, shipping providers, compliance partners, legal advisors, or other vendors who help operate the website or support legitimate business functions.</p>
+        <p>We may also disclose information when required by law, regulation, subpoena, court order, governmental request, fraud investigation, safety concern, policy enforcement, or to protect the rights, property, and safety of researchpeps, our visitors, or others.</p>
+
+        <h2>7. Payments, Orders, and Third-Party Services</h2>
+        <p>If checkout, payment, shipping, forms, analytics, live chat, email marketing, or other third-party tools are added, those providers may process information under their own privacy policies and security practices. researchpeps is not responsible for the privacy practices of third-party websites, platforms, or services that are not controlled by us.</p>
+
+        <h2>8. Data Security</h2>
+        <p>We use reasonable administrative, technical, and organizational safeguards designed to protect personal information from unauthorized access, loss, misuse, alteration, or disclosure. No website, transmission method, or storage system can be guaranteed to be completely secure.</p>
+
+        <h2>9. Data Retention</h2>
+        <p>We retain personal information only as long as reasonably necessary for the purposes described in this Privacy Policy, including customer support, business records, legal compliance, dispute resolution, security, fraud prevention, and policy enforcement.</p>
+
+        <h2>10. Your Privacy Choices</h2>
+        <p>Depending on your location and applicable law, you may have rights to request access to, correction of, deletion of, or limitation of certain personal information. You may also be able to opt out of certain marketing communications or adjust browser settings for cookies and tracking technologies.</p>
+        <p>To submit a privacy request, contact us using the contact information listed below. We may need to verify your identity before completing certain requests.</p>
+
+        <h2>11. California and Other State Privacy Notice</h2>
+        <p>If applicable privacy laws apply to researchpeps, eligible residents may have additional rights regarding access, deletion, correction, portability, and opting out of certain data sharing or targeted advertising. researchpeps does not knowingly sell personal information. If our data practices change, this Privacy Policy will be updated accordingly.</p>
+
+        <h2>12. International Visitors</h2>
+        <p>If you access the website from outside the United States, your information may be processed in the United States or other jurisdictions where our service providers operate. By using the website, you understand that privacy laws may differ from those in your location.</p>
+
+        <h2>13. Children’s Privacy</h2>
+        <p>This website is not directed to children or minors. We do not knowingly collect personal information from anyone under 18. If we learn that information from a minor has been submitted, we will take reasonable steps to delete it.</p>
+
+        <h2>14. Email Communications</h2>
+        <p>If you contact us or sign up for updates, we may use your email address to respond or send relevant business communications. You may unsubscribe from marketing emails where an unsubscribe option is provided. Transactional, legal, safety, or policy-related communications may still be sent when necessary.</p>
+
+        <h2>15. Changes to This Privacy Policy</h2>
+        <p>researchpeps may update this Privacy Policy from time to time to reflect changes in website features, business practices, legal requirements, or operational needs. The updated version will be posted on this page with a revised “Last Updated” date.</p>
+
+        <h2>16. Contact</h2>
+        <p>For privacy questions, requests, or concerns, contact researchpeps at:</p>
+        <p><strong>Email:</strong> your@email.com<br><strong>Phone:</strong> (000) 000-0000<br><strong>Mailing Address:</strong> Your business address here</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+
+<footer class="site-footer">
+  <div class="footer-grid">
+    <div class="footer-col">
+      <h4>Site Map</h4>
+      <button onclick="showPage('home')">Home</button>
+      <button onclick="showPage('peptides')">Peptides</button>
+      <button onclick="showHomeSection('faq')">FAQ</button>
+      <button onclick="showHomeSection('featured-peptides')">Featured Peptides</button>
+      <button onclick="toggleSearch()">Search</button>
+    </div>
+
+    <div class="footer-col">
+      <h4>Contact Us</h4>
+      <div class="footer-contact-lines">
+        <p><strong>Email:</strong> your@email.com</p>
+        <p><strong>Phone:</strong> (000) 000-0000</p>
+        <p><strong>Address:</strong> Your address here</p>
+        <p><strong>Hours:</strong> Mon – Fri, 9 AM – 5 PM</p>
+      </div>
+    </div>
+
+    <div class="footer-col">
+      <h4>Legal</h4>
+      <button onclick="showPage('rules-regulations')">Rules &amp; Regulations</button>
+      <button onclick="showPage('disclaimers')">Disclaimers</button>
+      <button onclick="showPage('privacy')">Privacy Policy</button>
+    </div>
+  </div>
+
+  <div class="footer-bottom">© 2026 RESEARCHPEPS.COM, ALL RIGHTS RESERVED.</div>
+</footer>
+
+<script>
+const VIAL_TEMPLATE_IMAGE = "/images/pep.png";
+
+const products = [
+  {
+    "name": "Retatrutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Triple-acting research peptide commonly studied for weight loss, appetite control, blood sugar balance, and overall metabolic health.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "RT5",
+        "spec": "5mg*10 vials",
+        "price": "$82.50"
+      },
+      {
+        "code": "RT10",
+        "spec": "10mg*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "RT15",
+        "spec": "15mg*10 vials",
+        "price": "$157.50"
+      },
+      {
+        "code": "RT20",
+        "spec": "20mg*10 vials",
+        "price": "$195.00"
+      },
+      {
+        "code": "RT30",
+        "spec": "30mg*10 vials",
+        "price": "$255.00"
+      },
+      {
+        "code": "RT40",
+        "spec": "40mg*10 vials",
+        "price": "$315.00"
+      },
+      {
+        "code": "RT50",
+        "spec": "50mg*10 vials",
+        "price": "$382.50"
+      },
+      {
+        "code": "RT60",
+        "spec": "60mg*10 vials",
+        "price": "$435.00"
+      }
+    ]
+  },
+  {
+    "name": "Semaglutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "GLP-1 research peptide commonly studied for weight loss, appetite control, slower stomach emptying, and blood sugar support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "SM05",
+        "spec": "5mg*10 vials",
+        "price": "$52.50"
+      },
+      {
+        "code": "SM10",
+        "spec": "10mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "SM15",
+        "spec": "15mg*10 vials",
+        "price": "$90.00"
+      },
+      {
+        "code": "SM20",
+        "spec": "20mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "SM30",
+        "spec": "30mg*10 vials",
+        "price": "$135.00"
+      }
+    ]
+  },
+  {
+    "name": "Tirzepatide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Dual-action research peptide commonly studied for weight loss, appetite control, improved glucose balance, and broader metabolic support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "TR5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "TR10",
+        "spec": "10mg*10 vials",
+        "price": "$75.00"
+      },
+      {
+        "code": "TR15",
+        "spec": "15mg*10 vials",
+        "price": "$97.50"
+      },
+      {
+        "code": "TR20",
+        "spec": "20mg*10 vials",
+        "price": "$112.50"
+      },
+      {
+        "code": "TR30",
+        "spec": "30mg*10 vials",
+        "price": "$142.50"
+      },
+      {
+        "code": "TR40",
+        "spec": "40mg*10 vials",
+        "price": "$172.50"
+      },
+      {
+        "code": "TR50",
+        "spec": "50mg*10 vials",
+        "price": "$217.50"
+      },
+      {
+        "code": "TR60",
+        "spec": "60mg*10 vials",
+        "price": "$255.00"
+      }
+    ]
+  },
+  {
+    "name": "Semax",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for focus, memory, mental clarity, and broader cognitive support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "XA5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "XA11",
+        "spec": "10mg*10 vials",
+        "price": "$75.00"
+      }
+    ]
+  },
+  {
+    "name": "HGH",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research hormone product commonly studied for growth, recovery, body composition, and performance-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "H10",
+        "spec": "10iu*10 vials",
+        "price": "$75.00"
+      },
+      {
+        "code": "H15",
+        "spec": "15iu*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "H24",
+        "spec": "24iu*10 vials",
+        "price": "$165.00"
+      },
+      {
+        "code": "H36",
+        "spec": "36iu*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "IGF-1LR3",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth factor research peptide commonly studied for muscle growth, recovery, and cell-signaling activity.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "IG01",
+        "spec": "0.1mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "IG1",
+        "spec": "1mg*10 vials",
+        "price": "$282.00"
+      }
+    ]
+  },
+  {
+    "name": "BPC-157",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for recovery, gut health, tissue repair, and joint support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BC5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "BC10",
+        "spec": "10mg*10 vials",
+        "price": "$105.00"
+      }
+    ]
+  },
+  {
+    "name": "TB-500",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for recovery, tissue repair, flexibility, and injury-support pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BT5",
+        "spec": "5mg*10 vials",
+        "price": "$112.50"
+      }
+    ]
+  },
+  {
+    "name": "GHK-CU",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Copper peptide researched for skin repair, collagen support, hair-related studies, and overall tissue recovery.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CU50",
+        "spec": "50mg*10 vials",
+        "price": "$45.00"
+      },
+      {
+        "code": "CU100",
+        "spec": "100mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "NAD+",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Cellular coenzyme commonly studied for energy production, healthy aging research, and cellular repair pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "NJ100",
+        "spec": "100mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "NJ500",
+        "spec": "500mg*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "NJ1000",
+        "spec": "1000mg*10 vials",
+        "price": "$195.00"
+      }
+    ]
+  },
+  {
+    "name": "Ipamorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep support, and lean-mass related research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "IP5",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "IP10",
+        "spec": "10mg*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 WO/Dac",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and body-composition support.",
+    "aliases": [
+      "CJC-1295 No DAC",
+      "CJC No DAC",
+      "cjc-1295 no dac",
+      "cjc wo dac",
+      "cjc without dac",
+      "cjc no dac",
+      "no dac"
+    ],
+    "options": [
+      {
+        "code": "NO DAC",
+        "spec": "2mg*10 vials",
+        "price": "$45.00"
+      },
+      {
+        "code": "CND5",
+        "spec": "5mg*10 vials",
+        "price": "$127.50"
+      },
+      {
+        "code": "CND10",
+        "spec": "10mg*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 DAC + Ipamorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Peptide blend commonly studied for recovery, sleep support, growth hormone pathways, and body-composition goals.",
+    "aliases": [
+      "cjc dac ipamorelin",
+      "CJC DAC ipamorelin",
+      "cjc-1295 dac ipamorelin",
+      "cjc ipo",
+      "dac ip",
+      "CJC-1295 DAC 5mg + Ipamorelin 5mg"
+    ],
+    "options": [
+      {
+        "code": "DAC+ip5",
+        "spec": "CJC-1295 DAC 5mg + Ipamorelin 5mg*10 vials",
+        "price": "$140.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 WO/Dac 5mg + Ipamorelin 5mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Peptide blend commonly studied for growth hormone support, recovery, sleep quality, and body-composition goals.",
+    "aliases": [
+      "cjc no dac ipamorelin",
+      "CJC no dac ipa",
+      "1295 ip5",
+      "CJC-1295 No DAC 5mg + Ipamorelin 5mg",
+      "cjc-1295 no dac ipamorelin"
+    ],
+    "options": [
+      {
+        "code": "CP10",
+        "spec": "10mg*10 vials",
+        "price": "$142.50"
+      }
+    ]
+  },
+  {
+    "name": "Sermorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and healthy hormone support.",
+    "aliases": [
+      "sermorelin",
+      "Semorelin Acetate",
+      "Sermorelin Acetate",
+      "semorelin acetate",
+      "sermorelin acetate"
+    ],
+    "options": [
+      {
+        "code": "SE2",
+        "spec": "2mg*10 vials",
+        "price": "$35.00"
+      },
+      {
+        "code": "SM05A",
+        "spec": "5mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "SM010A",
+        "spec": "10mg*10 vials",
+        "price": "$180.00"
+      }
+    ]
+  },
+  {
+    "name": "GHRP-2",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth hormone secretagogue commonly studied for appetite increase, hormone release, and recovery support.",
+    "aliases": [
+      "GHRP2",
+      "ghrp2",
+      "ghrp-2"
+    ],
+    "options": [
+      {
+        "code": "G25",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "G210",
+        "spec": "10mg*10 vials",
+        "price": "$105.00"
+      }
+    ]
+  },
+  {
+    "name": "GHRP-6",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth hormone secretagogue commonly studied for appetite support, hormone release, and recovery-related effects.",
+    "aliases": [
+      "GHRP-6 Acetate",
+      "ghrp-6 acetate",
+      "ghrp6",
+      "GHRP6"
+    ],
+    "options": [
+      {
+        "code": "G65",
+        "spec": "5mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "G610",
+        "spec": "10mg*10 vials",
+        "price": "$141.00"
+      }
+    ]
+  },
+  {
+    "name": "Cagrilintide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for weight loss, appetite control, and metabolic health support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CGL5",
+        "spec": "5mg*10 vials",
+        "price": "$157.50"
+      },
+      {
+        "code": "CGL10",
+        "spec": "10mg*10 vials",
+        "price": "$277.50"
+      }
+    ]
+  },
+  {
+    "name": "Cagrilintide 5mg + Semaglutide 5mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Dual peptide blend commonly studied for weight loss, appetite control, and stronger metabolic support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CS10",
+        "spec": "10mg*10 vials",
+        "price": "$285.00"
+      }
+    ]
+  },
+  {
+    "name": "AOD",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for fat loss, body-composition support, and metabolism-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "5AD",
+        "spec": "5mg*10 vials",
+        "price": "$157.50"
+      }
+    ]
+  },
+  {
+    "name": "5-amino-1mq",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research compound commonly studied for fat loss, metabolism, and body-composition support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "5AM",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "MOTS-C",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Mitochondrial research peptide commonly studied for metabolism, energy use, insulin sensitivity, and exercise support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MS10",
+        "spec": "10mg*10 vials",
+        "price": "$97.50"
+      },
+      {
+        "code": "MS40",
+        "spec": "40mg*10 vials",
+        "price": "$277.50"
+      }
+    ]
+  },
+  {
+    "name": "IGF-DES",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth factor research peptide often studied for muscle cell activity, tissue repair, and localized growth signaling.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "IGD",
+        "spec": "2mg*10 vials",
+        "price": "$82.50"
+      }
+    ]
+  },
+  {
+    "name": "Selank",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for stress support, anxiety-related behavior, mood balance, and mental clarity.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "SK5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "SK11",
+        "spec": "10mg*10 vials",
+        "price": "$75.00"
+      }
+    ]
+  },
+  {
+    "name": "Tesamorelin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth hormone releasing peptide studied for body-composition changes, fat loss research, and hormone-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "TSM5",
+        "spec": "5mg*10 vials",
+        "price": "$165.00"
+      },
+      {
+        "code": "TSM10",
+        "spec": "10mg*10 vials",
+        "price": "$277.50"
+      }
+    ]
+  },
+  {
+    "name": "Mazdutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide studied for weight loss, appetite control, blood sugar balance, and metabolic health.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MDT10",
+        "spec": "10mg*10 vials",
+        "price": "$292.50"
+      }
+    ]
+  },
+  {
+    "name": "Survodutide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for weight loss, appetite control, and cardiometabolic health markers.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "SUR10",
+        "spec": "10mg*10 vials",
+        "price": "$405.00"
+      }
+    ]
+  },
+  {
+    "name": "KPV",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for gut health, inflammation support, and skin-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "KPV5",
+        "spec": "5mg*10 vials",
+        "price": "$67.50"
+      },
+      {
+        "code": "KPV10",
+        "spec": "10mg*10 vials",
+        "price": "$90.00"
+      }
+    ]
+  },
+  {
+    "name": "Thymosin Alpha-1",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for immune support, inflammation balance, and overall immune function.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "TA5",
+        "spec": "5mg*10 vials",
+        "price": "$120.00"
+      },
+      {
+        "code": "TA10",
+        "spec": "10mg*10 vials",
+        "price": "$217.50"
+      }
+    ]
+  },
+  {
+    "name": "KissPeptin-10",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide mainly studied for hormone signaling, reproductive function, and fertility-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "KS5",
+        "spec": "5mg*10 vials",
+        "price": "$75.00"
+      },
+      {
+        "code": "KS10",
+        "spec": "10mg*10 vials",
+        "price": "$127.50"
+      }
+    ]
+  },
+  {
+    "name": "Lemon Bottle",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research product often discussed in body-composition and fat-targeting studies, especially around localized fat reduction models.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LB",
+        "spec": "10ml*10 vials",
+        "price": "$150.00"
+      }
+    ]
+  },
+  {
+    "name": "Vasoactive Intestinal Peptide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide studied for inflammation, immune signaling, blood vessel function, and gut-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "VIP5",
+        "spec": "5mg*10 vials",
+        "price": "$112.50"
+      },
+      {
+        "code": "VIP10",
+        "spec": "10mg*10 vials",
+        "price": "$217.50"
+      }
+    ]
+  },
+  {
+    "name": "Bacteriostatic Water 0.9%",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Lab supply commonly used for peptide mixing and dilution in research settings.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BA3",
+        "spec": "3ml*10 vials",
+        "price": "$7.50"
+      },
+      {
+        "code": "BA10",
+        "spec": "10ml*10 vials",
+        "price": "$15.00"
+      }
+    ]
+  },
+  {
+    "name": "BPC-157 5mg + TB-500 5mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Peptide blend commonly studied for recovery, tissue repair, joint support, and healing-related research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BB10",
+        "spec": "10mg*10 vials",
+        "price": "$142.50"
+      }
+    ]
+  },
+  {
+    "name": "AICAR",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research compound commonly studied for energy use, endurance, metabolism, and exercise-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "AR50",
+        "spec": "50mg*10 vials",
+        "price": "$93.00"
+      }
+    ]
+  },
+  {
+    "name": "SS-31",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Mitochondrial research peptide studied for cellular energy, oxidative stress, and heart or muscle support pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "2S10",
+        "spec": "10mg*10 vials",
+        "price": "$129.00"
+      },
+      {
+        "code": "2S50",
+        "spec": "50mg*10 vials",
+        "price": "$427.50"
+      }
+    ]
+  },
+  {
+    "name": "Glutathione",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Antioxidant research compound commonly studied for detox support, oxidative stress, and cellular protection.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "GTT",
+        "spec": "1500mg*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "HMG",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research hormone product commonly studied for fertility support and reproductive hormone function.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "G75",
+        "spec": "75iu*10 vials",
+        "price": "$90.00"
+      }
+    ]
+  },
+  {
+    "name": "Lipo-C with vitamins B12",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research blend commonly studied for metabolism, fat-burning support, energy, and vitamin B12 support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LC216",
+        "spec": "10ml*10 vials",
+        "price": "$112.50"
+      }
+    ]
+  },
+  {
+    "name": "HCG",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research hormone product commonly studied for fertility, hormone balance, and reproductive support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "G5K",
+        "spec": "5000iu*10 vials",
+        "price": "$127.50"
+      },
+      {
+        "code": "G10K",
+        "spec": "10000iu*10 vials",
+        "price": "$240.00"
+      }
+    ]
+  },
+  {
+    "name": "BPC-157 10mg + TB-500 10mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Higher-strength peptide blend commonly studied for recovery, tissue repair, and joint or muscle support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BB20",
+        "spec": "20mg*10 vials",
+        "price": "$255.00"
+      }
+    ]
+  },
+  {
+    "name": "FOXO4",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide studied in longevity and senescence models, especially for aging-related cell pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "F410",
+        "spec": "10mg*10 vials",
+        "price": "$495.00"
+      }
+    ]
+  },
+  {
+    "name": "LL37",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Antimicrobial research peptide commonly studied for immune defense, skin repair, and inflammation-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "3710",
+        "spec": "10mg*10 vials",
+        "price": "$142.50"
+      }
+    ]
+  },
+  {
+    "name": "Dermorphin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide mainly studied for pain-signaling pathways and receptor-binding activity.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "DR5",
+        "spec": "5mg*10 vials",
+        "price": "$82.50"
+      }
+    ]
+  },
+  {
+    "name": "L-Carnitine 600mg/ml",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research compound commonly studied for fat metabolism, energy production, and exercise performance support.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LC600",
+        "spec": "10ml*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "Acetic Acid Water 0.6%",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Lab supply commonly used for peptide mixing and reconstitution in research settings.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "AA3",
+        "spec": "3ml*10 vials",
+        "price": "$7.50"
+      },
+      {
+        "code": "AA10",
+        "spec": "10ml*10 vials",
+        "price": "$15.00"
+      }
+    ]
+  },
+  {
+    "name": "CJC-1295 W/Dac",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Longer-acting growth hormone releasing peptide studied for recovery, hormone support, and body-composition research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CD5",
+        "spec": "5mg*10 vials",
+        "price": "$240.00"
+      }
+    ]
+  },
+  {
+    "name": "Cerebrolysin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research compound commonly studied for brain support, nerve health, memory, and recovery-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "CBL60",
+        "spec": "60mg*10 vials",
+        "price": "$43.50"
+      }
+    ]
+  },
+  {
+    "name": "Epithalon",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for healthy aging, sleep patterns, and cellular longevity pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "ET10",
+        "spec": "10mg*10 vials",
+        "price": "$72.00"
+      },
+      {
+        "code": "ET50",
+        "spec": "50mg*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "LC120",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research wellness blend commonly studied for energy support, metabolism, and body-composition goals.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "LC120",
+        "spec": "10ml*10 vials",
+        "price": "$90.00"
+      }
+    ]
+  },
+  {
+    "name": "Hexarelin Acetate",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Growth hormone secretagogue commonly studied for recovery, muscle support, and hormone-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "HX5",
+        "spec": "5mg*10 vials",
+        "price": "$120.00"
+      }
+    ]
+  },
+  {
+    "name": "Pinealon",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for brain health, memory support, and healthy aging pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "PI5",
+        "spec": "5mg*10 vials",
+        "price": "$82.50"
+      },
+      {
+        "code": "PI10",
+        "spec": "10mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "PI20",
+        "spec": "20mg*10 vials",
+        "price": "$150.00"
+      }
+    ]
+  },
+  {
+    "name": "Melanotan",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for skin pigmentation and tanning-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MT1",
+        "spec": "10mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "Snap-8",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied in cosmetic and skin-care research for expression lines and wrinkle-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "NPB10",
+        "spec": "10mg*10 vials",
+        "price": "$60.00"
+      }
+    ]
+  },
+  {
+    "name": "Phosphate Buffered Saline (PBS)",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Lab buffer commonly used for dilution, washing, and general peptide research preparation.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "WA3",
+        "spec": "3ml*10 vials",
+        "price": "$7.50"
+      },
+      {
+        "code": "WA10",
+        "spec": "10ml*10 vials",
+        "price": "$15.00"
+      }
+    ]
+  },
+  {
+    "name": "Adipotide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide mainly studied for fat loss and body-composition related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "AP2",
+        "spec": "2mg*10 vials",
+        "price": "$105.00"
+      },
+      {
+        "code": "AP5",
+        "spec": "5mg*10 vials",
+        "price": "$225.00"
+      }
+    ]
+  },
+  {
+    "name": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research blend commonly studied for skin repair, tissue recovery, joint support, and healing-related effects.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "BBG70",
+        "spec": "70mg*10 vials",
+        "price": "$240.00"
+      }
+    ]
+  },
+  {
+    "name": "Oxytocin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for social bonding, mood, stress response, and behavioral pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "OT2",
+        "spec": "2mg*10 vials",
+        "price": "$37.50"
+      }
+    ]
+  },
+  {
+    "name": "B12 1mg/ml",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Vitamin B12 research product commonly studied for energy support, metabolism, and nutrient-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "B12",
+        "spec": "10ml*10 vials",
+        "price": "$52.50"
+      }
+    ]
+  },
+  {
+    "name": "Melatonin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research hormone commonly studied for sleep support, circadian rhythm balance, and recovery.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "MT10",
+        "spec": "10mg*10 vials",
+        "price": "$82.50"
+      }
+    ]
+  },
+  {
+    "name": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg + KPV 10mg",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Advanced peptide blend commonly studied for skin repair, gut support, inflammation balance, and full-body recovery research.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "KLOW80",
+        "spec": "80mg*10 vials",
+        "price": "$292.50"
+      }
+    ]
+  },
+  {
+    "name": "SLU-PP-322",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research compound being explored for metabolism, energy use, and weight-management related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "322",
+        "spec": "5mg*10 vials",
+        "price": "$150.00"
+      }
+    ]
+  },
+  {
+    "name": "MT-2 (melanotan 2 acetate)",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for skin pigmentation, tanning response, and melanin-related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "ML10",
+        "spec": "10mg*10 vials",
+        "price": "$67.50"
+      }
+    ]
+  },
+  {
+    "name": "DSIP",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for sleep support, stress balance, and nervous-system related pathways.",
+    "aliases": [],
+    "options": [
+      {
+        "code": "DS5",
+        "spec": "5mg*10 vials",
+        "price": "$60.00"
+      },
+      {
+        "code": "DS15",
+        "spec": "15mg*10 vials",
+        "price": "$127.50"
+      }
+    ]
+  }
+];
+
+let currentProduct = null;
+let currentOption = null;
+let selectedOptions = {};
+let selectedPurchaseTypes = {};
+let selectedVialQuantities = {};
+let cart = [];
+
+const KIT_PRICE_MULTIPLIER = 1.20;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 1.98;
+
+function parsePrice(priceText) {
+  return Number(String(priceText).replace(/[^0-9.]/g, ""));
+}
+
+function getVialCount(spec) {
+  const match = String(spec).match(/\*(\d+)\s*vials?/i);
+  return match ? Number(match[1]) : 1;
+}
+
+function formatMoney(value) {
+  const number = Number(value) || 0;
+  return "$" + number.toFixed(2);
+}
+
+function getRaisedKitPrice(option) {
+  return parsePrice(option.price) * KIT_PRICE_MULTIPLIER;
+}
+
+function getBasePerVialPrice(option) {
+  const vialCount = getVialCount(option.spec);
+  const basePrice = parsePrice(option.price);
+  return vialCount ? basePrice / vialCount : basePrice;
+}
+
+function getSingleVialPrice(option) {
+  return getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER;
+}
+
+function formatOption(option) {
+  return option.spec + " — " + formatMoney(getRaisedKitPrice(option));
+}
+
+function formatSizeOption(option, purchaseType) {
+  const dose = String(option.spec).split('*')[0].trim();
+  if (purchaseType === 'single') {
+    return dose + ' single vial — ' + formatMoney(getSingleVialPrice(option)) + ' each';
+  }
+  return option.spec + ' — ' + formatMoney(getRaisedKitPrice(option));
+}
+
+function getOneVialPriceText(option) {
+  return formatMoney(getSingleVialPrice(option)) + " single vial";
+}
+
+function getProductByName(productName) {
+  return products.find(function(item) { return item.name === productName; });
+}
+
+function getSelectedOption(product) {
+  if (!product || !product.options || product.options.length === 0) return null;
+  const selectedCode = selectedOptions[product.name];
+  return product.options.find(function(option) { return option.code === selectedCode; }) || product.options[0];
+}
+
+function getSelectedPurchaseType(product) {
+  return selectedPurchaseTypes[product.name] || 'kit';
+}
+
+function getSelectedVialQuantity(product) {
+  return Math.max(1, Math.min(99, Number(selectedVialQuantities[product.name]) || 1));
+}
+
+function getDisplayPriceForProduct(product) {
+  const option = getSelectedOption(product);
+  const purchaseType = getSelectedPurchaseType(product);
+  if (!option) return 0;
+  if (purchaseType === 'single') return getSingleVialPrice(option) * getSelectedVialQuantity(product);
+  return getRaisedKitPrice(option);
+}
+
+function getPurchaseLabel(product) {
+  const option = getSelectedOption(product);
+  const purchaseType = getSelectedPurchaseType(product);
+  if (!option) return '';
+  if (purchaseType === 'single') {
+    const qty = getSelectedVialQuantity(product);
+    return qty + ' vial' + (qty === 1 ? '' : 's') + ' • ' + getDoseText(option) + ' each';
+  }
+  return option.spec;
+}
+
+function getStartingPrice(product) {
+  if (!product.options || product.options.length === 0) return "";
+  return formatMoney(getSingleVialPrice(product.options[0])) + " per single vial";
+}
+
+function getSingleVialSavingsPercent() {
+  return Math.round((1 - (KIT_PRICE_MULTIPLIER / SINGLE_VIAL_PRICE_MULTIPLIER)) * 100);
+}
+
+function getSingleVialDisplay(option) {
+  return formatMoney(getSingleVialPrice(option)) + " per vial";
+}
+
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(function(page) {
+    page.classList.remove('active');
+  });
+
+  const page = document.getElementById(id);
+  if (page) page.classList.add('active');
+
+  setActiveNav(id);
+  closeSearchOnly();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function setActiveNav(id) {
+  document.querySelectorAll('.nav-link').forEach(function(button) {
+    button.classList.remove('active-link');
+  });
+
+  let navId = 'home';
+  if (id === 'peptides' || id === 'product-detail') navId = 'peptides';
+  if (id === 'faq') navId = 'faq';
+
+  const activeButton = document.querySelector('[data-nav="' + navId + '"]');
+  if (activeButton) activeButton.classList.add('active-link');
+}
+
+function toggleSearch() {
+  const panel = document.getElementById('searchPanel');
+  const isOpen = panel.classList.toggle('open');
+
+  if (isOpen) {
+    renderSearchResults();
+    setTimeout(function() {
+      document.getElementById('productSearch').focus();
+    }, 50);
+  }
+}
+
+function closeSearchOnly() {
+  const panel = document.getElementById('searchPanel');
+  if (panel) panel.classList.remove('open');
+}
+
+function renderSearchResults() {
+  const input = document.getElementById('productSearch');
+  const results = document.getElementById('searchResults');
+  const query = input.value.trim().toLowerCase();
+
+  let matches = products.filter(function(product) {
+    const optionText = (product.options || []).map(function(option) {
+      return option.code + ' ' + option.spec + ' ' + option.price;
+    }).join(' ');
+    const searchable = [product.name, product.category, product.description, optionText, (product.aliases || []).join(' ')].join(' ').toLowerCase();
+    return query.length === 0 || searchable.includes(query);
+  });
+
+  if (query.length === 0) {
+    matches = products.filter(function(product) {
+      return ['Retatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'CJC-1295 WO/Dac'].includes(product.name);
+    });
+  }
+
+  if (matches.length === 0) {
+    results.innerHTML = '<div class="empty-search">No peptides found. Try searching “semaglutide”, “tirzepatide”, “BPC”, or “GHK”.</div>';
+    return;
+  }
+
+  results.innerHTML = matches.slice(0, 12).map(function(product) {
+    return `
+      <button class="search-result" onclick="openProduct('${escapeForAttribute(product.name)}')">
+        <span class="search-result-icon">${product.icon}</span>
+        <span>
+          <strong>${product.name}</strong>
+          <small>${product.options.length} option${product.options.length === 1 ? '' : 's'} • from ${getStartingPrice(product)}</small>
+        </span>
+        <span>View →</span>
+      </button>
+    `;
+  }).join('');
+}
+
+function escapeForAttribute(value) {
+  return String(value).replace(/'/g, "\\'");
+}
+
+function renderOptionSelect(product, elementIdPrefix) {
+  const selected = getSelectedOption(product);
+  const purchaseType = getSelectedPurchaseType(product);
+  const vialQty = getSelectedVialQuantity(product);
+  const totalPrice = getDisplayPriceForProduct(product);
+  const kitPerVial = selected ? getRaisedKitPrice(selected) / getVialCount(selected.spec) : 0;
+
+  return `
+    <div class="option-field">
+      <label class="mini-label" for="${elementIdPrefix}PurchaseType">Order type</label>
+      <select id="${elementIdPrefix}PurchaseType" class="variant-select" onclick="event.stopPropagation()" onchange="selectPurchaseType('${escapeForAttribute(product.name)}', this.value, '${elementIdPrefix}')">
+        <option value="kit" ${purchaseType === 'kit' ? 'selected' : ''}>10-vial kit — best value</option>
+        <option value="single" ${purchaseType === 'single' ? 'selected' : ''}>Single vials</option>
+      </select>
+    </div>
+
+    <div class="option-field">
+      <label class="mini-label" for="${elementIdPrefix}SizeSelect">Vial strength</label>
+      <select id="${elementIdPrefix}SizeSelect" class="variant-select" onclick="event.stopPropagation()" onchange="selectProductOption('${escapeForAttribute(product.name)}', this.value, '${elementIdPrefix}')">
+        ${product.options.map(function(option) {
+          return `<option value="${option.code}" ${option.code === selected.code ? 'selected' : ''}>${formatSizeOption(option, purchaseType)}</option>`;
+        }).join('')}
+      </select>
+    </div>
+
+    <div id="${elementIdPrefix}VialQtyWrap" class="option-field" style="${purchaseType === 'single' ? '' : 'display:none;'}">
+      <label class="mini-label" for="${elementIdPrefix}VialQty">How many vials?</label>
+      <input
+        id="${elementIdPrefix}VialQty"
+        class="variant-select"
+        type="number"
+        min="1"
+        max="99"
+        value="${vialQty}"
+        onclick="event.stopPropagation()"
+        oninput="selectVialQuantity('${escapeForAttribute(product.name)}', this.value, '${elementIdPrefix}')"
+      >
+    </div>
+
+    <div id="${elementIdPrefix}Price" class="product-price">${formatMoney(totalPrice)}</div>
+    <div id="${elementIdPrefix}Code" class="product-code">${getPurchaseLabel(product)} • ${purchaseType === 'single' ? formatMoney(getSingleVialPrice(selected)) + ' each' : formatMoney(kitPerVial) + ' per vial in kit'}</div>
+  `;
+}
+
+function selectProductOption(productName, optionCode, elementIdPrefix) {
+  const product = getProductByName(productName);
+  if (!product) return;
+  selectedOptions[product.name] = optionCode;
+  updateProductPriceDisplay(product, elementIdPrefix);
+}
+
+function selectPurchaseType(productName, purchaseType, elementIdPrefix) {
+  const product = getProductByName(productName);
+  if (!product) return;
+  selectedPurchaseTypes[product.name] = purchaseType === 'single' ? 'single' : 'kit';
+
+  const sizeSelect = document.getElementById(elementIdPrefix + 'SizeSelect');
+  if (sizeSelect) {
+    Array.from(sizeSelect.options).forEach(function(optionElement) {
+      const option = product.options.find(function(item) { return item.code === optionElement.value; });
+      if (option) optionElement.textContent = formatSizeOption(option, getSelectedPurchaseType(product));
+    });
+  }
+
+  updateProductPriceDisplay(product, elementIdPrefix);
+}
+
+function selectVialQuantity(productName, value, elementIdPrefix) {
+  const product = getProductByName(productName);
+  if (!product) return;
+  const qty = Math.max(1, Math.min(99, Number(value) || 1));
+  selectedVialQuantities[product.name] = qty;
+  updateProductPriceDisplay(product, elementIdPrefix);
+}
+
+function updateProductPriceDisplay(product, elementIdPrefix) {
+  const option = getSelectedOption(product);
+  const purchaseType = getSelectedPurchaseType(product);
+  const kitPerVial = option ? getRaisedKitPrice(option) / getVialCount(option.spec) : 0;
+
+  const priceEl = document.getElementById(elementIdPrefix + 'Price');
+  const codeEl = document.getElementById(elementIdPrefix + 'Code');
+  const doseEl = document.getElementById(elementIdPrefix + 'Dose');
+  const qtyWrap = document.getElementById(elementIdPrefix + 'VialQtyWrap');
+
+  if (priceEl) priceEl.textContent = formatMoney(getDisplayPriceForProduct(product));
+  if (codeEl) {
+    codeEl.textContent =
+      getPurchaseLabel(product) +
+      ' • ' +
+      (purchaseType === 'single'
+        ? formatMoney(getSingleVialPrice(option)) + ' each'
+        : formatMoney(kitPerVial) + ' per vial in kit');
+  }
+  if (doseEl) doseEl.textContent = getDoseText(option);
+  if (currentProduct && currentProduct.name === product.name) {
+    const detailDoseEl = document.getElementById('detailArtworkDose');
+    if (detailDoseEl) detailDoseEl.textContent = getDoseText(option);
+  }
+  if (qtyWrap) qtyWrap.style.display = purchaseType === 'single' ? '' : 'none';
+
+  if (currentProduct && currentProduct.name === product.name) {
+    currentOption = option;
+    const pills = document.getElementById('variantDetailPills');
+    if (pills) {
+      pills.innerHTML = `
+        <span class="variant-pill">${getPurchaseLabel(product)}</span>
+        <span class="variant-pill">${formatMoney(getDisplayPriceForProduct(product))}</span>
+        <span class="variant-pill">${purchaseType === 'single' ? formatMoney(getSingleVialPrice(option)) + ' each' : '10-vial kit'}</span>
+      `;
+    }
+  }
+}
+
+function openProduct(productName) {
+  const product = getProductByName(productName);
+  if (!product) return;
+
+  currentProduct = product;
+  selectedOptions[product.name] = product.options && product.options[0] ? product.options[0].code : selectedOptions[product.name];
+  selectedPurchaseTypes[product.name] = 'kit';
+  selectedVialQuantities[product.name] = 1;
+  currentOption = getSelectedOption(product);
+
+  document.getElementById('productBackButton').onclick = function() { showPage('peptides'); };
+  document.getElementById('productBackButton').textContent = '← Back to Peptides';
+  document.getElementById('productDetailKicker').textContent = product.category + ' catalog';
+  document.getElementById('productDetailTitle').textContent = product.name;
+  document.getElementById('productDetailLead').textContent = product.options.length + ' size option' + (product.options.length === 1 ? '' : 's') + ' available for ' + product.name + '.';
+  const detailPic = document.getElementById('productDetailPic');
+  if (detailPic) detailPic.innerHTML = renderProductArt(product, 'detailArtwork');
+  document.getElementById('productDetailCategoryKicker').textContent = product.category + ' product';
+  document.getElementById('productDetailName').textContent = product.name;
+  document.getElementById('productDetailDescription').textContent = product.description;
+
+  document.getElementById('productOptionsBlock').innerHTML = `
+    ${renderOptionSelect(product, 'detailOption')}
+    <div id="variantDetailPills" class="variant-detail-row">
+      <span class="variant-pill">${getPurchaseLabel(product)}</span>
+      <span class="variant-pill">${formatMoney(getDisplayPriceForProduct(product))}</span>
+      <span class="variant-pill">${getSelectedPurchaseType(product) === 'single' ? formatMoney(getSingleVialPrice(currentOption)) + ' each' : '10-vial kit'}</span>
+    </div>
+    <div class="bundle-savings-note">Best value: choose the 10-vial kit to save about ${getSingleVialSavingsPercent()}% compared with single-vial pricing.</div>
+  `;
+
+  closeOverlays();
+  showPage('product-detail');
+}
+
+function addCurrentProductToCart() {
+  if (!currentProduct) return;
+  const option = getSelectedOption(currentProduct);
+  const cartKey = currentProduct.name + '|' + option.code;
+
+  if (!cart.some(function(item) { return item.key === cartKey; })) {
+    cart.push({ key: cartKey, product: currentProduct, option: option });
+  }
+
+  renderCart();
+  openCart();
+}
+
+function toggleCart() {
+  const drawer = document.getElementById('cartDrawer');
+  if (drawer.classList.contains('open')) {
+    closeOverlays();
+  } else {
+    openCart();
+  }
+}
+
+function openCart() {
+  renderCart();
+  document.getElementById('cartDrawer').classList.add('open');
+  document.getElementById('screenOverlay').classList.add('open');
+}
+
+function closeOverlays() {
+  closeSearchOnly();
+  document.getElementById('cartDrawer').classList.remove('open');
+  document.getElementById('screenOverlay').classList.remove('open');
+}
+
+function removeFromCart(cartKey) {
+  cart = cart.filter(function(item) { return item.key !== cartKey; });
+  renderCart();
+}
+
+function renderCart() {
+  const cartItems = document.getElementById('cartItems');
+  const cartCount = document.getElementById('cartCount');
+
+  cartCount.textContent = cart.length;
+  cartCount.classList.toggle('show', cart.length > 0);
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<div class="empty-search">Your cart is empty. Open a peptide product page and save a catalog item here.</div>';
+    return;
+  }
+
+  cartItems.innerHTML = cart.map(function(item) {
+    return `
+      <div class="cart-item">
+        <span class="cart-item-icon">${item.product.icon}</span>
+        <span>
+          <strong>${item.product.name}</strong><br>
+          <small>${item.option.spec} • ${item.option.price}</small><br>
+          <small>${getOneVialPriceText(item.option)}</small>
+        </span>
+        <button onclick="removeFromCart('${escapeForAttribute(item.key)}')">Remove</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function showHomeSection(sectionId) {
+  showPage('home');
+  if (sectionId === 'faq') setActiveNav('faq');
+  else setActiveNav('home');
+  setTimeout(function() {
+    const target = document.getElementById(sectionId);
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 80);
+}
+
+function toggleFaq(button) {
+  const item = button.closest('.faq-item');
+  if (!item) return;
+  item.classList.toggle('open');
+}
+
+function getDoseText(option) {
+  if (!option || !option.spec) return "";
+  const match = String(option.spec).match(/(\d+(?:\.\d+)?\s*(?:mg|mcg|iu|ml))/i);
+  return match ? match[1].replace(/\s+/g, "") : String(option.spec).split("*")[0].trim();
+}
+
+function getLabelFontSize(productName) {
+  const len = String(productName).length;
+  if (len > 42) return "6.2px";
+  if (len > 34) return "7px";
+  if (len > 28) return "7.8px";
+  if (len > 22) return "8.7px";
+  if (len > 16) return "9.5px";
+  return "10.6px";
+}
+
+function renderProductArt(product, elementIdPrefix) {
+  const selected = getSelectedOption(product);
+  return `
+    <div class="product-art">
+      <img class="product-vial-photo" src="${VIAL_TEMPLATE_IMAGE}" alt="${product.name} research vial" loading="lazy">
+      <div class="photo-vial-label">
+        <span class="brand">researchpeps</span>
+        <span class="name" style="--label-size: ${getLabelFontSize(product.name)}">${product.name}</span>
+        <span id="${elementIdPrefix}Dose" class="dose">${getDoseText(selected)}</span>
+        <span class="use">Research use only</span>
+      </div>
+    </div>
+  `;
+}
+
+function renderCartThumbnail(product, option) {
+  return `
+    <span class="cart-item-photo">
+      <img src="${VIAL_TEMPLATE_IMAGE}" alt="${escapeForAttribute(product.name)} research vial" loading="lazy" onerror="this.closest('.cart-item-photo').classList.add('image-missing')">
+      <span class="cart-mini-label">
+        <strong>${escapeHtml(product.name)}</strong>
+        <small>${escapeHtml(getDoseText(option))}</small>
+      </span>
+    </span>
+  `;
+}
+
+function renderCatalogSinglePricing(product, elementIdPrefix) {
+  const selected = getSelectedOption(product);
+  return `
+    <select class="variant-select" onclick="event.stopPropagation()" onchange="selectCatalogSingleOption('${escapeForAttribute(product.name)}', this.value, '${elementIdPrefix}')">
+      ${product.options.map(function(option) {
+        return `<option value="${option.code}" ${option.code === selected.code ? 'selected' : ''}>${String(option.spec).split('*')[0].trim()} single vial</option>`;
+      }).join('')}
+    </select>
+    <div id="${elementIdPrefix}Price" class="product-price">${getSingleVialDisplay(selected)}</div>
+    <div id="${elementIdPrefix}Code" class="product-code">Single-vial price • 10-vial kit available on product page</div>
+  `;
+}
+
+function selectCatalogSingleOption(productName, optionCode, elementIdPrefix) {
+  const product = getProductByName(productName);
+  if (!product) return;
+  selectedOptions[product.name] = optionCode;
+  const option = getSelectedOption(product);
+  const priceEl = document.getElementById(elementIdPrefix + 'Price');
+  const codeEl = document.getElementById(elementIdPrefix + 'Code');
+  const doseEl = document.getElementById(elementIdPrefix + 'Dose');
+  if (priceEl) priceEl.textContent = getSingleVialDisplay(option);
+  if (codeEl) codeEl.textContent = 'Single-vial price • 10-vial kit available on product page';
+  if (doseEl) doseEl.textContent = getDoseText(option);
+}
+
+function addSingleVialToCart(productName) {
+  const product = getProductByName(productName);
+  if (!product) return;
+  selectedPurchaseTypes[product.name] = 'single';
+  selectedVialQuantities[product.name] = 1;
+  addProductToCart(product.name);
+}
+
+function renderProductCard(product, indexPrefix) {
+  const idPrefix = indexPrefix + product.name.replace(/[^a-zA-Z0-9]/g, '');
+  return `
+    <article class="card product-card" onclick="openProduct('${escapeForAttribute(product.name)}')">
+      ${renderProductArt(product, idPrefix)}
+      <div class="card-text">
+        <h3>${product.name}</h3>
+        <p>${product.description}</p>
+        ${renderCatalogSinglePricing(product, idPrefix)}
+        <div class="product-card-actions">
+          <button class="btn primary catalog-cart-btn" onclick="event.stopPropagation(); addSingleVialToCart('${escapeForAttribute(product.name)}')">Add 1 Vial</button>
+        </div>
+      </div>
+    </article>
+  `;
+}
+
+function renderPeptideCatalog() {
+  const grid = document.getElementById('peptideCatalogGrid');
+  if (grid) {
+    grid.innerHTML = products.map(function(product) {
+      return renderProductCard(product, 'catalog');
+    }).join('');
+  }
+
+  const featured = document.getElementById('featuredPeptideGrid');
+  if (featured) {
+    const featuredNames = ['Retatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'TB-500', 'CJC-1295 WO/Dac', 'CJC-1295 DAC + Ipamorelin', 'Sermorelin', 'GHRP-2', 'GHRP-6', 'NAD+'];
+    featured.innerHTML = products.filter(function(product) {
+      return featuredNames.includes(product.name);
+    }).map(function(product) {
+      return renderProductCard(product, 'featured');
+    }).join('');
+  }
+}
+
+function initHeroVial() {
+  const scene = document.getElementById('heroVialScene');
+  if (!scene) return;
+
+  scene.addEventListener('mousemove', function(event) {
+    const rect = scene.getBoundingClientRect();
+    const x = (event.clientX - rect.left) / rect.width;
+    const y = (event.clientY - rect.top) / rect.height;
+    const tiltY = (x - 0.5) * 18;
+    const tiltX = (0.5 - y) * 16;
+    scene.style.setProperty('--tiltX', tiltX.toFixed(2) + 'deg');
+    scene.style.setProperty('--tiltY', tiltY.toFixed(2) + 'deg');
+  });
+
+  scene.addEventListener('mouseleave', function() {
+    scene.style.setProperty('--tiltX', '0deg');
+    scene.style.setProperty('--tiltY', '0deg');
+  });
+}
+
+
+function confirmAgeGate() {
+  const gate = document.getElementById('ageGate');
+  if (gate) gate.classList.add('hidden');
+  document.body.classList.remove('age-locked');
+}
+
+function denyAgeGate() {
+  const card = document.getElementById('ageGateCard');
+  const message = document.getElementById('ageGateMessage');
+  if (card) card.classList.add('age-gate-denied');
+  if (message) message.textContent = 'Access is restricted to visitors who are 21 years of age or older.';
+}
+
+function leaveAgeGate() {
+  if (window.history.length > 1) {
+    window.history.back();
+  } else {
+    window.location.href = 'about:blank';
+  }
+}
+
+
+
+/* Customer accounts, persistent cart, checkout, and order history.
+   This is a front-end prototype. Do not use localStorage login or order storage for production.
+   A live store needs a secure backend, hashed passwords, payment processing, inventory, taxes, and compliance review. */
+const CART_STORAGE_KEY = 'researchpeps_cart_v2';
+const ACCOUNTS_STORAGE_KEY = 'researchpeps_accounts_v1';
+const SESSION_STORAGE_KEY = 'researchpeps_current_user_v1';
+
+function loadJsonStorage(key, fallback) {
+  try {
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
+  } catch (error) {
+    return fallback;
+  }
+}
+
+function saveJsonStorage(key, value) {
+  localStorage.setItem(key, JSON.stringify(value));
+}
+
+function loadStorefrontState() {
+  cart = loadJsonStorage(CART_STORAGE_KEY, []);
+  cart = cart.map(function(item) {
+    if (item.productName) return item;
+    return {
+      key: item.key,
+      productName: item.product ? item.product.name : '',
+      optionCode: item.option ? item.option.code : '',
+      quantity: item.quantity || 1
+    };
+  }).filter(function(item) {
+    const product = getProductByName(item.productName);
+    return product && product.options.some(function(option) { return option.code === item.optionCode; });
+  });
+}
+
+function saveCart() {
+  saveJsonStorage(CART_STORAGE_KEY, cart);
+}
+
+function getAccounts() {
+  return loadJsonStorage(ACCOUNTS_STORAGE_KEY, {});
+}
+
+function saveAccounts(accounts) {
+  saveJsonStorage(ACCOUNTS_STORAGE_KEY, accounts);
+}
+
+function getCurrentUserEmail() {
+  return localStorage.getItem(SESSION_STORAGE_KEY) || '';
+}
+
+function getCurrentAccount() {
+  const email = getCurrentUserEmail();
+  const accounts = getAccounts();
+  return email && accounts[email] ? accounts[email] : null;
+}
+
+function updateCurrentAccount(updater) {
+  const email = getCurrentUserEmail();
+  if (!email) return null;
+  const accounts = getAccounts();
+  if (!accounts[email]) return null;
+  updater(accounts[email]);
+  accounts[email].updatedAt = new Date().toISOString();
+  saveAccounts(accounts);
+  return accounts[email];
+}
+
+function normalizeEmail(email) {
+  return String(email || '').trim().toLowerCase();
+}
+
+function escapeHtml(value) {
+  return String(value == null ? '' : value)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
+function getCartProduct(item) {
+  return getProductByName(item.productName || (item.product && item.product.name));
+}
+
+function getCartOption(item) {
+  const product = getCartProduct(item);
+  if (!product) return null;
+  return product.options.find(function(option) { return option.code === (item.optionCode || (item.option && item.option.code)); }) || product.options[0];
+}
+
+function getCartLineUnitPrice(item) {
+  const option = getCartOption(item);
+  if (!option) return 0;
+  if (item.purchaseType === 'single') {
+    return getSingleVialPrice(option) * (item.vialQuantity || 1);
+  }
+  return getRaisedKitPrice(option);
+}
+
+function getCartLineLabel(item) {
+  const option = getCartOption(item);
+  if (!option) return '';
+  if (item.purchaseType === 'single') {
+    const qty = item.vialQuantity || 1;
+    return qty + ' vial' + (qty === 1 ? '' : 's') + ' • ' + getDoseText(option) + ' each';
+  }
+  return option.spec;
+}
+
+function getCartLineTotal(item) {
+  return getCartLineUnitPrice(item) * (item.quantity || 1);
+}
+
+function getCartSubtotal() {
+  return cart.reduce(function(total, item) {
+    return total + getCartLineTotal(item);
+  }, 0);
+}
+
+function getSelectedShippingCountry() {
+  return String(document.getElementById('checkoutCountry')?.value || 'United States').trim() || 'United States';
+}
+
+function getShippingRateForCountry(country) {
+  const selected = String(country || 'United States').trim().toLowerCase();
+  const match = (shippingRates.rates || []).find(function(rate) {
+    return String(rate.country || '').toLowerCase() === selected || String(rate.code || '').toLowerCase() === selected;
+  });
+  if (match) return Number(match.rate || 0);
+  const fallback = (shippingRates.rates || []).find(function(rate) { return String(rate.code || '').toUpperCase() === 'ROW'; });
+  return Number((fallback && fallback.rate) || shippingRates.defaultRate || 80);
+}
+
+function getCheckoutShipping() {
+  if (cart.length === 0) return 0;
+  return getShippingRateForCountry(getSelectedShippingCountry());
+}
+
+function getCartTotal() {
+  return getCartSubtotal() + getCheckoutShipping();
+}
+
+function getCartCount() {
+  return cart.reduce(function(total, item) {
+    return total + (item.quantity || 1);
+  }, 0);
+}
+
+function showMessage(elementId, message) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  element.textContent = message;
+  element.classList.add('show');
+}
+
+function clearMessage(elementId) {
+  const element = document.getElementById(elementId);
+  if (!element) return;
+  element.textContent = '';
+  element.classList.remove('show');
+}
+
+function updateAccountNav() {
+  const pill = document.getElementById('accountStatusPill');
+  if (!pill) return;
+  const account = getCurrentAccount();
+  pill.textContent = account ? 'Account' : 'Login';
+}
+
+function openAccount(message) {
+  closeOverlays();
+  renderAccountPage();
+  updateAccountNav();
+  showPage('account');
+  if (message) showMessage('accountMessage', message);
+}
+
+function createAccount() {
+  clearMessage('accountMessage');
+  const name = String(document.getElementById('signupName')?.value || '').trim();
+  const email = normalizeEmail(document.getElementById('signupEmail')?.value);
+  const password = String(document.getElementById('signupPassword')?.value || '');
+
+  if (!name || !email || !password) {
+    showMessage('accountMessage', 'Please enter a name, email, and password to create an account.');
+    return;
+  }
+
+  const accounts = getAccounts();
+  if (accounts[email]) {
+    showMessage('accountMessage', 'An account already exists for that email. Sign in instead.');
+    return;
+  }
+
+  accounts[email] = {
+    name: name,
+    email: email,
+    password: password,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+    orders: []
+  };
+
+  saveAccounts(accounts);
+  localStorage.setItem(SESSION_STORAGE_KEY, email);
+  updateAccountNav();
+  renderAccountPage();
+  showMessage('accountMessage', 'Account created. You can now checkout and view past orders here.');
+}
+
+function loginAccount() {
+  clearMessage('accountMessage');
+  const email = normalizeEmail(document.getElementById('loginEmail')?.value);
+  const password = String(document.getElementById('loginPassword')?.value || '');
+  const accounts = getAccounts();
+
+  if (!accounts[email] || accounts[email].password !== password) {
+    showMessage('accountMessage', 'Email or password did not match.');
+    return;
+  }
+
+  localStorage.setItem(SESSION_STORAGE_KEY, email);
+  updateAccountNav();
+  renderAccountPage();
+  showMessage('accountMessage', 'Signed in successfully.');
+}
+
+function logoutAccount() {
+  localStorage.removeItem(SESSION_STORAGE_KEY);
+  updateAccountNav();
+  renderAccountPage();
+  showMessage('accountMessage', 'Signed out.');
+}
+
+function setAccountPageHeader(account) {
+  const kicker = document.getElementById('accountPageKicker');
+  const title = document.getElementById('accountPageTitle');
+  const lead = document.getElementById('accountPageLead');
+
+  if (!title || !lead) return;
+
+  if (account) {
+    if (kicker) kicker.textContent = 'Customer account';
+    title.textContent = 'My Account';
+    lead.textContent = 'Manage your cart checkout, account status, and past orders.';
+  } else {
+    if (kicker) kicker.textContent = 'Customer account';
+    title.textContent = 'Login & Orders';
+    lead.textContent = 'Create an account or sign in to checkout and view past orders.';
+  }
+}
+
+function renderAccountPage() {
+  const container = document.getElementById('accountContent');
+  if (!container) return;
+
+  const account = getCurrentAccount();
+  setAccountPageHeader(account);
+  clearMessage('accountMessage');
+
+  if (!account) {
+    container.innerHTML = `
+      <div class="account-grid">
+        <div class="account-panel">
+          <h2>Create account</h2>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label for="signupName">Full name</label>
+              <input id="signupName" autocomplete="name" placeholder="Customer name">
+            </div>
+            <div class="form-field full">
+              <label for="signupEmail">Email</label>
+              <input id="signupEmail" type="email" autocomplete="email" placeholder="email@example.com">
+            </div>
+            <div class="form-field full">
+              <label for="signupPassword">Password</label>
+              <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Create a password">
+            </div>
+          </div>
+          <div class="actions"><button class="btn primary" onclick="createAccount()">Create Account</button></div>
+          <p class="auth-note">Live mode: account data is handled by the backend with hashed passwords and secure cookies.</p>
+        </div>
+
+        <div class="account-panel">
+          <h2>Sign in</h2>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label for="loginEmail">Email</label>
+              <input id="loginEmail" type="email" autocomplete="email" placeholder="email@example.com">
+            </div>
+            <div class="form-field full">
+              <label for="loginPassword">Password</label>
+              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
+            </div>
+          </div>
+          <div class="actions"><button class="btn primary" onclick="loginAccount()">Sign In</button></div>
+          <p class="auth-note">After checkout, orders will appear in your backend account history.</p>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const orders = Array.isArray(account.orders) ? account.orders.slice().reverse() : [];
+  container.innerHTML = `
+    <div class="account-dashboard-head">
+      <div>
+        <p class="kicker">Signed in as ${escapeHtml(account.email)}</p>
+        <h2>Welcome, ${escapeHtml(account.name)}</h2>
+      </div>
+      <div class="actions">
+        <button class="btn primary" onclick="startCheckout()">Checkout Cart</button>
+        <button class="btn" onclick="logoutAccount()">Sign Out</button>
+      </div>
+    </div>
+
+    <div class="account-panel" style="margin-bottom: 22px;">
+      <h2>Order history</h2>
+      <p class="lead">${orders.length ? 'Past orders are listed below.' : 'No orders yet. Add products to your cart and checkout to place an order.'}</p>
+    </div>
+
+    <div class="order-history-list">
+      ${orders.length ? orders.map(renderOrderCard).join('') : ''}
+    </div>
+  `;
+}
+
+function renderOrderCard(order) {
+  const date = new Date(order.createdAt).toLocaleString();
+  const items = (order.items || []).map(function(item) {
+    return `
+      <div class="order-item">
+        <div>
+          <strong>${escapeHtml(item.name)}</strong><br>
+          <small>${escapeHtml(item.spec)} • Qty ${escapeHtml(item.quantity)}</small>
+        </div>
+        <strong>${escapeHtml(formatMoney(item.lineTotal))}</strong>
+      </div>
+    `;
+  }).join('');
+
+  return `
+    <article class="order-card">
+      <div class="account-dashboard-head" style="margin-bottom: 14px;">
+        <div>
+          <span class="order-status">${escapeHtml(order.status || 'Order Submitted')}</span>
+          <h3 class="order-id">${escapeHtml(order.id)}</h3>
+          <p class="order-meta">${escapeHtml(date)} • ${escapeHtml(order.paymentMethodLabel || 'Invoice / payment link')}</p>
+        </div>
+        <div class="summary-total" style="border-top: none; margin: 0; padding: 0;"><span>Total</span><span>${escapeHtml(formatMoney(order.total || 0))}</span></div>
+      </div>
+      <div class="order-items">${items}</div>
+    </article>
+  `;
+}
+
+function addProductToCart(productName) {
+  const product = getProductByName(productName);
+  if (!product) return;
+
+  const option = getSelectedOption(product);
+  const purchaseType = getSelectedPurchaseType(product);
+  const vialQty = purchaseType === 'single' ? getSelectedVialQuantity(product) : 1;
+  const cartKey = product.name + '|' + option.code + '|' + purchaseType + '|' + vialQty;
+  const existing = cart.find(function(item) { return item.key === cartKey; });
+
+  if (existing) {
+    existing.quantity = (existing.quantity || 1) + 1;
+  } else {
+    cart.push({
+      key: cartKey,
+      productName: product.name,
+      optionCode: option.code,
+      purchaseType: purchaseType,
+      vialQuantity: vialQty,
+      quantity: 1
+    });
+  }
+
+  saveCart();
+  renderCart();
+  renderCheckoutPage();
+  openCart();
+}
+
+function addCurrentProductToCart() {
+  if (!currentProduct) return;
+  addProductToCart(currentProduct.name);
+}
+
+function updateCartQuantity(cartKey, delta) {
+  const item = cart.find(function(line) { return line.key === cartKey; });
+  if (!item) return;
+  item.quantity = Math.max(1, (item.quantity || 1) + delta);
+  saveCart();
+  renderCart();
+  renderCheckoutPage();
+}
+
+function removeFromCart(cartKey) {
+  cart = cart.filter(function(item) { return item.key !== cartKey; });
+  saveCart();
+  renderCart();
+  renderCheckoutPage();
+}
+
+function renderCart() {
+  const cartItems = document.getElementById('cartItems');
+  const cartCount = document.getElementById('cartCount');
+  const cartDrawerTotal = document.getElementById('cartDrawerTotal');
+
+  if (!cartItems || !cartCount) return;
+
+  const count = getCartCount();
+  cartCount.textContent = count;
+  cartCount.classList.toggle('show', count > 0);
+  if (cartDrawerTotal) cartDrawerTotal.textContent = formatMoney(getCartSubtotal());
+
+  if (cart.length === 0) {
+    cartItems.innerHTML = '<div class="empty-search">Your cart is empty. Open a peptide product page and add an item here.</div>';
+    return;
+  }
+
+  cartItems.innerHTML = cart.map(function(item) {
+    const product = getCartProduct(item);
+    const option = getCartOption(item);
+    if (!product || !option) return '';
+    return `
+      <div class="cart-item">
+        ${renderCartThumbnail(product, option)}
+        <span>
+          <strong>${product.name}</strong><br>
+          <small>${getCartLineLabel(item)} • ${formatMoney(getCartLineUnitPrice(item))}</small><br>
+          <small>${item.purchaseType === 'single' ? 'Single-vial order' : formatMoney(getRaisedKitPrice(option) / getVialCount(option.spec)) + ' per vial in kit'}</small>
+          <span class="cart-line-actions">
+            <button class="qty-btn" onclick="updateCartQuantity('${escapeForAttribute(item.key)}', -1)">−</button>
+            <span class="qty-count">${item.quantity || 1}</span>
+            <button class="qty-btn" onclick="updateCartQuantity('${escapeForAttribute(item.key)}', 1)">+</button>
+          </span>
+        </span>
+        <button onclick="removeFromCart('${escapeForAttribute(item.key)}')">Remove</button>
+      </div>
+    `;
+  }).join('');
+}
+
+function startCheckout() {
+  closeOverlays();
+
+  if (cart.length === 0) {
+    openCart();
+    return;
+  }
+
+  const account = getCurrentAccount();
+  if (!account) {
+    openAccount('Create an account or sign in before checkout so the order can be saved to past orders.');
+    return;
+  }
+
+  renderCheckoutPage();
+  showPage('checkout');
+}
+
+function renderCheckoutPage() {
+  const summary = document.getElementById('checkoutCartSummary');
+  const subtotalEl = document.getElementById('checkoutSubtotal');
+  const shippingEl = document.getElementById('checkoutShipping');
+  const total = document.getElementById('checkoutTotal');
+  if (!summary || !total) return;
+
+  const account = getCurrentAccount();
+  const nameField = document.getElementById('checkoutName');
+  const emailField = document.getElementById('checkoutEmail');
+  if (account) {
+    if (nameField && !nameField.value) nameField.value = account.name;
+    if (emailField && !emailField.value) emailField.value = account.email;
+  }
+
+  if (cart.length === 0) {
+    summary.innerHTML = '<div class="empty-search">Your cart is empty.</div>';
+    if (subtotalEl) subtotalEl.textContent = '$0.00';
+    if (shippingEl) shippingEl.textContent = '$0.00';
+    total.textContent = '$0.00';
+    return;
+  }
+
+  summary.innerHTML = cart.map(function(item) {
+    const product = getCartProduct(item);
+    const option = getCartOption(item);
+    if (!product || !option) return '';
+    return `
+      <div class="summary-item">
+        <div>
+          <strong>${escapeHtml(product.name)}</strong><br>
+          <small>${escapeHtml(getCartLineLabel(item))} • Qty ${escapeHtml(item.quantity || 1)}</small>
+        </div>
+        <strong>${escapeHtml(formatMoney(getCartLineTotal(item)))}</strong>
+      </div>
+    `;
+  }).join('');
+  if (subtotalEl) subtotalEl.textContent = formatMoney(getCartSubtotal());
+  if (shippingEl) shippingEl.textContent = formatMoney(getCheckoutShipping()) + ' (' + getSelectedShippingCountry() + ')';
+  total.textContent = formatMoney(getCartTotal());
+  updateCryptoWalletBox();
+}
+
+function getPaymentMethodLabel(value) {
+  if (value === 'btc') return 'Bitcoin (BTC)';
+  if (value === 'sol') return 'Solana (SOL)';
+  if (value === 'usdc') return 'USDC';
+  if (value === 'stripe') return 'Credit card';
+  return 'Credit card';
+}
+
+function placeOrder() {
+  clearMessage('checkoutMessage');
+  const account = getCurrentAccount();
+  if (!account) {
+    openAccount('Please sign in before placing an order.');
+    return;
+  }
+  if (cart.length === 0) {
+    showMessage('checkoutMessage', 'Your cart is empty.');
+    return;
+  }
+
+  const requiredFields = [
+    ['checkoutName', 'name'],
+    ['checkoutEmail', 'email'],
+    ['checkoutPhone', 'phone'],
+    ['checkoutAddress', 'shipping address'],
+    ['checkoutCity', 'city'],
+    ['checkoutState', 'state'],
+    ['checkoutZip', 'ZIP code'],
+    ['checkoutCountry', 'country']
+  ];
+
+  for (const pair of requiredFields) {
+    const field = document.getElementById(pair[0]);
+    if (!field || !String(field.value).trim()) {
+      showMessage('checkoutMessage', 'Please enter your ' + pair[1] + '.');
+      return;
+    }
+  }
+
+  const researchOnly = document.getElementById('checkoutResearchOnly');
+  if (!researchOnly || !researchOnly.checked) {
+    showMessage('checkoutMessage', 'Please confirm the research-use-only statement before placing the order.');
+    return;
+  }
+
+  const paymentValue = document.getElementById('checkoutPaymentMethod')?.value || 'stripe';
+  const order = {
+    id: 'RP-' + Date.now().toString().slice(-8),
+    createdAt: new Date().toISOString(),
+    status: 'Order Submitted',
+    paymentMethod: paymentValue,
+    paymentMethodLabel: getPaymentMethodLabel(paymentValue),
+    customer: {
+      name: String(document.getElementById('checkoutName').value).trim(),
+      email: normalizeEmail(document.getElementById('checkoutEmail').value),
+      phone: String(document.getElementById('checkoutPhone').value).trim(),
+      address: String(document.getElementById('checkoutAddress').value).trim(),
+      city: String(document.getElementById('checkoutCity').value).trim(),
+      state: String(document.getElementById('checkoutState').value).trim(),
+      zip: String(document.getElementById('checkoutZip').value).trim(),
+      country: String(document.getElementById('checkoutCountry').value).trim(),
+      notes: String(document.getElementById('checkoutNotes')?.value || '').trim()
+    },
+    items: cart.map(function(item) {
+      const product = getCartProduct(item);
+      const option = getCartOption(item);
+      return {
+        name: product ? product.name : item.productName,
+        code: option ? option.code : item.optionCode,
+        spec: getCartLineLabel(item),
+        unitPrice: getCartLineUnitPrice(item),
+        quantity: item.quantity || 1,
+        lineTotal: getCartLineTotal(item)
+      };
+    }),
+    total: getCartTotal()
+  };
+
+  updateCurrentAccount(function(savedAccount) {
+    savedAccount.name = order.customer.name || savedAccount.name;
+    savedAccount.email = order.customer.email || savedAccount.email;
+    savedAccount.orders = Array.isArray(savedAccount.orders) ? savedAccount.orders : [];
+    savedAccount.orders.push(order);
+  });
+
+  cart = [];
+  saveCart();
+  renderCart();
+  renderCheckoutPage();
+  renderAccountPage();
+  showMessage('checkoutMessage', 'Order ' + order.id + ' was placed and saved to your account history.');
+  updateAccountNav();
+}
+
+/* Backend API override for live accounts, login, orders, and checkout.
+   This replaces the localStorage account/order prototype with secure server calls.
+   Keep cart UI local for speed, but prices/orders are recalculated on the server. */
+let backendAccount = null;
+let cryptoWallets = {};
+let shippingRates = { defaultRate: 80, rates: [{ country: 'United States', code: 'US', rate: 15 }] };
+let lastCompletedOrder = null;
+let lastCryptoPayment = null;
+let lastCryptoQuote = null;
+let currentCryptoQuote = null;
+
+function isCryptoMethod(value) {
+  return ['btc', 'sol', 'usdc'].includes(String(value || '').toLowerCase());
+}
+
+async function loadPaymentOptions() {
+  try {
+    const data = await apiRequest('/api/payment-options', { method: 'GET' });
+    cryptoWallets = data.cryptoWallets || {};
+  } catch (error) {
+    cryptoWallets = {};
+  }
+}
+
+async function loadShippingRates() {
+  try {
+    const data = await apiRequest('/api/shipping-rates', { method: 'GET' });
+    shippingRates = data || shippingRates;
+  } catch (error) {
+    // Keep default rates if the backend quote endpoint is unavailable.
+  }
+}
+
+async function loadCryptoQuote(method) {
+  const amountBox = document.getElementById('cryptoAmountDue');
+  const note = document.getElementById('cryptoQuoteNote');
+
+  if (!isCryptoMethod(method)) {
+    currentCryptoQuote = null;
+    if (amountBox) amountBox.textContent = 'Select BTC, SOL, or USDC.';
+    if (note) note.textContent = '';
+    return;
+  }
+
+  const total = getCartTotal();
+  if (!total || total <= 0) {
+    currentCryptoQuote = null;
+    if (amountBox) amountBox.textContent = 'Cart total is empty.';
+    if (note) note.textContent = '';
+    return;
+  }
+
+  if (amountBox) amountBox.textContent = 'Calculating...';
+  if (note) note.textContent = 'Using current market rate.';
+
+  try {
+    const data = await apiRequest(
+      '/api/crypto-quote?method=' +
+        encodeURIComponent(method) +
+        '&amountUsd=' +
+        encodeURIComponent(total.toFixed(2)),
+      { method: 'GET' }
+    );
+
+    currentCryptoQuote = data.quote || null;
+
+    if (currentCryptoQuote && amountBox) {
+      amountBox.textContent = currentCryptoQuote.amount + ' ' + currentCryptoQuote.symbol;
+    }
+
+    if (currentCryptoQuote && note) {
+      const expires = new Date(currentCryptoQuote.expiresAt).toLocaleTimeString();
+      note.textContent = 'Send this amount before ' + expires + '. Network fees are paid separately by the customer.';
+    }
+  } catch (error) {
+    currentCryptoQuote = null;
+    if (amountBox) amountBox.textContent = 'Could not load crypto quote.';
+    if (note) note.textContent = 'Refresh or try again before placing the order.';
+  }
+}
+
+function updateCryptoWalletBox() {
+  const method = document.getElementById('checkoutPaymentMethod')?.value || 'stripe';
+  const box = document.getElementById('cryptoWalletBox');
+  const title = document.getElementById('cryptoWalletTitle');
+  const network = document.getElementById('cryptoWalletNetwork');
+  const address = document.getElementById('cryptoWalletAddress');
+
+  if (!box || !title || !network || !address) return;
+
+  if (!isCryptoMethod(method)) {
+    box.style.display = 'none';
+    currentCryptoQuote = null;
+    return;
+  }
+
+  const wallet = cryptoWallets[method];
+  box.style.display = 'grid';
+  title.textContent = wallet?.label || getPaymentMethodLabel(method);
+  network.textContent = wallet?.network ? `Network: ${wallet.network}` : 'Network: confirm before sending payment.';
+  address.textContent = wallet?.address || 'Wallet address not set yet. Add it in your .env file.';
+  loadCryptoQuote(method);
+}
+
+async function copyCryptoWalletAddress() {
+  const address = document.getElementById('cryptoWalletAddress')?.textContent || '';
+  if (!address || address.includes('not set')) return;
+  try {
+    await navigator.clipboard.writeText(address);
+    showMessage('checkoutMessage', 'Wallet address copied.');
+  } catch (error) {
+    showMessage('checkoutMessage', 'Copy failed. Highlight the wallet address and copy it manually.');
+  }
+}
+
+function renderThankYouPage(order, cryptoPayment, cryptoQuote) {
+  lastCompletedOrder = order || null;
+  lastCryptoPayment = cryptoPayment || null;
+  lastCryptoQuote = cryptoQuote || null;
+
+  const orderId = document.getElementById('thankYouOrderId');
+  const status = document.getElementById('thankYouStatus');
+  const payment = document.getElementById('thankYouPayment');
+  const shipping = document.getElementById('thankYouShipping');
+  const total = document.getElementById('thankYouTotal');
+  const intro = document.getElementById('thankYouIntro');
+  const cryptoBox = document.getElementById('thankYouCryptoBox');
+
+  if (orderId) orderId.textContent = order?.id || '—';
+  if (status) status.textContent = order?.status || 'Order Submitted';
+  if (payment) payment.textContent = order?.paymentMethodLabel || getPaymentMethodLabel(order?.paymentMethod);
+  if (shipping) shipping.textContent = formatMoney(order?.shippingCharge || 0);
+  if (total) total.textContent = formatMoney(order?.total || 0);
+  if (intro) intro.textContent = 'Order ' + (order?.id || '') + ' was saved to your account. Keep this order number for payment and support.';
+
+  if (cryptoBox) {
+    if (cryptoPayment) {
+      cryptoBox.style.display = 'block';
+      cryptoBox.innerHTML = `
+        <strong>Crypto payment instructions</strong><br>
+        ${cryptoQuote ? `<strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}<br>` : ''}
+        Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.<br>
+        ${cryptoQuote ? `Quote expires: ${escapeHtml(new Date(cryptoQuote.expiresAt).toLocaleString())}. Network fees are separate.<br>` : ''}
+        Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send us the transaction hash with your order number.
+        <code>${escapeHtml(cryptoPayment.address)}</code>
+      `;
+    } else {
+      cryptoBox.style.display = 'none';
+      cryptoBox.innerHTML = '';
+    }
+  }
+}
+
+function viewLastOrder() {
+  openAccount();
+  setTimeout(function() {
+    const target = document.querySelector('.order-history-list');
+    if (target) target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, 120);
+}
+
+async function apiRequest(path, options) {
+  const response = await fetch(path, {
+    credentials: 'include',
+    headers: { 'Content-Type': 'application/json', ...(options && options.headers ? options.headers : {}) },
+    ...options
+  });
+
+  let payload = {};
+  try { payload = await response.json(); } catch (error) { payload = {}; }
+
+  if (!response.ok) {
+    throw new Error(payload.error || 'Request failed. Please try again.');
+  }
+  return payload;
+}
+
+async function initBackendSession() {
+  try {
+    const data = await apiRequest('/api/session', { method: 'GET' });
+    backendAccount = data.account || null;
+  } catch (error) {
+    backendAccount = null;
+  }
+}
+
+function getCurrentAccount() {
+  return backendAccount;
+}
+
+function updateCurrentAccount() {
+  return backendAccount;
+}
+
+function updateAccountNav() {
+  const pill = document.getElementById('accountStatusPill');
+  if (!pill) return;
+  pill.textContent = backendAccount ? 'Account' : 'Login';
+}
+
+async function createAccount() {
+  clearMessage('accountMessage');
+  const name = String(document.getElementById('signupName')?.value || '').trim();
+  const email = normalizeEmail(document.getElementById('signupEmail')?.value);
+  const password = String(document.getElementById('signupPassword')?.value || '');
+
+  if (!name || !email || !password) {
+    showMessage('accountMessage', 'Please enter a name, email, and password to create an account.');
+    return;
+  }
+
+  try {
+    const data = await apiRequest('/api/auth/register', {
+      method: 'POST',
+      body: JSON.stringify({ name, email, password })
+    });
+    backendAccount = data.account;
+    updateAccountNav();
+    renderAccountPage();
+    showMessage('accountMessage', 'Account created. You can now checkout and view past orders here.');
+  } catch (error) {
+    showMessage('accountMessage', error.message);
+  }
+}
+
+async function loginAccount() {
+  clearMessage('accountMessage');
+  const email = normalizeEmail(document.getElementById('loginEmail')?.value);
+  const password = String(document.getElementById('loginPassword')?.value || '');
+
+  try {
+    const data = await apiRequest('/api/auth/login', {
+      method: 'POST',
+      body: JSON.stringify({ email, password })
+    });
+    backendAccount = data.account;
+    updateAccountNav();
+    renderAccountPage();
+    showMessage('accountMessage', 'Signed in successfully.');
+  } catch (error) {
+    showMessage('accountMessage', error.message);
+  }
+}
+
+async function logoutAccount() {
+  try {
+    await apiRequest('/api/auth/logout', { method: 'POST', body: JSON.stringify({}) });
+  } catch (error) {}
+  backendAccount = null;
+  updateAccountNav();
+  renderAccountPage();
+  showMessage('accountMessage', 'Signed out.');
+}
+
+function buildCheckoutPayload() {
+  return {
+    customer: {
+      name: String(document.getElementById('checkoutName').value).trim(),
+      email: normalizeEmail(document.getElementById('checkoutEmail').value),
+      phone: String(document.getElementById('checkoutPhone').value).trim()
+    },
+    shipping: {
+      address: String(document.getElementById('checkoutAddress').value).trim(),
+      city: String(document.getElementById('checkoutCity').value).trim(),
+      state: String(document.getElementById('checkoutState').value).trim(),
+      zip: String(document.getElementById('checkoutZip').value).trim(),
+      country: String(document.getElementById('checkoutCountry').value).trim()
+    },
+    notes: String(document.getElementById('checkoutNotes')?.value || '').trim(),
+    paymentMethod: document.getElementById('checkoutPaymentMethod')?.value || 'stripe',
+    researchUseAccepted: !!document.getElementById('checkoutResearchOnly')?.checked,
+    items: cart.map(function(item) {
+      return {
+        productName: item.productName,
+        optionCode: item.optionCode,
+        purchaseType: item.purchaseType || 'kit',
+        vialQuantity: item.vialQuantity || 1,
+        quantity: item.quantity || 1
+      };
+    })
+  };
+}
+
+async function startCheckout() {
+  closeOverlays();
+
+  if (cart.length === 0) {
+    openCart();
+    return;
+  }
+
+  if (!backendAccount) {
+    openAccount('Create an account or sign in before checkout so the order can be saved to past orders.');
+    return;
+  }
+
+  renderCheckoutPage();
+  showPage('checkout');
+}
+
+async function placeOrder() {
+  clearMessage('checkoutMessage');
+  if (!backendAccount) {
+    openAccount('Please sign in before placing an order.');
+    return;
+  }
+  if (cart.length === 0) {
+    showMessage('checkoutMessage', 'Your cart is empty.');
+    return;
+  }
+
+  const requiredFields = [
+    ['checkoutName', 'name'],
+    ['checkoutEmail', 'email'],
+    ['checkoutPhone', 'phone'],
+    ['checkoutAddress', 'shipping address'],
+    ['checkoutCity', 'city'],
+    ['checkoutState', 'state'],
+    ['checkoutZip', 'ZIP code'],
+    ['checkoutCountry', 'country']
+  ];
+
+  for (const pair of requiredFields) {
+    const field = document.getElementById(pair[0]);
+    if (!field || !String(field.value).trim()) {
+      showMessage('checkoutMessage', 'Please enter your ' + pair[1] + '.');
+      return;
+    }
+  }
+
+  if (!document.getElementById('checkoutResearchOnly')?.checked) {
+    showMessage('checkoutMessage', 'Please confirm the research-use-only statement before placing the order.');
+    return;
+  }
+
+  try {
+    const payload = buildCheckoutPayload();
+    const endpoint = payload.paymentMethod === 'stripe' ? '/api/checkout/stripe' : '/api/orders';
+    const data = await apiRequest(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(payload)
+    });
+
+    if (data.checkoutUrl) {
+      window.location.href = data.checkoutUrl;
+      return;
+    }
+
+    backendAccount = data.account;
+    cart = [];
+    saveCart();
+    renderCart();
+    renderCheckoutPage();
+    renderAccountPage();
+    updateAccountNav();
+    renderThankYouPage(data.order, data.cryptoPayment || null, data.cryptoQuote || null);
+    showPage('thank-you');
+  } catch (error) {
+    showMessage('checkoutMessage', error.message);
+  }
+}
+
+async function initializeLiveStorefront() {
+  loadStorefrontState();
+  await initBackendSession();
+  await loadPaymentOptions();
+  await loadShippingRates();
+  renderPeptideCatalog();
+  renderCart();
+  renderSearchResults();
+  renderAccountPage();
+  renderCheckoutPage();
+  updateCryptoWalletBox();
+  updateAccountNav();
+  initHeroVial();
+  showPage('home');
+}
+
+window.addEventListener('load', initializeLiveStorefront);
+</script>
+
+</body>
+</html>
