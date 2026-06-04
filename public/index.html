@@ -3656,23 +3656,26 @@ function getVialCount(spec) {
   return match ? Number(match[1]) : 1;
 }
 
+function makeNicePrice(value) {
+  const number = Number(value) || 0;
+  if (number <= 0) return 0;
+
+
+  const baseTen = Math.floor(number / 10) * 10;
+  return baseTen + 9.99;
+}
+
 function formatMoney(value) {
   const number = Number(value) || 0;
   return "$" + number.toFixed(2);
 }
 
 function getRaisedKitPrice(option) {
-  return parsePrice(option.price) * KIT_PRICE_MULTIPLIER;
-}
-
-function getBasePerVialPrice(option) {
-  const vialCount = getVialCount(option.spec);
-  const basePrice = parsePrice(option.price);
-  return vialCount ? basePrice / vialCount : basePrice;
+  return makeNicePrice(parsePrice(option.price) * KIT_PRICE_MULTIPLIER);
 }
 
 function getSingleVialPrice(option) {
-  return getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER;
+  return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
 }
 
 function formatOption(option) {

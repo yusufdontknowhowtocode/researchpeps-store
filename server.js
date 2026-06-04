@@ -301,8 +301,27 @@ function dollarsToCents(priceText) {
   return Math.round(number * 100);
 }
 
+function makeNicePrice(value) {
+  const number = Number(value) || 0;
+  if (number <= 0) return 0;
+
+
+  const baseTen = Math.floor(number / 10) * 10;
+  return baseTen + 9.99;
+}
+
+function formatMoney(value) {
+  const number = Number(value) || 0;
+  return "$" + number.toFixed(2);
+}
 function formatMoneyFromCents(cents) {
-  return '$' + (cents / 100).toFixed(2);
+  return "$" + (Number(cents || 0) / 100).toFixed(2);
+}
+
+
+
+function getSingleVialPrice(option) {
+  return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
 }
 
 function normalizeCountryName(country) {
@@ -358,8 +377,8 @@ function publicShippingRates() {
   };
 }
 
-const KIT_PRICE_MULTIPLIER = 1.32;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 2.178;
+const KIT_PRICE_MULTIPLIER = 1.67;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 3.5;
 
 function parsePrice(priceText) {
   const number = Number(String(priceText).replace(/[^0-9.]/g, ''));
@@ -372,7 +391,7 @@ function getVialCount(spec) {
 }
 
 function getRaisedKitPrice(option) {
-  return parsePrice(option.price) * KIT_PRICE_MULTIPLIER;
+  return makeNicePrice(parsePrice(option.price) * KIT_PRICE_MULTIPLIER);
 }
 
 function getBasePerVialPrice(option) {
@@ -382,7 +401,7 @@ function getBasePerVialPrice(option) {
 }
 
 function getSingleVialPrice(option) {
-  return getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER;
+  return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
 }
 
 function dollarsToCentsNumber(value) {
@@ -953,11 +972,13 @@ app.post('/api/cart/quote', (req, res, next) => {
       shipping: totals.shippingCents / 100,
       total: totals.totalCents / 100,
       totalLabel: formatMoneyFromCents(totals.totalCents)
+      
     });
   } catch (error) {
     next(error);
   }
 });
+
 
 app.get('/api/orders', requireAuth, (req, res) => {
   const rows = db.prepare('SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC').all(req.session.userId);
