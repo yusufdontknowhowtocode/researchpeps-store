@@ -320,10 +320,6 @@ function formatMoneyFromCents(cents) {
 
 
 
-function getSingleVialPrice(option) {
-  return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
-}
-
 function normalizeCountryName(country) {
   const value = String(country || '').trim();
   if (!value) return 'United States';
@@ -377,7 +373,7 @@ function publicShippingRates() {
   };
 }
 
-const KIT_PRICE_MULTIPLIER = 1.67;
+const KIT_PRICE_MULTIPLIER = 2;
 const SINGLE_VIAL_PRICE_MULTIPLIER = 3.5;
 
 function parsePrice(priceText) {
