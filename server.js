@@ -358,8 +358,8 @@ function publicShippingRates() {
   };
 }
 
-const KIT_PRICE_MULTIPLIER = 1.20;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 1.98;
+const KIT_PRICE_MULTIPLIER = 1.32;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 2.178;
 
 function parsePrice(priceText) {
   const number = Number(String(priceText).replace(/[^0-9.]/g, ''));
