@@ -3674,6 +3674,11 @@ function getRaisedKitPrice(option) {
   return makeNicePrice(parsePrice(option.price) * KIT_PRICE_MULTIPLIER);
 }
 
+function getBasePerVialPrice(option) {
+  const vialCount = getVialCount(option.spec);
+  const basePrice = parsePrice(option.price);
+  return vialCount ? basePrice / vialCount : basePrice;
+}
 function getSingleVialPrice(option) {
   return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
 }
