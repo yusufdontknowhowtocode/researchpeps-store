@@ -4,7 +4,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title> researchpeps.us </title>
+<title>RESEARCHPEPS.US</title>
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="alternate icon" href="/favicon.ico">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -1752,6 +1754,163 @@ body.age-locked .vial-rotor {
   letter-spacing: 0.01em;
 }
 
+
+/* Clean sign-in / create-account page */
+.auth-shell {
+  display: grid;
+  place-items: center;
+  padding: 10px 0 80px;
+}
+.auth-wrap {
+  width: min(100%, 540px);
+}
+.auth-head {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.auth-head .kicker {
+  margin-bottom: 14px;
+}
+.auth-title {
+  color: #fff;
+  font-size: clamp(36px, 5vw, 58px);
+  line-height: .96;
+  margin-bottom: 10px;
+}
+.auth-subtitle {
+  color: var(--muted);
+  font-size: 16px;
+  line-height: 1.6;
+}
+.auth-card {
+  overflow: hidden;
+  border-radius: 18px;
+  background: rgba(255,255,255,.96);
+  color: #111827;
+  border: 1px solid rgba(15,23,42,.12);
+  box-shadow: 0 24px 80px rgba(0,0,0,.30);
+}
+.auth-tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  border-bottom: 1px solid rgba(15,23,42,.10);
+}
+.auth-tab {
+  min-height: 58px;
+  border: 0;
+  background: #f8fafc;
+  color: #64748b;
+  cursor: pointer;
+  font-weight: 900;
+  letter-spacing: .02em;
+}
+.auth-tab.active {
+  background: #fff;
+  color: #1d4ed8;
+  box-shadow: inset 0 -3px 0 #2563eb;
+}
+.auth-body {
+  padding: 30px 34px 32px;
+}
+.auth-google {
+  width: 100%;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid #d7dee9;
+  background: #fff;
+  color: #334155;
+  font-weight: 850;
+  cursor: pointer;
+}
+.auth-divider {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  color: #94a3b8;
+  font-size: 12px;
+  font-weight: 900;
+  margin: 22px 0;
+  text-transform: uppercase;
+}
+.auth-divider::before,
+.auth-divider::after {
+  content: "";
+  height: 1px;
+  background: #e2e8f0;
+  flex: 1;
+}
+.auth-field {
+  margin-bottom: 16px;
+}
+.auth-field label {
+  display: block;
+  color: #334155;
+  font-weight: 900;
+  margin-bottom: 8px;
+  font-size: 14px;
+}
+.auth-input {
+  width: 100%;
+  height: 52px;
+  border-radius: 12px;
+  border: 1px solid #cbd5e1;
+  background: #fff;
+  color: #0f172a;
+  padding: 0 15px;
+  font-size: 15px;
+  outline: none;
+}
+.auth-input:focus {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 4px rgba(37,99,235,.12);
+}
+.auth-submit {
+  width: 100%;
+  height: 54px;
+  border: 0;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-weight: 950;
+  letter-spacing: .05em;
+  cursor: pointer;
+  margin-top: 8px;
+}
+.auth-links {
+  text-align: center;
+  margin-top: 20px;
+  color: #64748b;
+  line-height: 1.8;
+}
+.auth-links button {
+  border: 0;
+  background: transparent;
+  color: #1d4ed8;
+  font-weight: 900;
+  cursor: pointer;
+}
+.auth-small-note {
+  text-align: center;
+  color: #94a3b8;
+  font-size: 13px;
+  margin-top: 14px;
+  line-height: 1.6;
+}
+.auth-message-inline {
+  display: none;
+  margin-bottom: 18px;
+  border-radius: 12px;
+  padding: 13px 14px;
+  font-weight: 850;
+  font-size: 14px;
+}
+.auth-message-inline.show { display: block; }
+.auth-message-inline.error { background: #fee2e2; color: #991b1b; }
+.auth-message-inline.success { background: #dcfce7; color: #166534; }
+@media (max-width: 640px) {
+  .auth-body { padding: 24px 20px 28px; }
+}
+
 </style>
 </head>
 <body class="age-locked">
@@ -1828,7 +1987,7 @@ body.age-locked .vial-rotor {
   </div>
   <div id="cartItems" class="cart-items"></div>
   <div class="cart-footer">
-    <div class="cart-total-row"><span>Subtotal</span><span id="cartDrawerTotal">$0.00</span></div>
+    <div class="cart-total-row"><span>Total</span><span id="cartDrawerTotal">$0.00</span></div>
     <button class="btn primary" onclick="startCheckout()">Checkout</button>
     <p class="cart-help-text">Checkout places an order and saves it to your backend account history.</p>
   </div>
@@ -1953,7 +2112,7 @@ body.age-locked .vial-rotor {
         <h1>Peptides</h1>
         <p class="lead"></p>
       </div>
-      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 44% compared with buying the same vials one at a time.</div>
+      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 39% compared with buying the same vials one at a time.</div>
       <div id="peptideCatalogGrid" class="grid"></div>
     </div>
   </section>
@@ -2337,7 +2496,7 @@ After review, eligible damaged-shipment claims may be approved for replacement o
 
         <h2>16. Contact</h2>
         <p>For privacy questions, requests, or concerns, contact researchpeps at:</p>
-        <p><strong>Email:</strong> info@researchpeps.us <br><strong></strong><br><strong>Mailing Address:</strong> Pennsylvania, United States</p>
+        <p><strong>Email:</strong> your@email.com<br><strong>Phone:</strong> (000) 000-0000<br><strong>Mailing Address:</strong> Your business address here</p>
       </div>
     </div>
   </section>
@@ -2358,8 +2517,9 @@ After review, eligible damaged-shipment claims may be approved for replacement o
     <div class="footer-col">
       <h4>Contact Us</h4>
       <div class="footer-contact-lines">
-        <p><strong>Email:</strong> info@researchpeps.us</p>
-        <p><strong>Address:</strong> Pennsylvania, United States</p>
+        <p><strong>Email:</strong> your@email.com</p>
+        <p><strong>Phone:</strong> (000) 000-0000</p>
+        <p><strong>Address:</strong> Your address here</p>
         <p><strong>Hours:</strong> Mon – Fri, 9 AM – 5 PM</p>
       </div>
     </div>
@@ -2372,7 +2532,7 @@ After review, eligible damaged-shipment claims may be approved for replacement o
     </div>
   </div>
 
-  <div class="footer-bottom">© 2026 RESEARCHPEPS.US , ALL RIGHTS RESERVED.</div>
+  <div class="footer-bottom">© 2026 RESEARCHPEPS.COM, ALL RIGHTS RESERVED.</div>
 </footer>
 
 <script>
@@ -3651,18 +3811,16 @@ function parsePrice(priceText) {
   return Number(String(priceText).replace(/[^0-9.]/g, ""));
 }
 
-function getVialCount(spec) {
-  const match = String(spec).match(/\*(\d+)\s*vials?/i);
-  return match ? Number(match[1]) : 1;
-}
-
 function makeNicePrice(value) {
   const number = Number(value) || 0;
   if (number <= 0) return 0;
-
-
   const baseTen = Math.floor(number / 10) * 10;
   return baseTen + 9.99;
+}
+
+function getVialCount(spec) {
+  const match = String(spec).match(/\*(\d+)\s*vials?/i);
+  return match ? Number(match[1]) : 1;
 }
 
 function formatMoney(value) {
@@ -3679,6 +3837,7 @@ function getBasePerVialPrice(option) {
   const basePrice = parsePrice(option.price);
   return vialCount ? basePrice / vialCount : basePrice;
 }
+
 function getSingleVialPrice(option) {
   return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
 }
@@ -4408,7 +4567,7 @@ function createAccount() {
   const password = String(document.getElementById('signupPassword')?.value || '');
 
   if (!name || !email || !password) {
-    showMessage('accountMessage', 'Please enter a name, email, and password to create an account.');
+    showAuthMessage('Please enter a name, email, and password to create an account. Password must be at least 8 characters.');
     return;
   }
 
@@ -4431,7 +4590,7 @@ function createAccount() {
   localStorage.setItem(SESSION_STORAGE_KEY, email);
   updateAccountNav();
   renderAccountPage();
-  showMessage('accountMessage', 'Account created. You can now checkout and view past orders here.');
+  showAuthMessage('Account created. You can now checkout and view past orders here.', 'success');
 }
 
 function loginAccount() {
@@ -4448,7 +4607,7 @@ function loginAccount() {
   localStorage.setItem(SESSION_STORAGE_KEY, email);
   updateAccountNav();
   renderAccountPage();
-  showMessage('accountMessage', 'Signed in successfully.');
+  showAuthMessage('Signed in successfully.', 'success');
 }
 
 function logoutAccount() {
@@ -4456,6 +4615,23 @@ function logoutAccount() {
   updateAccountNav();
   renderAccountPage();
   showMessage('accountMessage', 'Signed out.');
+}
+
+let authMode = 'login';
+
+function setAuthMode(mode) {
+  authMode = mode === 'register' ? 'register' : 'login';
+  renderAccountPage();
+}
+
+function showAuthMessage(message, type = 'error') {
+  const inline = document.getElementById('authInlineMessage');
+  if (inline) {
+    inline.className = 'auth-message-inline show ' + type;
+    inline.textContent = message;
+    return;
+  }
+  showMessage('accountMessage', message);
 }
 
 function setAccountPageHeader(account) {
@@ -4485,42 +4661,71 @@ function renderAccountPage() {
   clearMessage('accountMessage');
 
   if (!account) {
+    const isLogin = authMode === 'login';
     container.innerHTML = `
-      <div class="account-grid">
-        <div class="account-panel">
-          <h2>Create account</h2>
-          <div class="form-grid">
-            <div class="form-field full">
-              <label for="signupName">Full name</label>
-              <input id="signupName" autocomplete="name" placeholder="Customer name">
-            </div>
-            <div class="form-field full">
-              <label for="signupEmail">Email</label>
-              <input id="signupEmail" type="email" autocomplete="email" placeholder="email@example.com">
-            </div>
-            <div class="form-field full">
-              <label for="signupPassword">Password</label>
-              <input id="signupPassword" type="password" autocomplete="new-password" placeholder="Create a password">
-            </div>
+      <div class="auth-shell">
+        <div class="auth-wrap">
+          <div class="auth-head">
+            <p class="kicker">Customer Account</p>
+            <h2 class="auth-title">${isLogin ? 'Sign In' : 'Create Account'}</h2>
+            <p class="auth-subtitle">${isLogin ? 'Welcome back to researchpeps.' : 'Create an account to save your orders and checkout faster.'}</p>
           </div>
-          <div class="actions"><button class="btn primary" onclick="createAccount()">Create Account</button></div>
-          <p class="auth-note"</p>
-        </div>
 
-        <div class="account-panel">
-          <h2>Sign in</h2>
-          <div class="form-grid">
-            <div class="form-field full">
-              <label for="loginEmail">Email</label>
-              <input id="loginEmail" type="email" autocomplete="email" placeholder="email@example.com">
+          <div class="auth-card">
+            <div class="auth-tabs">
+              <button class="auth-tab ${isLogin ? 'active' : ''}" onclick="setAuthMode('login')">🔒 Sign In</button>
+              <button class="auth-tab ${!isLogin ? 'active' : ''}" onclick="setAuthMode('register')">✦ Create Account</button>
             </div>
-            <div class="form-field full">
-              <label for="loginPassword">Password</label>
-              <input id="loginPassword" type="password" autocomplete="current-password" placeholder="Password">
+
+            <div class="auth-body">
+              <div id="authInlineMessage" class="auth-message-inline"></div>
+
+              <button class="auth-google" type="button" onclick="showAuthMessage('Google sign-in is not connected yet. Use email and password for now.', 'error')">
+                Continue with Google
+              </button>
+
+              <div class="auth-divider">or</div>
+
+              ${isLogin ? `
+                <form onsubmit="event.preventDefault(); loginAccount();">
+                  <div class="auth-field">
+                    <label for="loginEmail">Email Address</label>
+                    <input class="auth-input" id="loginEmail" type="email" placeholder="you@example.com" autocomplete="email">
+                  </div>
+                  <div class="auth-field">
+                    <label for="loginPassword">Password</label>
+                    <input class="auth-input" id="loginPassword" type="password" placeholder="Enter your password" autocomplete="current-password">
+                  </div>
+                  <button class="auth-submit" type="submit">SIGN IN →</button>
+                </form>
+                <div class="auth-links">
+                  <div>Can't sign in? <button onclick="showAuthMessage('Password reset is not active yet. Email info@researchpeps.us for help.', 'error')">Reset your password</button></div>
+                  <div>Don't have an account? <button onclick="setAuthMode('register')">Create one</button></div>
+                </div>
+              ` : `
+                <form onsubmit="event.preventDefault(); createAccount();">
+                  <div class="auth-field">
+                    <label for="signupName">Full Name</label>
+                    <input class="auth-input" id="signupName" type="text" placeholder="Your name" autocomplete="name">
+                  </div>
+                  <div class="auth-field">
+                    <label for="signupEmail">Email Address</label>
+                    <input class="auth-input" id="signupEmail" type="email" placeholder="you@example.com" autocomplete="email">
+                  </div>
+                  <div class="auth-field">
+                    <label for="signupPassword">Password</label>
+                    <input class="auth-input" id="signupPassword" type="password" placeholder="Create a password" autocomplete="new-password">
+                  </div>
+                  <button class="auth-submit" type="submit">CREATE ACCOUNT →</button>
+                </form>
+                <div class="auth-links">
+                  <div>Already have an account? <button onclick="setAuthMode('login')">Sign in</button></div>
+                </div>
+              `}
+
+              <p class="auth-small-note">Your session stays active on this device. Passwords are handled by the backend with hashed storage.</p>
             </div>
           </div>
-          <div class="actions"><button class="btn primary" onclick="loginAccount()">Sign In</button></div>
-          <p class="auth-note">After checkout, orders will appear in your backend account history.</p>
         </div>
       </div>
     `;
@@ -4640,7 +4845,7 @@ function renderCart() {
   const count = getCartCount();
   cartCount.textContent = count;
   cartCount.classList.toggle('show', count > 0);
-  if (cartDrawerTotal) cartDrawerTotal.textContent = formatMoney(getCartSubtotal());
+  if (cartDrawerTotal) cartDrawerTotal.textContent = formatMoney(getCartTotal());
 
   if (cart.length === 0) {
     cartItems.innerHTML = '<div class="empty-search">Your cart is empty. Open a peptide product page and add an item here.</div>';
@@ -5032,7 +5237,7 @@ async function createAccount() {
   const password = String(document.getElementById('signupPassword')?.value || '');
 
   if (!name || !email || !password) {
-    showMessage('accountMessage', 'Please enter a name, email, and password to create an account.');
+    showAuthMessage('Please enter a name, email, and password to create an account. Password must be at least 8 characters.');
     return;
   }
 
@@ -5044,9 +5249,9 @@ async function createAccount() {
     backendAccount = data.account;
     updateAccountNav();
     renderAccountPage();
-    showMessage('accountMessage', 'Account created. You can now checkout and view past orders here.');
+    showAuthMessage('Account created. You can now checkout and view past orders here.', 'success');
   } catch (error) {
-    showMessage('accountMessage', error.message);
+    showAuthMessage(error.message);
   }
 }
 
@@ -5063,9 +5268,9 @@ async function loginAccount() {
     backendAccount = data.account;
     updateAccountNav();
     renderAccountPage();
-    showMessage('accountMessage', 'Signed in successfully.');
+    showAuthMessage('Signed in successfully.', 'success');
   } catch (error) {
-    showMessage('accountMessage', error.message);
+    showAuthMessage(error.message);
   }
 }
 
