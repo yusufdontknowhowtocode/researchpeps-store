@@ -27,6 +27,8 @@ const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true';
 const MAIL_FROM = process.env.MAIL_FROM || SMTP_USER || '';
 const ORDER_NOTIFY_EMAIL = process.env.ORDER_NOTIFY_EMAIL || process.env.OWNER_EMAIL || '';
+const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const PASSWORD_RESET_EXPIRES_MINUTES = Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES || 60);
 const DEFAULT_BTC_PAYMENT_ADDRESS = '3QaBoxDHEWnuGy5emvYawoFCM5E5yMEvap';
 const DEFAULT_SOL_PAYMENT_ADDRESS = '7NVysM4pSWVq4ZYKnnCwz3fnaA1BgkCex6tARvv7vqBT';
 const DEFAULT_USDC_PAYMENT_ADDRESS = '3q2QjuTXc5S8MYo5YdD5ELuBz1ASv5YDcEvmQgw4V6n9';
@@ -79,6 +81,56 @@ function escapeHtml(value) {
     .replace(/>/g, '&gt;')
     .replace(/"/g, '&quot;')
     .replace(/'/g, '&#039;');
+}
+
+
+function createRandomPasswordHashPlaceholder() {
+  return bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
+}
+
+function hashResetToken(token) {
+  return crypto.createHash('sha256').update(String(token || '')).digest('hex');
+}
+
+function buildPasswordResetUrl(token) {
+  const base = String(PUBLIC_URL || '').replace(/\/$/, '');
+  return `${base}/?reset=${encodeURIComponent(token)}`;
+}
+
+async function verifyGoogleCredential(credential) {
+  if (!GOOGLE_CLIENT_ID) {
+    const error = new Error('Google sign-in is not configured. Add GOOGLE_CLIENT_ID in Render environment variables.');
+    error.status = 503;
+    throw error;
+  }
+
+  if (!credential) {
+    const error = new Error('Missing Google credential.');
+    error.status = 400;
+    throw error;
+  }
+
+  const response = await fetch(`https://oauth2.googleapis.com/tokeninfo?id_token=${encodeURIComponent(credential)}`);
+  const payload = await response.json().catch(() => ({}));
+
+  if (!response.ok || payload.error_description || payload.aud !== GOOGLE_CLIENT_ID) {
+    const error = new Error('Google sign-in could not be verified. Check your Google client ID and authorized domain.');
+    error.status = 401;
+    throw error;
+  }
+
+  const emailVerified = payload.email_verified === true || payload.email_verified === 'true';
+  if (!payload.email || !emailVerified) {
+    const error = new Error('Google email is not verified. Use another sign-in method.');
+    error.status = 401;
+    throw error;
+  }
+
+  return {
+    sub: String(payload.sub || ''),
+    email: normalizeEmail(payload.email),
+    name: String(payload.name || payload.given_name || payload.email).trim()
+  };
 }
 
 function orderItemsText(order) {
@@ -168,6 +220,36 @@ function sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote) {
   });
 }
 
+async function sendPasswordResetEmail(user, resetUrl) {
+  if (!mailTransporter) {
+    console.log(`Password reset link for ${user.email}: ${resetUrl}`);
+    return;
+  }
+
+  const text = `Password reset requested.\n\nUse this link to reset your ResearchPeps password:\n${resetUrl}\n\nThis link expires in ${PASSWORD_RESET_EXPIRES_MINUTES} minutes. If you did not request this, ignore this email.`;
+  const html = `
+    <h2>Password reset requested</h2>
+    <p>Use the button below to reset your ResearchPeps password.</p>
+    <p><a href="${escapeHtml(resetUrl)}" style="display:inline-block;background:#1e5eff;color:#ffffff;padding:12px 18px;border-radius:10px;text-decoration:none;font-weight:700;">Reset password</a></p>
+    <p>This link expires in ${escapeHtml(PASSWORD_RESET_EXPIRES_MINUTES)} minutes.</p>
+    <p>If you did not request this, you can ignore this email.</p>
+  `;
+
+  await mailTransporter.sendMail({
+    from: MAIL_FROM,
+    to: user.email,
+    subject: 'Reset your ResearchPeps password',
+    text,
+    html
+  });
+}
+
+function sendPasswordResetEmailSafely(user, resetUrl) {
+  sendPasswordResetEmail(user, resetUrl).catch((error) => {
+    console.error('Password reset email failed:', error.message);
+  });
+}
+
 
 const dataDir = path.join(__dirname, 'data');
 fs.mkdirSync(dataDir, { recursive: true });
@@ -223,6 +305,16 @@ CREATE TABLE IF NOT EXISTS web_sessions (
   sess_json TEXT NOT NULL,
   expires_at INTEGER NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS password_resets (
+  id TEXT PRIMARY KEY,
+  user_id TEXT NOT NULL,
+  token_hash TEXT NOT NULL UNIQUE,
+  expires_at INTEGER NOT NULL,
+  used_at TEXT,
+  created_at TEXT NOT NULL,
+  FOREIGN KEY(user_id) REFERENCES users(id)
+);
 `);
 
 function ensureOrderColumn(name, definition) {
@@ -235,6 +327,17 @@ function ensureOrderColumn(name, definition) {
 ensureOrderColumn('subtotal_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('tax_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('shipping_cents', 'INTEGER NOT NULL DEFAULT 0');
+
+function ensureUserColumn(name, definition) {
+  const columns = db.prepare('PRAGMA table_info(users)').all().map((column) => column.name);
+  if (!columns.includes(name)) {
+    db.prepare(`ALTER TABLE users ADD COLUMN ${name} ${definition}`).run();
+  }
+}
+
+ensureUserColumn('google_sub', 'TEXT');
+ensureUserColumn('email_verified', 'INTEGER NOT NULL DEFAULT 0');
+ensureUserColumn('last_login_at', 'TEXT');
 
 class BetterSqliteSessionStore extends session.Store {
   constructor(database) {
@@ -896,6 +999,109 @@ app.get('/api/crypto-quote', requireAuth, async (req, res, next) => {
   }
 });
 
+app.get('/api/auth/google/config', (req, res) => {
+  res.json({ googleClientId: GOOGLE_CLIENT_ID || '' });
+});
+
+app.post('/api/auth/google', authLimiter, async (req, res, next) => {
+  try {
+    const googleUser = await verifyGoogleCredential(req.body.credential);
+    let row = db.prepare('SELECT * FROM users WHERE email = ?').get(googleUser.email);
+    const timestamp = nowIso();
+
+    if (!row) {
+      const id = crypto.randomUUID();
+      const passwordHash = await createRandomPasswordHashPlaceholder();
+      db.prepare(`
+        INSERT INTO users (id, name, email, password_hash, google_sub, email_verified, created_at, updated_at, last_login_at)
+        VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)
+      `).run(id, googleUser.name, googleUser.email, passwordHash, googleUser.sub, timestamp, timestamp, timestamp);
+      row = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+    } else {
+      db.prepare(`
+        UPDATE users
+        SET name = COALESCE(NULLIF(name, ''), ?), google_sub = COALESCE(google_sub, ?), email_verified = 1, updated_at = ?, last_login_at = ?
+        WHERE id = ?
+      `).run(googleUser.name, googleUser.sub, timestamp, timestamp, row.id);
+      row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
+    }
+
+    req.session.userId = row.id;
+    res.json({ account: publicUser(row) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/auth/password-reset-request', authLimiter, async (req, res, next) => {
+  try {
+    const email = normalizeEmail(req.body.email);
+    const genericMessage = 'If an account exists for that email, a reset link was sent.';
+
+    if (!email) return res.status(400).json({ error: 'Enter your email address.' });
+
+    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+    if (user) {
+      const rawToken = crypto.randomBytes(32).toString('hex');
+      const tokenHash = hashResetToken(rawToken);
+      const now = Date.now();
+      const expiresAt = now + PASSWORD_RESET_EXPIRES_MINUTES * 60 * 1000;
+      const createdAt = nowIso();
+
+      db.prepare('DELETE FROM password_resets WHERE user_id = ? AND used_at IS NULL').run(user.id);
+      db.prepare(`
+        INSERT INTO password_resets (id, user_id, token_hash, expires_at, created_at)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(crypto.randomUUID(), user.id, tokenHash, expiresAt, createdAt);
+
+      sendPasswordResetEmailSafely(user, buildPasswordResetUrl(rawToken));
+    }
+
+    res.json({ ok: true, message: genericMessage });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/auth/password-reset', authLimiter, async (req, res, next) => {
+  try {
+    const token = String(req.body.token || '').trim();
+    const password = String(req.body.password || '');
+
+    if (!token || password.length < 8) {
+      return res.status(400).json({ error: 'Reset token and a password with at least 8 characters are required.' });
+    }
+
+    const tokenHash = hashResetToken(token);
+    const reset = db.prepare('SELECT * FROM password_resets WHERE token_hash = ? AND used_at IS NULL').get(tokenHash);
+
+    if (!reset || Number(reset.expires_at) <= Date.now()) {
+      return res.status(400).json({ error: 'Reset link is invalid or expired. Request a new reset email.' });
+    }
+
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(reset.user_id);
+    if (!user) return res.status(400).json({ error: 'Account no longer exists.' });
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const timestamp = nowIso();
+
+    const updatePassword = db.transaction(() => {
+      db.prepare('UPDATE users SET password_hash = ?, updated_at = ?, last_login_at = ? WHERE id = ?')
+        .run(passwordHash, timestamp, timestamp, user.id);
+      db.prepare('UPDATE password_resets SET used_at = ? WHERE id = ?')
+        .run(timestamp, reset.id);
+      db.prepare('DELETE FROM password_resets WHERE user_id = ? AND used_at IS NULL').run(user.id);
+    });
+    updatePassword();
+
+    const updatedUser = db.prepare('SELECT * FROM users WHERE id = ?').get(user.id);
+    req.session.userId = updatedUser.id;
+    res.json({ account: publicUser(updatedUser) });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.post('/api/auth/register', authLimiter, async (req, res, next) => {
   try {
     const name = String(req.body.name || '').trim();
@@ -936,8 +1142,10 @@ app.post('/api/auth/login', authLimiter, async (req, res, next) => {
       return res.status(401).json({ error: 'Email or password did not match.' });
     }
 
-    req.session.userId = row.id;
-    res.json({ account: publicUser(row) });
+    db.prepare('UPDATE users SET last_login_at = ? WHERE id = ?').run(nowIso(), row.id);
+    const updatedRow = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
+    req.session.userId = updatedRow.id;
+    res.json({ account: publicUser(updatedRow) });
   } catch (error) {
     next(error);
   }
