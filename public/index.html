@@ -1963,6 +1963,138 @@ body.age-locked .vial-rotor {
   .auth-body { padding: 24px 20px 28px; }
 }
 
+
+/* Cleaner profile page spacing and account typography */
+#account .section {
+  padding-top: 68px;
+}
+
+#account .page-head {
+  padding-bottom: 42px;
+  margin-bottom: 38px;
+}
+
+#account .page-head h1 {
+  margin-bottom: 14px;
+}
+
+#account .page-head .lead {
+  max-width: 720px;
+}
+
+.account-dashboard-head {
+  align-items: flex-end;
+  gap: 28px;
+  margin-bottom: 30px;
+  padding: 4px 0 8px;
+}
+
+.account-dashboard-copy {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.account-email-kicker,
+.account-panel-kicker {
+  margin-bottom: 0;
+  color: var(--gold);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.account-dashboard-head h2 {
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 850;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  margin: 0;
+}
+
+.account-dashboard-subtitle {
+  max-width: 650px;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.75;
+  letter-spacing: 0;
+}
+
+.account-dashboard-actions {
+  margin-top: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.account-history-panel {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 28px !important;
+  padding: 34px 36px;
+  border-radius: 30px;
+}
+
+.account-history-panel h2,
+.account-panel h2,
+.order-card h3 {
+  font-family: var(--font-body);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.account-history-panel h2 {
+  font-size: 28px;
+  margin-bottom: 0;
+}
+
+.account-history-panel .lead {
+  max-width: 860px;
+  font-family: var(--font-body);
+  font-size: 16.5px;
+  line-height: 1.85;
+  letter-spacing: 0;
+}
+
+.order-history-list {
+  gap: 20px;
+}
+
+.order-card {
+  padding: 30px 32px;
+}
+
+.order-card h3 {
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.order-meta {
+  margin: 10px 0 18px;
+  line-height: 1.75;
+}
+
+@media (max-width: 820px) {
+  #account .section {
+    padding-top: 46px;
+  }
+
+  .account-dashboard-head {
+    align-items: stretch;
+    gap: 22px;
+  }
+
+  .account-dashboard-actions {
+    justify-content: flex-start;
+  }
+
+  .account-history-panel {
+    padding: 26px 22px;
+  }
+}
+
 </style>
 </head>
 <body class="age-locked">
@@ -2548,7 +2680,7 @@ After review, eligible damaged-shipment claims may be approved for replacement o
 
         <h2>16. Contact</h2>
         <p>For privacy questions, requests, or concerns, contact researchpeps at:</p>
-        <p><strong>Email:</strong> your@email.com<br><strong>Phone:</strong> (000) 000-0000<br><strong>Mailing Address:</strong> Your business address here</p>
+        <p><strong>Email:</strong> orders@researchpeps.us<br><strong>Mailing Address:</strong> United States, Pennsylvania</p>
       </div>
     </div>
   </section>
@@ -2569,9 +2701,8 @@ After review, eligible damaged-shipment claims may be approved for replacement o
     <div class="footer-col">
       <h4>Contact Us</h4>
       <div class="footer-contact-lines">
-        <p><strong>Email:</strong> your@email.com</p>
-        <p><strong>Phone:</strong> (000) 000-0000</p>
-        <p><strong>Address:</strong> Your address here</p>
+        <p><strong>Email:</strong> orders@researchpeps.us</p>
+        <p><strong>Address:</strong> United States, Pennsylvania</p>
         <p><strong>Hours:</strong> Mon – Fri, 9 AM – 5 PM</p>
       </div>
     </div>
@@ -4380,7 +4511,7 @@ function renderPeptideCatalog() {
 
   const featured = document.getElementById('featuredPeptideGrid');
   if (featured) {
-    const featuredNames = ['Retatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'TB-500', 'CJC-1295 WO/Dac', 'CJC-1295 DAC + Ipamorelin', 'Sermorelin', 'GHRP-2', 'GHRP-6', 'NAD+'];
+    const featuredNames = ['Retatrutide', 'HGH', 'GHK-CU', 'BPC-157', 'NAD+', 'CJC-1295 DAC + Ipamorelin', 'Semax', 'IGF-1LR3'];
     featured.innerHTML = products.filter(function(product) {
       return featuredNames.includes(product.name);
     }).map(function(product) {
@@ -4821,18 +4952,22 @@ function renderAccountPage() {
   const orders = Array.isArray(account.orders) ? account.orders.slice().reverse() : [];
   container.innerHTML = `
     <div class="account-dashboard-head">
-      <div>
-        <p class="kicker">Signed in as ${escapeHtml(account.email)}</p>
+      <div class="account-dashboard-copy">
+        <p class="kicker account-email-kicker">Signed in as ${escapeHtml(account.email)}</p>
         <h2>Welcome, ${escapeHtml(account.name)}</h2>
+        <p class="account-dashboard-subtitle">Manage checkout, saved session details, and order history from one clean account area.</p>
       </div>
-      <div class="actions">
+      <div class="actions account-dashboard-actions">
         <button class="btn primary" onclick="startCheckout()">Checkout Cart</button>
         <button class="btn" onclick="logoutAccount()">Sign Out</button>
       </div>
     </div>
 
-    <div class="account-panel" style="margin-bottom: 22px;">
-      <h2>Order history</h2>
+    <div class="account-panel account-history-panel">
+      <div>
+        <p class="kicker account-panel-kicker">Orders</p>
+        <h2>Order history</h2>
+      </div>
       <p class="lead">${orders.length ? 'Past orders are listed below.' : 'No orders yet. Add products to your cart and checkout to place an order.'}</p>
     </div>
 
