@@ -259,6 +259,8 @@ function ensureUserColumn(name, definition) {
 }
 
 ensureUserColumn('google_sub', 'TEXT');
+ensureUserColumn('email_verified', 'INTEGER NOT NULL DEFAULT 0');
+ensureUserColumn('last_login_at', 'TEXT');
 
 class BetterSqliteSessionStore extends session.Store {
   constructor(database) {
@@ -378,12 +380,12 @@ async function verifyGoogleCredential(credential) {
 }
 
 async function sendPasswordResetEmail(user, token) {
+  const resetUrl = `${PUBLIC_URL}/?reset=${encodeURIComponent(token)}`;
+
   if (!mailTransporter) {
-    console.log('Email not configured. Skipping password reset email.');
+    console.log(`Password reset link for ${user.email}: ${resetUrl}`);
     return;
   }
-
-  const resetUrl = `${PUBLIC_URL}/?reset=${encodeURIComponent(token)}`;
   const expiresText = `${PASSWORD_RESET_EXPIRES_MINUTES} minutes`;
   const text = `Reset your ResearchPeps password.\n\nUse this link within ${expiresText}:\n${resetUrl}\n\nIf you did not request this, you can ignore this email.`;
   const html = `
@@ -970,6 +972,12 @@ app.get('/api/auth/config', (req, res) => {
   });
 });
 
+app.get('/api/auth/google/config', (req, res) => {
+  res.json({
+    googleClientId: GOOGLE_CLIENT_ID || ''
+  });
+});
+
 app.get('/api/shipping-rates', (req, res) => {
   res.json(publicShippingRates());
 });
@@ -1010,6 +1018,65 @@ app.get('/api/crypto-quote', requireAuth, async (req, res, next) => {
   }
 });
 
+
+async function createPasswordResetForEmail(email) {
+  const genericMessage = 'If an account exists for that email, a reset link was sent.';
+  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizeEmail(email));
+
+  if (user) {
+    const token = crypto.randomBytes(32).toString('hex');
+    const tokenHash = sha256(token);
+    const expiresAt = Date.now() + PASSWORD_RESET_EXPIRES_MINUTES * 60 * 1000;
+    const timestamp = nowIso();
+
+    db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ? AND used_at IS NULL').run(user.id);
+    db.prepare(`
+      INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at)
+      VALUES (?, ?, ?, ?, ?)
+    `).run(crypto.randomUUID(), user.id, tokenHash, expiresAt, timestamp);
+
+    await sendPasswordResetEmail(user, token);
+  }
+
+  return { ok: true, message: genericMessage };
+}
+
+async function confirmPasswordResetToken(token, password, req) {
+  const cleanToken = String(token || '').trim();
+  const cleanPassword = String(password || '');
+
+  if (!cleanToken || cleanPassword.length < 8) {
+    const error = new Error('Reset token and a password with at least 8 characters are required.');
+    error.status = 400;
+    throw error;
+  }
+
+  const tokenHash = sha256(cleanToken);
+  const reset = db.prepare(`
+    SELECT * FROM password_reset_tokens
+    WHERE token_hash = ? AND used_at IS NULL
+  `).get(tokenHash);
+
+  if (!reset || reset.expires_at <= Date.now()) {
+    const error = new Error('Reset link is invalid or expired. Request a new password reset email.');
+    error.status = 400;
+    throw error;
+  }
+
+  const passwordHash = await bcrypt.hash(cleanPassword, 12);
+  const timestamp = nowIso();
+  db.prepare('UPDATE users SET password_hash = ?, updated_at = ?, last_login_at = ? WHERE id = ?')
+    .run(passwordHash, timestamp, timestamp, reset.user_id);
+  db.prepare('UPDATE password_reset_tokens SET used_at = ? WHERE id = ?')
+    .run(timestamp, reset.id);
+  db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ? AND id != ?')
+    .run(reset.user_id, reset.id);
+
+  req.session.userId = reset.user_id;
+  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(reset.user_id);
+  return { account: publicUser(user) };
+}
+
 app.post('/api/auth/register', authLimiter, async (req, res, next) => {
   try {
     const name = String(req.body.name || '').trim();
@@ -1028,8 +1095,8 @@ app.post('/api/auth/register', authLimiter, async (req, res, next) => {
     const timestamp = nowIso();
 
     db.prepare(`
-      INSERT INTO users (id, name, email, password_hash, created_at, updated_at)
-      VALUES (?, ?, ?, ?, ?, ?)
+      INSERT INTO users (id, name, email, password_hash, email_verified, created_at, updated_at)
+      VALUES (?, ?, ?, ?, 0, ?, ?)
     `).run(id, name, email, passwordHash, timestamp, timestamp);
 
     req.session.userId = id;
@@ -1050,8 +1117,10 @@ app.post('/api/auth/login', authLimiter, async (req, res, next) => {
       return res.status(401).json({ error: 'Email or password did not match.' });
     }
 
-    req.session.userId = row.id;
-    res.json({ account: publicUser(row) });
+    db.prepare('UPDATE users SET last_login_at = ? WHERE id = ?').run(nowIso(), row.id);
+    const updatedRow = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
+    req.session.userId = updatedRow.id;
+    res.json({ account: publicUser(updatedRow) });
   } catch (error) {
     next(error);
   }
@@ -1067,22 +1136,36 @@ app.post('/api/auth/google', authLimiter, async (req, res, next) => {
 
     if (!row) {
       row = db.prepare('SELECT * FROM users WHERE email = ?').get(profile.email);
+
       if (row) {
-        db.prepare('UPDATE users SET google_sub = ?, updated_at = ? WHERE id = ?')
-          .run(profile.googleSub, timestamp, row.id);
+        db.prepare('UPDATE users SET name = COALESCE(NULLIF(name, \'\'), ?), google_sub = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?')
+          .run(profile.name, profile.googleSub, timestamp, timestamp, row.id);
+        row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
       } else {
         const id = crypto.randomUUID();
         const randomPasswordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
         db.prepare(`
-          INSERT INTO users (id, name, email, password_hash, google_sub, created_at, updated_at)
-          VALUES (?, ?, ?, ?, ?, ?, ?)
-        `).run(id, profile.name, profile.email, randomPasswordHash, profile.googleSub, timestamp, timestamp);
+          INSERT INTO users (id, name, email, password_hash, google_sub, email_verified, created_at, updated_at, last_login_at)
+          VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)
+        `).run(id, profile.name, profile.email, randomPasswordHash, profile.googleSub, timestamp, timestamp, timestamp);
+        row = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
       }
+    } else {
+      db.prepare('UPDATE users SET name = COALESCE(NULLIF(name, \'\'), ?), email = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?')
+        .run(profile.name, profile.email, timestamp, timestamp, row.id);
+      row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
     }
 
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(profile.email);
-    req.session.userId = user.id;
-    res.json({ account: publicUser(user) });
+    req.session.userId = row.id;
+    res.json({ account: publicUser(row), user: publicUser(row) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.post('/api/auth/password-reset-request', authLimiter, async (req, res, next) => {
+  try {
+    res.json(await createPasswordResetForEmail(req.body.email));
   } catch (error) {
     next(error);
   }
@@ -1090,30 +1173,10 @@ app.post('/api/auth/google', authLimiter, async (req, res, next) => {
 
 app.post('/api/auth/password-reset', authLimiter, async (req, res, next) => {
   try {
-    const email = normalizeEmail(req.body.email);
-    const genericMessage = 'If an account exists for that email, a reset link was sent.';
-
-    if (!email) {
-      return res.json({ ok: true, message: genericMessage });
+    if (req.body.token || req.body.password) {
+      return res.json(await confirmPasswordResetToken(req.body.token, req.body.password, req));
     }
-
-    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
-    if (user && mailTransporter) {
-      const token = crypto.randomBytes(32).toString('hex');
-      const tokenHash = sha256(token);
-      const expiresAt = Date.now() + PASSWORD_RESET_EXPIRES_MINUTES * 60 * 1000;
-      db.prepare(`
-        INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at)
-        VALUES (?, ?, ?, ?, ?)
-      `).run(crypto.randomUUID(), user.id, tokenHash, expiresAt, nowIso());
-      await sendPasswordResetEmail(user, token);
-    }
-
-    if (user && !mailTransporter) {
-      console.log('Password reset requested, but SMTP is not configured.');
-    }
-
-    res.json({ ok: true, message: genericMessage });
+    res.json(await createPasswordResetForEmail(req.body.email));
   } catch (error) {
     next(error);
   }
@@ -1121,35 +1184,7 @@ app.post('/api/auth/password-reset', authLimiter, async (req, res, next) => {
 
 app.post('/api/auth/password-reset/confirm', authLimiter, async (req, res, next) => {
   try {
-    const token = String(req.body.token || '').trim();
-    const password = String(req.body.password || '');
-
-    if (!token || password.length < 8) {
-      return res.status(400).json({ error: 'Reset token and a password with at least 8 characters are required.' });
-    }
-
-    const tokenHash = sha256(token);
-    const reset = db.prepare(`
-      SELECT * FROM password_reset_tokens
-      WHERE token_hash = ? AND used_at IS NULL
-    `).get(tokenHash);
-
-    if (!reset || reset.expires_at <= Date.now()) {
-      return res.status(400).json({ error: 'Reset link is invalid or expired. Request a new password reset email.' });
-    }
-
-    const passwordHash = await bcrypt.hash(password, 12);
-    const timestamp = nowIso();
-    db.prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
-      .run(passwordHash, timestamp, reset.user_id);
-    db.prepare('UPDATE password_reset_tokens SET used_at = ? WHERE id = ?')
-      .run(timestamp, reset.id);
-    db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ? AND id != ?')
-      .run(reset.user_id, reset.id);
-
-    req.session.userId = reset.user_id;
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(reset.user_id);
-    res.json({ account: publicUser(user) });
+    res.json(await confirmPasswordResetToken(req.body.token, req.body.password, req));
   } catch (error) {
     next(error);
   }
