@@ -1843,6 +1843,33 @@ body.age-locked .vial-rotor {
   font-weight: 850;
   cursor: pointer;
 }
+.auth-google-redirect {
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 96px;
+  position: relative;
+}
+.auth-google-g {
+  position: absolute;
+  left: 18px;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: #4285f4;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+.auth-google-wrap iframe,
+.auth-google-wrap > div {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
 .auth-google-fallback:disabled {
   cursor: wait;
   opacity: .75;
@@ -5281,40 +5308,16 @@ function renderGoogleButton() {
   const wrap = document.getElementById('googleSignInWrap');
   if (!wrap) return;
 
-  if (!googleClientId) {
-    wrap.innerHTML = `
-      <button class="auth-google-fallback" type="button" onclick="showAuthMessage('Google Client ID is missing in Render environment variables.', 'error')">
-        Continue with Google
-      </button>
-    `;
-    return;
-  }
+  wrap.innerHTML = `
+    <button class="auth-google-fallback auth-google-redirect" type="button" onclick="startGoogleRedirectLogin()">
+      <span class="auth-google-g">G</span>
+      <span>Continue with Google</span>
+    </button>
+  `;
+}
 
-  if (!window.google || !google.accounts || !google.accounts.id) {
-    wrap.innerHTML = `
-      <button class="auth-google-fallback" type="button" disabled>
-        Loading Google...
-      </button>
-    `;
-    setTimeout(renderGoogleButton, 300);
-    return;
-  }
-
-  wrap.innerHTML = '';
-
-  google.accounts.id.initialize({
-    client_id: googleClientId,
-    callback: handleGoogleCredential
-  });
-
-  google.accounts.id.renderButton(wrap, {
-    theme: 'outline',
-    size: 'large',
-    type: 'standard',
-    text: 'continue_with',
-    shape: 'rectangular',
-    width: Math.min(wrap.offsetWidth || 486, 486)
-  });
+function startGoogleRedirectLogin() {
+  window.location.href = '/api/auth/google/start';
 }
 
 async function handleGoogleCredential(response) {
@@ -5339,15 +5342,22 @@ async function handleGoogleCredential(response) {
 }
 
 async function requestPasswordReset() {
-  const email = normalizeEmail(document.getElementById('loginEmail')?.value);
+  const emailInput = document.getElementById('loginEmail');
+  let email = normalizeEmail(emailInput?.value);
+
+  if (!email) {
+    email = normalizeEmail(window.prompt('Enter the email address for your account:') || '');
+    if (emailInput && email) emailInput.value = email;
+  }
 
   if (!email) {
     showAuthMessage('Enter your email address first, then click reset password.', 'error');
+    if (emailInput) emailInput.focus();
     return;
   }
 
   try {
-    const data = await apiRequest('/api/auth/password-reset', {
+    const data = await apiRequest('/api/auth/password-reset-request', {
       method: 'POST',
       body: JSON.stringify({ email })
     });
@@ -5588,8 +5598,20 @@ async function initializeLiveStorefront() {
   updateCryptoWalletBox();
   updateAccountNav();
   initHeroVial();
+  const urlParams = new URLSearchParams(window.location.search);
+  const googleStatus = urlParams.get('google');
+  const googleMessage = urlParams.get('message');
+
   if (passwordResetToken) {
     showPage('account');
+  } else if (googleStatus) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showPage('account');
+    if (googleStatus === 'success') {
+      showMessage('accountMessage', 'Signed in with Google successfully.');
+    } else {
+      showMessage('accountMessage', googleMessage || 'Google sign-in failed. Check your Google OAuth settings.');
+    }
   } else {
     showPage('home');
   }

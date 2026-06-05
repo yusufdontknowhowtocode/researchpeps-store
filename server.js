@@ -28,6 +28,7 @@ const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'tru
 const MAIL_FROM = process.env.MAIL_FROM || SMTP_USER || '';
 const ORDER_NOTIFY_EMAIL = process.env.ORDER_NOTIFY_EMAIL || process.env.OWNER_EMAIL || '';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
+const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const PASSWORD_RESET_EXPIRES_MINUTES = Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES || 60);
 const DEFAULT_BTC_PAYMENT_ADDRESS = '3QaBoxDHEWnuGy5emvYawoFCM5E5yMEvap';
 const DEFAULT_SOL_PAYMENT_ADDRESS = '7NVysM4pSWVq4ZYKnnCwz3fnaA1BgkCex6tARvv7vqBT';
@@ -377,6 +378,45 @@ async function verifyGoogleCredential(credential) {
     email,
     name: String(profile.name || getNameFromEmail(email)).trim()
   };
+}
+
+
+function getGoogleRedirectUri() {
+  return `${PUBLIC_URL.replace(/\/$/, '')}/api/auth/google/callback`;
+}
+
+function getPublicRedirectPath(pathAndQuery) {
+  return `${PUBLIC_URL.replace(/\/$/, '')}${pathAndQuery}`;
+}
+
+async function signInGoogleProfile(req, profile) {
+  const timestamp = nowIso();
+  let row = db.prepare('SELECT * FROM users WHERE google_sub = ?').get(profile.googleSub);
+
+  if (!row) {
+    row = db.prepare('SELECT * FROM users WHERE email = ?').get(profile.email);
+
+    if (row) {
+      db.prepare("UPDATE users SET name = COALESCE(NULLIF(name, ''), ?), google_sub = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?")
+        .run(profile.name, profile.googleSub, timestamp, timestamp, row.id);
+      row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
+    } else {
+      const id = crypto.randomUUID();
+      const randomPasswordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
+      db.prepare(`
+        INSERT INTO users (id, name, email, password_hash, google_sub, email_verified, created_at, updated_at, last_login_at)
+        VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)
+      `).run(id, profile.name, profile.email, randomPasswordHash, profile.googleSub, timestamp, timestamp, timestamp);
+      row = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
+    }
+  } else {
+    db.prepare("UPDATE users SET name = COALESCE(NULLIF(name, ''), ?), email = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?")
+      .run(profile.name, profile.email, timestamp, timestamp, row.id);
+    row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
+  }
+
+  req.session.userId = row.id;
+  return publicUser(row);
 }
 
 async function sendPasswordResetEmail(user, token) {
@@ -968,13 +1008,15 @@ app.get('/api/products', (req, res) => {
 
 app.get('/api/auth/config', (req, res) => {
   res.json({
-    googleClientId: GOOGLE_CLIENT_ID || ''
+    googleClientId: GOOGLE_CLIENT_ID || '',
+    googleRedirectEnabled: Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET)
   });
 });
 
 app.get('/api/auth/google/config', (req, res) => {
   res.json({
-    googleClientId: GOOGLE_CLIENT_ID || ''
+    googleClientId: GOOGLE_CLIENT_ID || '',
+    googleRedirectEnabled: Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET)
   });
 });
 
@@ -1127,37 +1169,68 @@ app.post('/api/auth/login', authLimiter, async (req, res, next) => {
 });
 
 
+app.get('/api/auth/google/start', authLimiter, (req, res) => {
+  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
+    return res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent('Google Client ID or Client Secret is missing in Render environment variables.')));
+  }
+
+  const state = crypto.randomBytes(24).toString('hex');
+  req.session.googleOAuthState = state;
+
+  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
+  url.searchParams.set('client_id', GOOGLE_CLIENT_ID);
+  url.searchParams.set('redirect_uri', getGoogleRedirectUri());
+  url.searchParams.set('response_type', 'code');
+  url.searchParams.set('scope', 'openid email profile');
+  url.searchParams.set('state', state);
+  url.searchParams.set('prompt', 'select_account');
+
+  res.redirect(url.toString());
+});
+
+app.get('/api/auth/google/callback', authLimiter, async (req, res) => {
+  try {
+    const code = String(req.query.code || '').trim();
+    const state = String(req.query.state || '').trim();
+
+    if (!code || !state || state !== req.session.googleOAuthState) {
+      return res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent('Google sign-in session expired. Try again.')));
+    }
+
+    delete req.session.googleOAuthState;
+
+    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        client_id: GOOGLE_CLIENT_ID,
+        client_secret: GOOGLE_CLIENT_SECRET,
+        code,
+        grant_type: 'authorization_code',
+        redirect_uri: getGoogleRedirectUri()
+      })
+    });
+
+    const tokenPayload = await tokenResponse.json();
+    if (!tokenResponse.ok || !tokenPayload.id_token) {
+      console.error('Google token exchange failed:', tokenPayload);
+      return res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent('Google sign-in could not be completed.')));
+    }
+
+    const profile = await verifyGoogleCredential(tokenPayload.id_token);
+    await signInGoogleProfile(req, profile);
+    res.redirect(getPublicRedirectPath('/?google=success'));
+  } catch (error) {
+    console.error('Google redirect auth error:', error);
+    res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent(error.message || 'Google sign-in failed.')));
+  }
+});
+
 app.post('/api/auth/google', authLimiter, async (req, res, next) => {
   try {
     const profile = await verifyGoogleCredential(req.body.credential);
-    const timestamp = nowIso();
-
-    let row = db.prepare('SELECT * FROM users WHERE google_sub = ?').get(profile.googleSub);
-
-    if (!row) {
-      row = db.prepare('SELECT * FROM users WHERE email = ?').get(profile.email);
-
-      if (row) {
-        db.prepare('UPDATE users SET name = COALESCE(NULLIF(name, \'\'), ?), google_sub = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?')
-          .run(profile.name, profile.googleSub, timestamp, timestamp, row.id);
-        row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
-      } else {
-        const id = crypto.randomUUID();
-        const randomPasswordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
-        db.prepare(`
-          INSERT INTO users (id, name, email, password_hash, google_sub, email_verified, created_at, updated_at, last_login_at)
-          VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)
-        `).run(id, profile.name, profile.email, randomPasswordHash, profile.googleSub, timestamp, timestamp, timestamp);
-        row = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
-      }
-    } else {
-      db.prepare('UPDATE users SET name = COALESCE(NULLIF(name, \'\'), ?), email = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?')
-        .run(profile.name, profile.email, timestamp, timestamp, row.id);
-      row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
-    }
-
-    req.session.userId = row.id;
-    res.json({ account: publicUser(row), user: publicUser(row) });
+    const account = await signInGoogleProfile(req, profile);
+    res.json({ account, user: account });
   } catch (error) {
     next(error);
   }
