@@ -10,6 +10,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -1821,6 +1822,30 @@ body.age-locked .vial-rotor {
   color: #334155;
   font-weight: 850;
   cursor: pointer;
+}
+
+.auth-google-wrap {
+  width: 100%;
+  min-height: 50px;
+  display: grid;
+  place-items: center;
+}
+.auth-google-wrap > div {
+  width: 100% !important;
+}
+.auth-google-fallback {
+  width: 100%;
+  height: 50px;
+  border-radius: 12px;
+  border: 1px solid #d7dee9;
+  background: #fff;
+  color: #334155;
+  font-weight: 850;
+  cursor: pointer;
+}
+.auth-google-fallback:disabled {
+  cursor: wait;
+  opacity: .75;
 }
 .auth-divider {
   display: flex;
@@ -3804,8 +3829,8 @@ let selectedPurchaseTypes = {};
 let selectedVialQuantities = {};
 let cart = [];
 
-const KIT_PRICE_MULTIPLIER = 2;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 3.5;
+const KIT_PRICE_MULTIPLIER = 1.5;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 2.8;
 
 function parsePrice(priceText) {
   return Number(String(priceText).replace(/[^0-9.]/g, ""));
@@ -4661,6 +4686,39 @@ function renderAccountPage() {
   clearMessage('accountMessage');
 
   if (!account) {
+    if (passwordResetToken) {
+      container.innerHTML = `
+        <div class="auth-shell">
+          <div class="auth-wrap">
+            <div class="auth-head">
+              <p class="kicker">Password Reset</p>
+              <h2 class="auth-title">Reset Password</h2>
+              <p class="auth-subtitle">Enter a new password for your researchpeps account.</p>
+            </div>
+
+            <div class="auth-card">
+              <div class="auth-body">
+                <div id="authInlineMessage" class="auth-message-inline"></div>
+
+                <form onsubmit="event.preventDefault(); resetPasswordWithToken();">
+                  <div class="auth-field">
+                    <label for="resetPassword">New Password</label>
+                    <input class="auth-input" id="resetPassword" type="password" placeholder="New password" autocomplete="new-password">
+                  </div>
+                  <button class="auth-submit" type="submit">RESET PASSWORD →</button>
+                </form>
+
+                <div class="auth-links">
+                  <div>Remembered it? <button onclick="passwordResetToken=''; window.history.replaceState({}, document.title, window.location.pathname); renderAccountPage();">Back to sign in</button></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      return;
+    }
+
     const isLogin = authMode === 'login';
     container.innerHTML = `
       <div class="auth-shell">
@@ -4680,9 +4738,9 @@ function renderAccountPage() {
             <div class="auth-body">
               <div id="authInlineMessage" class="auth-message-inline"></div>
 
-              <button class="auth-google" type="button" onclick="showAuthMessage('Google sign-in is not connected yet. Use email and password for now.', 'error')">
-                Continue with Google
-              </button>
+              <div id="googleSignInWrap" class="auth-google-wrap">
+                <button class="auth-google-fallback" type="button" disabled>Loading Google...</button>
+              </div>
 
               <div class="auth-divider">or</div>
 
@@ -4699,7 +4757,7 @@ function renderAccountPage() {
                   <button class="auth-submit" type="submit">SIGN IN →</button>
                 </form>
                 <div class="auth-links">
-                  <div>Can't sign in? <button onclick="showAuthMessage('Password reset is not active yet. Email info@researchpeps.us for help.', 'error')">Reset your password</button></div>
+                  <div>Can't sign in? <button onclick="requestPasswordReset()">Reset your password</button></div>
                   <div>Don't have an account? <button onclick="setAuthMode('register')">Create one</button></div>
                 </div>
               ` : `
@@ -4729,6 +4787,7 @@ function renderAccountPage() {
         </div>
       </div>
     `;
+    setTimeout(renderGoogleButton, 0);
     return;
   }
 
@@ -5040,6 +5099,8 @@ let lastCompletedOrder = null;
 let lastCryptoPayment = null;
 let lastCryptoQuote = null;
 let currentCryptoQuote = null;
+let googleClientId = '';
+let passwordResetToken = new URLSearchParams(window.location.search).get('reset') || '';
 
 function isCryptoMethod(value) {
   return ['btc', 'sol', 'usdc'].includes(String(value || '').toLowerCase());
@@ -5206,6 +5267,127 @@ async function apiRequest(path, options) {
   }
   return payload;
 }
+
+async function loadAuthConfig() {
+  try {
+    const data = await apiRequest('/api/auth/config', { method: 'GET' });
+    googleClientId = data.googleClientId || '';
+  } catch (error) {
+    googleClientId = '';
+  }
+}
+
+function renderGoogleButton() {
+  const wrap = document.getElementById('googleSignInWrap');
+  if (!wrap) return;
+
+  if (!googleClientId) {
+    wrap.innerHTML = `
+      <button class="auth-google-fallback" type="button" onclick="showAuthMessage('Google Client ID is missing in Render environment variables.', 'error')">
+        Continue with Google
+      </button>
+    `;
+    return;
+  }
+
+  if (!window.google || !google.accounts || !google.accounts.id) {
+    wrap.innerHTML = `
+      <button class="auth-google-fallback" type="button" disabled>
+        Loading Google...
+      </button>
+    `;
+    setTimeout(renderGoogleButton, 300);
+    return;
+  }
+
+  wrap.innerHTML = '';
+
+  google.accounts.id.initialize({
+    client_id: googleClientId,
+    callback: handleGoogleCredential
+  });
+
+  google.accounts.id.renderButton(wrap, {
+    theme: 'outline',
+    size: 'large',
+    type: 'standard',
+    text: 'continue_with',
+    shape: 'rectangular',
+    width: Math.min(wrap.offsetWidth || 486, 486)
+  });
+}
+
+async function handleGoogleCredential(response) {
+  try {
+    if (!response || !response.credential) {
+      showAuthMessage('Google did not return a sign-in credential.', 'error');
+      return;
+    }
+
+    const data = await apiRequest('/api/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential: response.credential })
+    });
+
+    backendAccount = data.account || data.user || null;
+    updateAccountNav();
+    renderAccountPage();
+    showMessage('accountMessage', 'Signed in with Google successfully.');
+  } catch (error) {
+    showAuthMessage(error.message || 'Google sign-in failed.', 'error');
+  }
+}
+
+async function requestPasswordReset() {
+  const email = normalizeEmail(document.getElementById('loginEmail')?.value);
+
+  if (!email) {
+    showAuthMessage('Enter your email address first, then click reset password.', 'error');
+    return;
+  }
+
+  try {
+    const data = await apiRequest('/api/auth/password-reset', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+
+    showAuthMessage(data.message || 'If an account exists for that email, a reset link was sent.', 'success');
+  } catch (error) {
+    showAuthMessage(error.message || 'Password reset request failed.', 'error');
+  }
+}
+
+async function resetPasswordWithToken() {
+  const password = String(document.getElementById('resetPassword')?.value || '');
+
+  if (!passwordResetToken) {
+    showAuthMessage('Reset token is missing. Request a new password reset email.', 'error');
+    return;
+  }
+
+  if (password.length < 8) {
+    showAuthMessage('Password must be at least 8 characters.', 'error');
+    return;
+  }
+
+  try {
+    const data = await apiRequest('/api/auth/password-reset/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ token: passwordResetToken, password })
+    });
+
+    backendAccount = data.account || null;
+    passwordResetToken = '';
+    window.history.replaceState({}, document.title, window.location.pathname);
+    updateAccountNav();
+    renderAccountPage();
+    showMessage('accountMessage', 'Password reset successfully. You are signed in.');
+  } catch (error) {
+    showAuthMessage(error.message || 'Password reset failed.', 'error');
+  }
+}
+
 
 async function initBackendSession() {
   try {
@@ -5395,6 +5577,7 @@ async function placeOrder() {
 async function initializeLiveStorefront() {
   loadStorefrontState();
   await initBackendSession();
+  await loadAuthConfig();
   await loadPaymentOptions();
   await loadShippingRates();
   renderPeptideCatalog();
@@ -5405,7 +5588,11 @@ async function initializeLiveStorefront() {
   updateCryptoWalletBox();
   updateAccountNav();
   initHeroVial();
-  showPage('home');
+  if (passwordResetToken) {
+    showPage('account');
+  } else {
+    showPage('home');
+  }
 }
 
 window.addEventListener('load', initializeLiveStorefront);
