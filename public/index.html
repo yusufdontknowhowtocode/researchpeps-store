@@ -2215,6 +2215,7 @@ body.age-locked .vial-rotor {
     display: grid;
   }
   .order-status-box { grid-template-columns: 1fr; }
+  .admin-tracking-grid { grid-template-columns: 1fr; }
   .order-status-dot { display: none; }
 }
 
@@ -2255,6 +2256,7 @@ body.age-locked .vial-rotor {
       <button class="nav-link active-link" data-nav="home" onclick="showPage('home')">Home</button>
       <button class="nav-link" data-nav="peptides" onclick="showPage('peptides')">Peptides</button>
       <button class="nav-link" data-nav="faq" onclick="showHomeSection('faq')">FAQ</button>
+      <button class="nav-link" data-nav="shipping-payment" onclick="showPage('shipping-payment')">Shipping</button>
     </div>
 
     <div class="nav-actions">
@@ -2304,7 +2306,7 @@ body.age-locked .vial-rotor {
   <div class="cart-footer">
     <div class="cart-total-row"><span>Total</span><span id="cartDrawerTotal">$0.00</span></div>
     <button class="btn primary" onclick="startCheckout()">Checkout</button>
-    <p class="cart-help-text">Checkout places an order and saves it to your backend account history.</p>
+    <p class="cart-help-text">Checkout places an order and saves it to your backend account history. <button type="button" style="border:0;background:transparent;color:#93c5fd;font-weight:800;cursor:pointer;" onclick="showPage('shipping-payment'); closeOverlays();">Shipping &amp; Payment</button></p>
   </div>
 </aside>
 
@@ -2427,7 +2429,7 @@ body.age-locked .vial-rotor {
         <h1>Peptides</h1>
         <p class="lead"></p>
       </div>
-      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 39% compared with buying the same vials one at a time.</div>
+      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 56% compared with buying the same vials one at a time.</div>
       <div id="peptideCatalogGrid" class="grid"></div>
     </div>
   </section>
@@ -2614,6 +2616,36 @@ body.age-locked .vial-rotor {
           <button class="btn" onclick="showPage('home')">Back to Home</button>
           <button class="btn" onclick="showPage('peptides')">Continue Shopping</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="shipping-payment" class="page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="showPage('home')">← Home</button>
+        <p class="kicker">Orders</p>
+        <h1>Shipping &amp; Payment</h1>
+        <p class="lead">ResearchPeps ships from Pennsylvania and updates order status from your account page as payment is verified and tracking becomes available.</p>
+      </div>
+
+      <div class="legal-page-card shipping-payment-card">
+        <h2>Shipping timeline</h2>
+        <p>Orders ship from <strong>United States, Pennsylvania</strong>. After an order is placed and payment is verified, please allow normal processing time before shipment is prepared.</p>
+        <p>Estimated delivery time is typically <strong>1 to 2 business weeks</strong> after shipment, depending on destination, carrier movement, holidays, weather, and other delays outside our control.</p>
+
+        <h2>Tracking numbers</h2>
+        <p>Once your order ships, the tracking number will be added to your order history. Sign in to your account and open <strong>My Account</strong> to check the latest status and tracking information.</p>
+
+        <h2>Payment options</h2>
+        <p>Credit card checkout will redirect to the payment processor when card payments are configured. Crypto orders are saved as awaiting payment until payment is manually verified.</p>
+        <p>For BTC, SOL, or USDC, send payment to the wallet shown at checkout. Type your order number in the payment note, memo, or reference field if your wallet allows it. If not, send the transaction hash with your order number to <strong>orders@researchpeps.us</strong>.</p>
+
+        <h2>Crypto verification</h2>
+        <p>After payment is received, the admin dashboard updates your customer-facing order status. Statuses may include awaiting payment, payment received, processing, packed, shipped, completed, or cancelled.</p>
+
+        <h2>Research-use confirmation</h2>
+        <p>All orders require confirmation that products are requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</p>
       </div>
     </div>
   </section>
@@ -2819,6 +2851,7 @@ After review, eligible damaged-shipment claims may be approved for replacement o
       <button onclick="showPage('peptides')">Peptides</button>
       <button onclick="showHomeSection('faq')">FAQ</button>
       <button onclick="showHomeSection('featured-peptides')">Featured Peptides</button>
+      <button onclick="showPage('shipping-payment')">Shipping &amp; Payment</button>
       <button onclick="toggleSearch()">Search</button>
     </div>
 
@@ -4208,7 +4241,7 @@ function getStartingPrice(product) {
 }
 
 function getSingleVialSavingsPercent() {
-  return Math.round((1 - (KIT_PRICE_MULTIPLIER / SINGLE_VIAL_PRICE_MULTIPLIER)) * 100);
+  return 56;
 }
 
 function getSingleVialDisplay(option) {
@@ -4236,6 +4269,7 @@ function setActiveNav(id) {
   let navId = 'home';
   if (id === 'peptides' || id === 'product-detail') navId = 'peptides';
   if (id === 'faq') navId = 'faq';
+  if (id === 'shipping-payment') navId = 'shipping-payment';
 
   const activeButton = document.querySelector('[data-nav="' + navId + '"]');
   if (activeButton) activeButton.classList.add('active-link');
@@ -5144,7 +5178,7 @@ function getOrderStatusMessage(order) {
     return 'Payment has been verified. Your order is now being prepared.';
   }
   if (lower.includes('ship')) {
-    return 'Your order has shipped. Tracking or delivery details will be shared when available.';
+    return order.trackingNumber ? 'Your order has shipped. Tracking details are shown below.' : 'Your order has shipped. Tracking will be added here when available.';
   }
   if (lower.includes('complete')) {
     return 'This order has been completed.';
@@ -5170,6 +5204,15 @@ function renderOrderCard(order) {
       </div>
     `;
   }).join('');
+  const trackingNumber = String(order.trackingNumber || '').trim();
+  const trackingCarrier = String(order.trackingCarrier || '').trim();
+  const trackingBlock = trackingNumber ? `
+      <div class="tracking-box">
+        <strong>Tracking${trackingCarrier ? ' — ' + escapeHtml(trackingCarrier) : ''}</strong>
+        <code>${escapeHtml(trackingNumber)}</code>
+        <small>Use this tracking number on the carrier website for delivery updates.</small>
+      </div>
+  ` : '';
 
   return `
     <article class="order-card">
@@ -5190,6 +5233,7 @@ function renderOrderCard(order) {
         </div>
       </div>
 
+      ${trackingBlock}
       <div class="order-items">${items}</div>
     </article>
   `;
@@ -5201,7 +5245,7 @@ function renderAdminDashboardShell() {
       <div>
         <p class="kicker account-panel-kicker">Admin</p>
         <h2>Order dashboard</h2>
-        <p class="lead">Search by order number, customer email, customer name, payment method, or status. Use this to verify crypto orders and update the customer-facing order status.</p>
+        <p class="lead">Search by order number, customer email, customer name, payment method, status, or tracking number. Use this to verify crypto orders, update status, and add tracking details customers can see.</p>
       </div>
 
       <div class="admin-toolbar">
@@ -5229,6 +5273,7 @@ function getAdminStatusOptions(currentStatus) {
     'Paid - Processing',
     'Packed',
     'Shipped',
+    'Shipped - Tracking Added',
     'Completed',
     'Cancelled',
     'Refunded'
@@ -5254,7 +5299,10 @@ function renderAdminOrderResults() {
     const statusOptions = getAdminStatusOptions(order.status).map(function(status) {
       return `<option value="${escapeForAttribute(status)}" ${status === order.status ? 'selected' : ''}>${escapeHtml(status)}</option>`;
     }).join('');
-    const selectId = 'adminStatus' + String(order.id).replace(/[^a-zA-Z0-9]/g, '');
+    const safeId = String(order.id).replace(/[^a-zA-Z0-9]/g, '');
+    const selectId = 'adminStatus' + safeId;
+    const trackingId = 'adminTracking' + safeId;
+    const carrierId = 'adminCarrier' + safeId;
 
     return `
       <article class="admin-order-card">
@@ -5266,17 +5314,29 @@ function renderAdminOrderResults() {
               <span><strong>Customer:</strong> ${escapeHtml(customer.name || '—')} • ${escapeHtml(customer.email || '—')}</span>
               <span><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel || order.paymentMethod || '—')} • <strong>Total:</strong> ${escapeHtml(formatMoney(order.total || 0))}</span>
               <span><strong>Shipping:</strong> ${escapeHtml(shipping.city || '')}${shipping.city ? ', ' : ''}${escapeHtml(shipping.state || '')} ${escapeHtml(shipping.zip || '')} ${escapeHtml(shipping.country || '')}</span>
+              <span><strong>Tracking:</strong> ${escapeHtml(order.trackingCarrier || '—')} ${escapeHtml(order.trackingNumber || '')}</span>
               <span><strong>Placed:</strong> ${escapeHtml(date)}</span>
             </div>
           </div>
           <button class="btn" onclick="copyOrderNumber('${escapeForAttribute(order.id)}')">Copy Order #</button>
         </div>
 
+        <div class="admin-tracking-grid">
+          <label>
+            Carrier
+            <input id="${carrierId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingCarrier || '')}" placeholder="USPS, UPS, FedEx, etc.">
+          </label>
+          <label>
+            Tracking number
+            <input id="${trackingId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingNumber || '')}" placeholder="Paste tracking number">
+          </label>
+        </div>
+
         <div class="admin-order-actions">
           <select id="${selectId}" class="admin-status-select">
             ${statusOptions}
           </select>
-          <button class="btn primary" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}')">Update Status</button>
+          <button class="btn primary" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}', '${trackingId}', '${carrierId}')">Update Order</button>
         </div>
       </article>
     `;
@@ -5302,9 +5362,11 @@ async function loadAdminOrders() {
   }
 }
 
-async function updateAdminOrderStatus(orderId, selectId) {
+async function updateAdminOrderStatus(orderId, selectId, trackingId, carrierId) {
   const select = document.getElementById(selectId);
   const status = String(select?.value || '').trim();
+  const trackingNumber = String(document.getElementById(trackingId)?.value || '').trim();
+  const trackingCarrier = String(document.getElementById(carrierId)?.value || '').trim();
   const message = document.getElementById('adminDashboardMessage');
 
   if (!status) return;
@@ -5313,7 +5375,7 @@ async function updateAdminOrderStatus(orderId, selectId) {
   try {
     const data = await apiRequest('/api/admin/orders/' + encodeURIComponent(orderId) + '/status', {
       method: 'PATCH',
-      body: JSON.stringify({ status })
+      body: JSON.stringify({ status, trackingNumber, trackingCarrier })
     });
 
     adminOrders = adminOrders.map(function(order) {
@@ -5321,7 +5383,7 @@ async function updateAdminOrderStatus(orderId, selectId) {
     });
     renderAdminOrderResults();
     await initBackendSession();
-    if (message) message.textContent = 'Updated ' + orderId + ' to: ' + status;
+    if (message) message.textContent = 'Updated ' + orderId + ' to: ' + status + (trackingNumber ? ' with tracking.' : '.');
   } catch (error) {
     if (message) message.textContent = error.message || 'Could not update order.';
   }

@@ -207,6 +207,8 @@ CREATE TABLE IF NOT EXISTS orders (
   notes TEXT,
   research_use_accepted INTEGER NOT NULL DEFAULT 0,
   stripe_session_id TEXT,
+  tracking_number TEXT,
+  tracking_carrier TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   FOREIGN KEY(user_id) REFERENCES users(id)
@@ -251,6 +253,8 @@ function ensureOrderColumn(name, definition) {
 ensureOrderColumn('subtotal_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('tax_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('shipping_cents', 'INTEGER NOT NULL DEFAULT 0');
+ensureOrderColumn('tracking_number', 'TEXT');
+ensureOrderColumn('tracking_carrier', 'TEXT');
 
 function ensureUserColumn(name, definition) {
   const columns = db.prepare('PRAGMA table_info(users)').all().map((column) => column.name);
@@ -734,6 +738,8 @@ function publicOrder(row) {
     notes: row.notes || '',
     researchUseAccepted: !!row.research_use_accepted,
     stripeSessionId: row.stripe_session_id || null,
+    trackingNumber: row.tracking_number || '',
+    trackingCarrier: row.tracking_carrier || '',
     items
   };
 }
@@ -1401,9 +1407,11 @@ app.get('/api/admin/orders', requireAdmin, (req, res) => {
         OR lower(customer_json) LIKE ?
         OR lower(shipping_json) LIKE ?
         OR lower(notes) LIKE ?
+        OR lower(COALESCE(tracking_number, '')) LIKE ?
+        OR lower(COALESCE(tracking_carrier, '')) LIKE ?
       ORDER BY created_at DESC
       LIMIT 500
-    `).all(like, like, like, like, like, like, like);
+    `).all(like, like, like, like, like, like, like, like, like);
   } else {
     rows = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 500').all();
   }
@@ -1413,12 +1421,20 @@ app.get('/api/admin/orders', requireAdmin, (req, res) => {
 
 app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {
   const status = String(req.body.status || '').trim();
+  const trackingNumber = String(req.body.trackingNumber || '').trim().slice(0, 120);
+  const trackingCarrier = String(req.body.trackingCarrier || '').trim().slice(0, 80);
+
   if (!status) return res.status(400).json({ error: 'Status is required.' });
 
   const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Order not found.' });
 
-  db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?').run(status, nowIso(), req.params.id);
+  db.prepare(`
+    UPDATE orders
+    SET status = ?, tracking_number = ?, tracking_carrier = ?, updated_at = ?
+    WHERE id = ?
+  `).run(status, trackingNumber, trackingCarrier, nowIso(), req.params.id);
+
   res.json({ order: publicOrder(db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id)) });
 });
 
