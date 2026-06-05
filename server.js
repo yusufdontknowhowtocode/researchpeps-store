@@ -695,6 +695,7 @@ function publicUser(row) {
     id: row.id,
     name: row.name,
     email: row.email,
+    isAdmin: ADMIN_EMAILS.includes(String(row.email || '').toLowerCase()),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     orders
@@ -1385,7 +1386,28 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
 });
 
 app.get('/api/admin/orders', requireAdmin, (req, res) => {
-  const rows = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 500').all();
+  const q = String(req.query.q || '').trim().toLowerCase();
+  let rows;
+
+  if (q) {
+    const like = `%${q}%`;
+    rows = db.prepare(`
+      SELECT *
+      FROM orders
+      WHERE lower(id) LIKE ?
+        OR lower(status) LIKE ?
+        OR lower(payment_method) LIKE ?
+        OR lower(payment_method_label) LIKE ?
+        OR lower(customer_json) LIKE ?
+        OR lower(shipping_json) LIKE ?
+        OR lower(notes) LIKE ?
+      ORDER BY created_at DESC
+      LIMIT 500
+    `).all(like, like, like, like, like, like, like);
+  } else {
+    rows = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 500').all();
+  }
+
   res.json({ orders: rows.map(publicOrder) });
 });
 

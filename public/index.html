@@ -2095,6 +2095,129 @@ body.age-locked .vial-rotor {
   }
 }
 
+
+/* Order status and admin dashboard additions */
+.order-status-box {
+  margin: 18px 0 20px;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 20px;
+  background: rgba(255,255,255,.045);
+  padding: 16px;
+}
+.order-status-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: #78b5ff;
+  box-shadow: 0 0 0 6px rgba(120,181,255,.12);
+  margin-top: 7px;
+}
+.order-status-title {
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 900;
+  letter-spacing: 0;
+  margin-bottom: 4px;
+}
+.order-status-text {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.65;
+}
+.order-card-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+.admin-dashboard {
+  margin-top: 36px;
+}
+.admin-dashboard h2,
+.admin-order-card h3 {
+  font-family: var(--font-body);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-top: 18px;
+}
+.admin-search-input,
+.admin-status-select {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 16px;
+  background: rgba(255,255,255,.075);
+  color: #f8fafc;
+  padding: 12px 14px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+.admin-status-select option {
+  background: #07152f;
+  color: #fff;
+}
+.admin-results {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+.admin-order-card {
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 24px;
+  background: rgba(255,255,255,.045);
+  padding: 20px;
+}
+.admin-order-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+.admin-order-meta {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+.admin-order-actions {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+}
+.admin-empty {
+  color: var(--muted);
+  line-height: 1.7;
+  padding: 8px 0;
+}
+@media (max-width: 820px) {
+  .order-card-topline,
+  .admin-order-head,
+  .admin-toolbar,
+  .admin-order-actions {
+    grid-template-columns: 1fr;
+    display: grid;
+  }
+  .order-status-box { grid-template-columns: 1fr; }
+  .order-status-dot { display: none; }
+}
+
 /* Account page duplicate top header removed */
 .account-section-clean {
   padding-top: 44px;
@@ -4542,10 +4665,35 @@ function initHeroVial() {
 }
 
 
-function confirmAgeGate() {
+function hideAgeGate() {
   const gate = document.getElementById('ageGate');
   if (gate) gate.classList.add('hidden');
   document.body.classList.remove('age-locked');
+}
+
+function rememberAgeVerification() {
+  try {
+    localStorage.setItem(AGE_GATE_STORAGE_KEY, new Date().toISOString());
+  } catch (error) {}
+}
+
+function hasRememberedAgeVerification() {
+  try {
+    return !!localStorage.getItem(AGE_GATE_STORAGE_KEY);
+  } catch (error) {
+    return false;
+  }
+}
+
+function applyAgeGateState() {
+  if (hasRememberedAgeVerification() || backendAccount) {
+    hideAgeGate();
+  }
+}
+
+function confirmAgeGate() {
+  rememberAgeVerification();
+  hideAgeGate();
 }
 
 function denyAgeGate() {
@@ -4571,6 +4719,7 @@ function leaveAgeGate() {
 const CART_STORAGE_KEY = 'researchpeps_cart_v2';
 const ACCOUNTS_STORAGE_KEY = 'researchpeps_accounts_v1';
 const SESSION_STORAGE_KEY = 'researchpeps_current_user_v1';
+const AGE_GATE_STORAGE_KEY = 'researchpeps_age_verified_v1';
 
 function loadJsonStorage(key, fallback) {
   try {
@@ -4975,11 +5124,41 @@ function renderAccountPage() {
     <div class="order-history-list">
       ${orders.length ? orders.map(renderOrderCard).join('') : ''}
     </div>
+
+    ${account.isAdmin ? renderAdminDashboardShell() : ''}
   `;
+
+  if (account.isAdmin) {
+    setTimeout(loadAdminOrders, 0);
+  }
+}
+
+function getOrderStatusMessage(order) {
+  const status = String(order.status || 'Order Submitted');
+  const lower = status.toLowerCase();
+
+  if (lower.includes('awaiting') && lower.includes('payment')) {
+    return 'Waiting for payment confirmation. Once payment is verified, the order status will update here.';
+  }
+  if (lower.includes('payment received') || lower.includes('paid') || lower.includes('processing')) {
+    return 'Payment has been verified. Your order is now being prepared.';
+  }
+  if (lower.includes('ship')) {
+    return 'Your order has shipped. Tracking or delivery details will be shared when available.';
+  }
+  if (lower.includes('complete')) {
+    return 'This order has been completed.';
+  }
+  if (lower.includes('cancel')) {
+    return 'This order was cancelled. Contact support if you have questions.';
+  }
+  return 'Your order was received and is waiting for the next update.';
 }
 
 function renderOrderCard(order) {
   const date = new Date(order.createdAt).toLocaleString();
+  const updated = order.updatedAt ? new Date(order.updatedAt).toLocaleString() : date;
+  const statusText = order.status || 'Order Submitted';
   const items = (order.items || []).map(function(item) {
     return `
       <div class="order-item">
@@ -4994,17 +5173,166 @@ function renderOrderCard(order) {
 
   return `
     <article class="order-card">
-      <div class="account-dashboard-head" style="margin-bottom: 14px;">
+      <div class="order-card-topline">
         <div>
-          <span class="order-status">${escapeHtml(order.status || 'Order Submitted')}</span>
+          <span class="order-status">${escapeHtml(statusText)}</span>
           <h3 class="order-id">${escapeHtml(order.id)}</h3>
-          <p class="order-meta">${escapeHtml(date)} • ${escapeHtml(order.paymentMethodLabel || 'Invoice / payment link')}</p>
+          <p class="order-meta">Placed ${escapeHtml(date)} • ${escapeHtml(order.paymentMethodLabel || 'Invoice / payment link')}</p>
         </div>
         <div class="summary-total" style="border-top: none; margin: 0; padding: 0;"><span>Total</span><span>${escapeHtml(formatMoney(order.total || 0))}</span></div>
       </div>
+
+      <div class="order-status-box">
+        <span class="order-status-dot"></span>
+        <div>
+          <div class="order-status-title">Order status: ${escapeHtml(statusText)}</div>
+          <div class="order-status-text">${escapeHtml(getOrderStatusMessage(order))}<br>Last updated: ${escapeHtml(updated)}</div>
+        </div>
+      </div>
+
       <div class="order-items">${items}</div>
     </article>
   `;
+}
+
+function renderAdminDashboardShell() {
+  return `
+    <div class="account-panel admin-dashboard">
+      <div>
+        <p class="kicker account-panel-kicker">Admin</p>
+        <h2>Order dashboard</h2>
+        <p class="lead">Search by order number, customer email, customer name, payment method, or status. Use this to verify crypto orders and update the customer-facing order status.</p>
+      </div>
+
+      <div class="admin-toolbar">
+        <input id="adminOrderSearch" class="admin-search-input" placeholder="Search order number, email, name, payment, or status" onkeydown="if(event.key === 'Enter') loadAdminOrders()">
+        <button class="btn primary" onclick="loadAdminOrders()">Search Orders</button>
+      </div>
+
+      <div id="adminDashboardMessage" class="auth-note"></div>
+      <div id="adminOrdersResults" class="admin-results">
+        <div class="admin-empty">Loading admin orders...</div>
+      </div>
+    </div>
+  `;
+}
+
+let adminOrders = [];
+
+function getAdminStatusOptions(currentStatus) {
+  const statuses = [
+    'Order Submitted',
+    'Awaiting Bitcoin (BTC) Payment',
+    'Awaiting Solana (SOL) Payment',
+    'Awaiting USDC (Solana) Payment',
+    'Payment Received - Processing',
+    'Paid - Processing',
+    'Packed',
+    'Shipped',
+    'Completed',
+    'Cancelled',
+    'Refunded'
+  ];
+  const cleanCurrent = String(currentStatus || 'Order Submitted');
+  if (!statuses.includes(cleanCurrent)) statuses.unshift(cleanCurrent);
+  return statuses;
+}
+
+function renderAdminOrderResults() {
+  const results = document.getElementById('adminOrdersResults');
+  if (!results) return;
+
+  if (!adminOrders.length) {
+    results.innerHTML = '<div class="admin-empty">No orders found.</div>';
+    return;
+  }
+
+  results.innerHTML = adminOrders.map(function(order) {
+    const date = order.createdAt ? new Date(order.createdAt).toLocaleString() : '';
+    const customer = order.customer || {};
+    const shipping = order.shipping || {};
+    const statusOptions = getAdminStatusOptions(order.status).map(function(status) {
+      return `<option value="${escapeForAttribute(status)}" ${status === order.status ? 'selected' : ''}>${escapeHtml(status)}</option>`;
+    }).join('');
+    const selectId = 'adminStatus' + String(order.id).replace(/[^a-zA-Z0-9]/g, '');
+
+    return `
+      <article class="admin-order-card">
+        <div class="admin-order-head">
+          <div>
+            <span class="order-status">${escapeHtml(order.status || 'Order Submitted')}</span>
+            <h3 class="order-id">${escapeHtml(order.id)}</h3>
+            <div class="admin-order-meta">
+              <span><strong>Customer:</strong> ${escapeHtml(customer.name || '—')} • ${escapeHtml(customer.email || '—')}</span>
+              <span><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel || order.paymentMethod || '—')} • <strong>Total:</strong> ${escapeHtml(formatMoney(order.total || 0))}</span>
+              <span><strong>Shipping:</strong> ${escapeHtml(shipping.city || '')}${shipping.city ? ', ' : ''}${escapeHtml(shipping.state || '')} ${escapeHtml(shipping.zip || '')} ${escapeHtml(shipping.country || '')}</span>
+              <span><strong>Placed:</strong> ${escapeHtml(date)}</span>
+            </div>
+          </div>
+          <button class="btn" onclick="copyOrderNumber('${escapeForAttribute(order.id)}')">Copy Order #</button>
+        </div>
+
+        <div class="admin-order-actions">
+          <select id="${selectId}" class="admin-status-select">
+            ${statusOptions}
+          </select>
+          <button class="btn primary" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}')">Update Status</button>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+async function loadAdminOrders() {
+  const message = document.getElementById('adminDashboardMessage');
+  const results = document.getElementById('adminOrdersResults');
+  const q = String(document.getElementById('adminOrderSearch')?.value || '').trim();
+
+  if (results) results.innerHTML = '<div class="admin-empty">Loading orders...</div>';
+  if (message) message.textContent = '';
+
+  try {
+    const data = await apiRequest('/api/admin/orders?q=' + encodeURIComponent(q), { method: 'GET' });
+    adminOrders = data.orders || [];
+    renderAdminOrderResults();
+  } catch (error) {
+    adminOrders = [];
+    if (results) results.innerHTML = '<div class="admin-empty">Admin orders could not be loaded.</div>';
+    if (message) message.textContent = error.message || 'Admin orders could not be loaded.';
+  }
+}
+
+async function updateAdminOrderStatus(orderId, selectId) {
+  const select = document.getElementById(selectId);
+  const status = String(select?.value || '').trim();
+  const message = document.getElementById('adminDashboardMessage');
+
+  if (!status) return;
+  if (message) message.textContent = 'Updating ' + orderId + '...';
+
+  try {
+    const data = await apiRequest('/api/admin/orders/' + encodeURIComponent(orderId) + '/status', {
+      method: 'PATCH',
+      body: JSON.stringify({ status })
+    });
+
+    adminOrders = adminOrders.map(function(order) {
+      return order.id === orderId ? data.order : order;
+    });
+    renderAdminOrderResults();
+    await initBackendSession();
+    if (message) message.textContent = 'Updated ' + orderId + ' to: ' + status;
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Could not update order.';
+  }
+}
+
+async function copyOrderNumber(orderId) {
+  try {
+    await navigator.clipboard.writeText(orderId);
+    const message = document.getElementById('adminDashboardMessage');
+    if (message) message.textContent = 'Copied order number ' + orderId;
+  } catch (error) {}
 }
 
 function addProductToCart(productName) {
@@ -5469,6 +5797,10 @@ async function handleGoogleCredential(response) {
     });
 
     backendAccount = data.account || data.user || null;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
     updateAccountNav();
     renderAccountPage();
     showMessage('accountMessage', 'Signed in with Google successfully.');
@@ -5524,6 +5856,10 @@ async function resetPasswordWithToken() {
     });
 
     backendAccount = data.account || null;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
     passwordResetToken = '';
     window.history.replaceState({}, document.title, window.location.pathname);
     updateAccountNav();
@@ -5539,6 +5875,7 @@ async function initBackendSession() {
   try {
     const data = await apiRequest('/api/session', { method: 'GET' });
     backendAccount = data.account || null;
+    if (backendAccount) rememberAgeVerification();
   } catch (error) {
     backendAccount = null;
   }
@@ -5575,6 +5912,10 @@ async function createAccount() {
       body: JSON.stringify({ name, email, password })
     });
     backendAccount = data.account;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
     updateAccountNav();
     renderAccountPage();
     showAuthMessage('Account created. You can now checkout and view past orders here.', 'success');
@@ -5594,6 +5935,10 @@ async function loginAccount() {
       body: JSON.stringify({ email, password })
     });
     backendAccount = data.account;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
     updateAccountNav();
     renderAccountPage();
     showAuthMessage('Signed in successfully.', 'success');
@@ -5722,7 +6067,12 @@ async function placeOrder() {
 
 async function initializeLiveStorefront() {
   loadStorefrontState();
+  applyAgeGateState();
   await initBackendSession();
+  if (backendAccount) {
+    rememberAgeVerification();
+    applyAgeGateState();
+  }
   await loadAuthConfig();
   await loadPaymentOptions();
   await loadShippingRates();
