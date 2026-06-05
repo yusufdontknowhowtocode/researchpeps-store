@@ -2095,6 +2095,14 @@ body.age-locked .vial-rotor {
   }
 }
 
+/* Account page duplicate top header removed */
+.account-section-clean {
+  padding-top: 44px;
+}
+@media (max-width: 820px) {
+  .account-section-clean { padding-top: 28px; }
+}
+
 </style>
 </head>
 <body class="age-locked">
@@ -2335,14 +2343,7 @@ body.age-locked .vial-rotor {
 
 
   <section id="account" class="page">
-    <div class="container section">
-      <div class="page-head">
-        <button class="btn back" onclick="showPage('home')">← Home</button>
-        <p id="accountPageKicker" class="kicker">Customer account</p>
-        <h1 id="accountPageTitle">Login &amp; Orders</h1>
-        <p id="accountPageLead" class="lead">Customers can create an account, sign in, and view past orders from checkout.</p>
-      </div>
-
+    <div class="container section account-section-clean">
       <div id="accountMessage" class="account-message"></div>
       <div id="accountContent"></div>
     </div>
