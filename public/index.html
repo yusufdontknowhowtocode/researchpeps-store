@@ -950,6 +950,68 @@ h1 {
 .legal-section p + p { margin-top: 12px; }
 
 
+/* Shipping & Payment page spacing */
+#shipping-payment .page-head {
+  padding-top: 74px;
+  padding-bottom: 46px;
+  margin-bottom: 38px;
+}
+
+#shipping-payment .page-head h1 {
+  display: block;
+  max-width: 980px;
+  margin: 0 0 58px;
+  line-height: .96;
+  letter-spacing: -0.045em;
+}
+
+#shipping-payment .page-head .lead {
+  display: block;
+  max-width: 1040px;
+  margin-top: 0;
+  font-size: clamp(18px, 1.85vw, 25px);
+  line-height: 1.95;
+  letter-spacing: -0.01em;
+}
+
+.shipping-payment-card {
+  display: grid;
+  gap: 18px;
+  padding: 42px;
+}
+
+.shipping-payment-card h2 {
+  margin: 22px 0 2px;
+  font-family: var(--font-body);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.shipping-payment-card h2:first-child {
+  margin-top: 0;
+}
+
+.shipping-payment-card p {
+  max-width: 980px;
+  line-height: 1.9;
+  font-size: 16.5px;
+}
+
+@media (max-width: 820px) {
+  #shipping-payment .page-head {
+    padding-top: 46px;
+  }
+
+  #shipping-payment .page-head h1 {
+    margin-bottom: 34px;
+  }
+
+  .shipping-payment-card {
+    padding: 28px 22px;
+  }
+}
+
+
 .site-footer {
   border-top: 1px solid rgba(15, 23, 42, .14);
   background: #f4f5f8;
@@ -2206,11 +2268,26 @@ body.age-locked .vial-rotor {
   line-height: 1.7;
   padding: 8px 0;
 }
+
+.admin-email-test {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+.admin-email-test-note {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
 @media (max-width: 820px) {
   .order-card-topline,
   .admin-order-head,
   .admin-toolbar,
-  .admin-order-actions {
+  .admin-order-actions,
+  .admin-email-test {
     grid-template-columns: 1fr;
     display: grid;
   }
@@ -2620,13 +2697,13 @@ body.age-locked .vial-rotor {
     </div>
   </section>
 
-  <section id="shipping-payment" class="page">
+  <section id="shipping-payment" class="page shipping-payment-page">
     <div class="container section">
       <div class="page-head">
         <button class="btn back" onclick="showPage('home')">← Home</button>
         <p class="kicker">Orders</p>
         <h1>Shipping &amp; Payment</h1>
-        <p class="lead">ResearchPeps ships from Pennsylvania and updates order status from your account page as payment is verified and tracking becomes available.</p>
+        <p class="lead">ResearchPeps ships from Pennsylvania. Order status updates appear in your account after payment is verified. Tracking becomes available once the order has shipped.</p>
       </div>
 
       <div class="legal-page-card shipping-payment-card">
@@ -4985,9 +5062,17 @@ function logoutAccount() {
 }
 
 let authMode = 'login';
+let passwordResetRequestMode = false;
 
 function setAuthMode(mode) {
+  passwordResetRequestMode = false;
   authMode = mode === 'register' ? 'register' : 'login';
+  renderAccountPage();
+}
+
+function startPasswordResetRequest() {
+  passwordResetRequestMode = true;
+  authMode = 'login';
   renderAccountPage();
 }
 
@@ -5061,6 +5146,45 @@ function renderAccountPage() {
       return;
     }
 
+    if (passwordResetRequestMode) {
+      container.innerHTML = `
+        <div class="auth-shell">
+          <div class="auth-wrap">
+            <div class="auth-head">
+              <p class="kicker">Password Help</p>
+              <h2 class="auth-title">Reset Password</h2>
+              <p class="auth-subtitle">Enter the email address on your account and we will send a reset link.</p>
+            </div>
+
+            <div class="auth-card">
+              <div class="auth-body">
+                <div id="authInlineMessage" class="auth-message-inline"></div>
+
+                <form onsubmit="event.preventDefault(); requestPasswordReset();">
+                  <div class="auth-field">
+                    <label for="resetEmail">Email Address</label>
+                    <input class="auth-input" id="resetEmail" type="email" placeholder="you@example.com" autocomplete="email">
+                  </div>
+                  <button class="auth-submit" type="submit">SEND RESET LINK →</button>
+                </form>
+
+                <div class="auth-links">
+                  <div>Remembered it? <button onclick="setAuthMode('login')">Back to sign in</button></div>
+                </div>
+
+                <p class="auth-small-note">The reset email comes from the site email system. Check your inbox and spam folder after sending.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      setTimeout(function() {
+        const resetEmail = document.getElementById('resetEmail');
+        if (resetEmail) resetEmail.focus();
+      }, 0);
+      return;
+    }
+
     const isLogin = authMode === 'login';
     container.innerHTML = `
       <div class="auth-shell">
@@ -5099,7 +5223,7 @@ function renderAccountPage() {
                   <button class="auth-submit" type="submit">SIGN IN →</button>
                 </form>
                 <div class="auth-links">
-                  <div>Can't sign in? <button onclick="requestPasswordReset()">Reset your password</button></div>
+                  <div>Can't sign in? <button onclick="startPasswordResetRequest()">Reset your password</button></div>
                   <div>Don't have an account? <button onclick="setAuthMode('register')">Create one</button></div>
                 </div>
               ` : `
@@ -5253,6 +5377,12 @@ function renderAdminDashboardShell() {
         <button class="btn primary" onclick="loadAdminOrders()">Search Orders</button>
       </div>
 
+      <div class="admin-email-test">
+        <input id="adminTestEmail" class="admin-search-input" placeholder="Send test email to address">
+        <button class="btn" onclick="sendAdminTestEmail()">Test Email</button>
+      </div>
+      <p class="admin-email-test-note">Use this if password reset emails are not arriving. It checks the same SMTP settings used by password reset.</p>
+
       <div id="adminDashboardMessage" class="auth-note"></div>
       <div id="adminOrdersResults" class="admin-results">
         <div class="admin-empty">Loading admin orders...</div>
@@ -5359,6 +5489,29 @@ async function loadAdminOrders() {
     adminOrders = [];
     if (results) results.innerHTML = '<div class="admin-empty">Admin orders could not be loaded.</div>';
     if (message) message.textContent = error.message || 'Admin orders could not be loaded.';
+  }
+}
+
+
+async function sendAdminTestEmail() {
+  const message = document.getElementById('adminDashboardMessage');
+  const email = normalizeEmail(document.getElementById('adminTestEmail')?.value || backendAccount?.email || '');
+
+  if (!email) {
+    if (message) message.textContent = 'Enter an email address to test.';
+    return;
+  }
+
+  if (message) message.textContent = 'Sending test email to ' + email + '...';
+
+  try {
+    const data = await apiRequest('/api/admin/test-email', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+    if (message) message.textContent = data.message || 'Test email sent. Check inbox and spam.';
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Test email failed. Check Render SMTP environment variables and logs.';
   }
 }
 
@@ -5872,16 +6025,11 @@ async function handleGoogleCredential(response) {
 }
 
 async function requestPasswordReset() {
-  const emailInput = document.getElementById('loginEmail');
-  let email = normalizeEmail(emailInput?.value);
+  const emailInput = document.getElementById('resetEmail') || document.getElementById('loginEmail');
+  const email = normalizeEmail(emailInput?.value);
 
   if (!email) {
-    email = normalizeEmail(window.prompt('Enter the email address for your account:') || '');
-    if (emailInput && email) emailInput.value = email;
-  }
-
-  if (!email) {
-    showAuthMessage('Enter your email address first, then click reset password.', 'error');
+    showAuthMessage('Enter the email address for your account.', 'error');
     if (emailInput) emailInput.focus();
     return;
   }
@@ -5892,9 +6040,9 @@ async function requestPasswordReset() {
       body: JSON.stringify({ email })
     });
 
-    showAuthMessage(data.message || 'If an account exists for that email, a reset link was sent.', 'success');
+    showAuthMessage(data.message || 'If an account exists for that email, a reset link was sent. Check inbox and spam.', 'success');
   } catch (error) {
-    showAuthMessage(error.message || 'Password reset request failed.', 'error');
+    showAuthMessage(error.message || 'Password reset request failed. Check SMTP email settings in Render.', 'error');
   }
 }
 

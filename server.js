@@ -447,6 +447,8 @@ async function sendPasswordResetEmail(user, token) {
     text,
     html
   });
+
+  console.log(`Password reset email sent to ${user.email}`);
 }
 
 function dollarsToCents(priceText) {
@@ -1072,6 +1074,12 @@ async function createPasswordResetForEmail(email) {
   const genericMessage = 'If an account exists for that email, a reset link was sent.';
   const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizeEmail(email));
 
+  if (user && !mailTransporter) {
+    const error = new Error('Password reset email is not configured yet. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, and MAIL_FROM in Render, then redeploy.');
+    error.status = 503;
+    throw error;
+  }
+
   if (user) {
     const token = crypto.randomBytes(32).toString('hex');
     const tokenHash = sha256(token);
@@ -1387,6 +1395,36 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
 
     res.status(201).json({ order, checkoutUrl: session.url });
   } catch (error) {
+    next(error);
+  }
+});
+
+
+app.post('/api/admin/test-email', requireAdmin, async (req, res, next) => {
+  try {
+    const email = normalizeEmail(req.body.email);
+    if (!email) return res.status(400).json({ error: 'Enter an email address to test.' });
+
+    if (!mailTransporter) {
+      return res.status(503).json({
+        error: 'SMTP email is not configured. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, and MAIL_FROM in Render.'
+      });
+    }
+
+    await mailTransporter.verify();
+    await mailTransporter.sendMail({
+      from: MAIL_FROM,
+      to: email,
+      subject: 'ResearchPeps email test',
+      text: 'This is a ResearchPeps SMTP test email. If you received this, password reset email sending is configured.',
+      html: '<p>This is a <strong>ResearchPeps SMTP test email</strong>.</p><p>If you received this, password reset email sending is configured.</p>'
+    });
+
+    res.json({ ok: true, message: `Test email sent to ${email}. Check inbox and spam.` });
+  } catch (error) {
+    console.error('Admin test email failed:', error);
+    error.status = 500;
+    error.message = 'Test email failed. Check SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, MAIL_FROM, and Render logs.';
     next(error);
   }
 });
