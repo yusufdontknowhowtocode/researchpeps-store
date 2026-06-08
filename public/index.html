@@ -950,6 +950,68 @@ h1 {
 .legal-section p + p { margin-top: 12px; }
 
 
+/* Shipping & Payment page spacing */
+#shipping-payment .page-head {
+  padding-top: 74px;
+  padding-bottom: 46px;
+  margin-bottom: 38px;
+}
+
+#shipping-payment .page-head h1 {
+  display: block;
+  max-width: 980px;
+  margin: 0 0 58px;
+  line-height: .96;
+  letter-spacing: -0.045em;
+}
+
+#shipping-payment .page-head .lead {
+  display: block;
+  max-width: 1040px;
+  margin-top: 0;
+  font-size: clamp(18px, 1.85vw, 25px);
+  line-height: 1.95;
+  letter-spacing: -0.01em;
+}
+
+.shipping-payment-card {
+  display: grid;
+  gap: 18px;
+  padding: 42px;
+}
+
+.shipping-payment-card h2 {
+  margin: 22px 0 2px;
+  font-family: var(--font-body);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.shipping-payment-card h2:first-child {
+  margin-top: 0;
+}
+
+.shipping-payment-card p {
+  max-width: 980px;
+  line-height: 1.9;
+  font-size: 16.5px;
+}
+
+@media (max-width: 820px) {
+  #shipping-payment .page-head {
+    padding-top: 46px;
+  }
+
+  #shipping-payment .page-head h1 {
+    margin-bottom: 34px;
+  }
+
+  .shipping-payment-card {
+    padding: 28px 22px;
+  }
+}
+
+
 .site-footer {
   border-top: 1px solid rgba(15, 23, 42, .14);
   background: #f4f5f8;
@@ -1647,204 +1709,191 @@ body.age-locked .vial-rotor {
   letter-spacing: .08em;
   text-transform: uppercase;
 }
-
-.order-status.is-paid,
-.order-status.is-processing,
-.order-status.is-completed {
-  border-color: rgba(92, 234, 162, .35);
-  background: rgba(92, 234, 162, .12);
-  color: #9df0bf;
-}
-.order-status.is-shipped {
-  border-color: rgba(120,181,255,.35);
-  background: rgba(120,181,255,.12);
-  color: #9bc7ff;
-}
-.order-status.is-pending {
-  border-color: rgba(245, 217, 136, .35);
-  background: rgba(245, 217, 136, .10);
-  color: #f5d988;
-}
-.order-status.is-cancelled {
-  border-color: rgba(248, 113, 113, .35);
-  background: rgba(248, 113, 113, .12);
-  color: #fca5a5;
-}
-.order-card-premium {
-  display: grid;
-  gap: 18px;
-}
-.order-card-top {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 18px;
-  align-items: start;
-}
-.order-badges {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-bottom: 12px;
-}
-.order-chip {
-  display: inline-flex;
-  align-items: center;
-  border: 1px solid rgba(148,163,184,.20);
-  border-radius: 999px;
-  background: rgba(255,255,255,.05);
-  color: #d9e6fb;
-  padding: 8px 12px;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .02em;
-}
-.order-id {
-  color: #fff;
-  font-size: clamp(26px, 3vw, 42px) !important;
-  line-height: 1.04;
-  margin: 0 0 10px !important;
-}
-.order-meta {
-  color: var(--muted);
-  line-height: 1.65;
-  font-size: 15px;
-  margin: 0;
-}
-.order-total-box {
-  min-width: 220px;
-  border: 1px solid rgba(148,163,184,.18);
-  border-radius: 24px;
-  background: linear-gradient(180deg, rgba(255,255,255,.055), rgba(255,255,255,.03));
-  padding: 18px 20px;
-  text-align: right;
-  display: grid;
-  gap: 6px;
-}
-.order-total-box .eyebrow {
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 800;
-  text-transform: uppercase;
-  letter-spacing: .12em;
-}
-.order-total-box strong {
-  color: #78b5ff;
-  font-size: clamp(28px, 3vw, 40px);
-  line-height: 1;
-}
-.order-total-box small {
-  color: var(--muted);
-  font-size: 13px;
-}
-.order-layout {
-  display: grid;
-  grid-template-columns: 1.05fr .95fr;
-  gap: 16px;
-}
-.order-info-card,
-.order-items-card {
-  border: 1px solid rgba(148,163,184,.16);
-  border-radius: 24px;
-  background: rgba(255,255,255,.035);
-  padding: 18px 18px 16px;
-}
-.order-info-card h4,
-.order-items-card h4 {
-  color: #fff;
-  font-size: 18px;
-  margin: 0 0 14px;
-}
-.order-kv {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 10px 0;
-  border-top: 1px solid rgba(148,163,184,.12);
-  color: var(--muted);
-}
-.order-kv:first-of-type { border-top: none; padding-top: 0; }
-.order-kv strong {
-  color: #f8fafc;
-  text-align: right;
-}
-.order-status-note {
-  margin: 14px 0 0;
-  color: #d5e3fb;
-  line-height: 1.65;
-  font-size: 14px;
-}
-.tracking-banner {
-  display: grid;
-  gap: 8px;
-  border: 1px solid rgba(120,181,255,.24);
-  border-radius: 20px;
-  background: rgba(120,181,255,.10);
-  padding: 16px;
-}
-.tracking-banner .tracking-label {
-  color: #9bc7ff;
-  font-size: 12px;
-  font-weight: 800;
-  letter-spacing: .12em;
-  text-transform: uppercase;
-}
-.tracking-banner strong {
-  color: #fff;
-  font-size: 20px;
-  line-height: 1.2;
-}
-.tracking-banner small,
-.empty-order-note {
-  color: var(--muted);
-  line-height: 1.65;
-  font-size: 14px;
-}
-.empty-order-note {
-  border: 1px dashed rgba(148,163,184,.24);
-  border-radius: 18px;
-  background: rgba(255,255,255,.03);
-  padding: 16px;
-}
-.order-section-head {
-  display: flex;
-  justify-content: space-between;
-  gap: 14px;
-  align-items: center;
-  margin-bottom: 14px;
-}
-.order-section-head span {
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 700;
-}
-.order-items-card .order-items {
-  gap: 0;
-}
-.order-items-card .order-item {
-  padding: 14px 0;
-}
-.order-items-card .order-item:last-child {
-  border-bottom: none;
-  padding-bottom: 0;
-}
-@media (max-width: 820px) {
-  .order-card-top,
-  .order-layout {
-    grid-template-columns: 1fr;
-  }
-  .order-total-box {
-    min-width: 0;
-    text-align: left;
-  }
-  .order-kv {
-    align-items: flex-start;
-  }
-}
 .auth-note {
   color: var(--muted);
   line-height: 1.65;
   font-size: 14px;
   margin-top: 14px;
+}
+
+
+
+/* Polished checkout form redesign */
+.checkout-form-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 0 !important;
+  border-radius: 34px !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(59,130,246,.22), transparent 260px),
+    linear-gradient(180deg, rgba(15,30,65,.96), rgba(3,7,18,.98)) !important;
+}
+.checkout-form-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.checkout-panel-head {
+  padding: 30px 32px 24px;
+  border-bottom: 1px solid rgba(148,163,184,.16);
+  background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(30,94,255,.06));
+}
+.checkout-panel-head h2 {
+  margin: 12px 0 8px !important;
+  font-size: clamp(30px, 3.4vw, 44px) !important;
+  line-height: .95;
+}
+.checkout-panel-head p {
+  max-width: 620px;
+  color: rgba(203,213,225,.88);
+  line-height: 1.7;
+  font-size: 15px;
+}
+.checkout-step-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid rgba(214,182,106,.35);
+  border-radius: 999px;
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  padding: 7px 11px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.checkout-form-section {
+  margin: 22px 26px;
+  padding: 22px;
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 24px;
+  background: rgba(255,255,255,.045);
+  box-shadow: 0 16px 42px rgba(0,0,0,.18);
+}
+.checkout-section-title {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+.checkout-section-title > span {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-size: 12px;
+  font-weight: 950;
+  box-shadow: 0 10px 24px rgba(37,99,235,.30);
+}
+.checkout-section-title strong {
+  display: block;
+  color: white;
+  font-size: 17px;
+  font-weight: 950;
+  letter-spacing: -.01em;
+}
+.checkout-section-title small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(170,183,207,.88);
+  line-height: 1.45;
+  font-size: 13px;
+}
+.pretty-form-grid {
+  gap: 16px !important;
+}
+.checkout-form-panel .form-field {
+  gap: 9px;
+}
+.checkout-form-panel .form-field label {
+  color: rgba(226,232,240,.94);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+.checkout-form-panel .form-field input,
+.checkout-form-panel .form-field select,
+.checkout-form-panel .form-field textarea {
+  border-radius: 18px;
+  border-color: rgba(148,163,184,.26);
+  background: rgba(15,23,42,.58);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.checkout-form-panel .form-field input,
+.checkout-form-panel .form-field select {
+  height: 54px;
+  min-height: 54px;
+}
+.checkout-form-panel .form-field textarea {
+  min-height: 112px;
+}
+.checkout-form-panel .form-field input:focus,
+.checkout-form-panel .form-field select:focus,
+.checkout-form-panel .form-field textarea:focus {
+  border-color: rgba(96,165,250,.78);
+  background: rgba(15,23,42,.78);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.13), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.payment-help-card {
+  margin-top: 14px;
+  padding: 15px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(59,130,246,.28);
+  background: rgba(30,94,255,.10);
+}
+.payment-help-card strong {
+  display: block;
+  color: #dbeafe;
+  font-size: 13px;
+  font-weight: 950;
+  margin-bottom: 6px;
+}
+.payment-help-card p {
+  color: rgba(203,213,225,.90);
+  line-height: 1.65;
+  font-size: 13.5px;
+}
+.checkout-confirm-section {
+  border-color: rgba(214,182,106,.28);
+  background: rgba(214,182,106,.08);
+}
+.pretty-check-row {
+  margin: 0 !important;
+  color: rgba(248,250,252,.92) !important;
+}
+.pretty-check-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+.checkout-actions-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 0 26px 28px;
+}
+.checkout-actions-row .btn {
+  min-height: 48px;
+  padding-inline: 22px;
+}
+.checkout-actions-row .btn.primary {
+  flex: 1;
+  min-width: 220px;
+}
+@media (max-width: 820px) {
+  .checkout-panel-head { padding: 26px 22px 22px; }
+  .checkout-form-section { margin: 18px 16px; padding: 18px; border-radius: 22px; }
+  .checkout-actions-row { padding: 0 16px 22px; }
 }
 
 @media (max-width: 820px) {
@@ -2016,6 +2065,7 @@ body.age-locked .vial-rotor {
   font-weight: 850;
   cursor: pointer;
 }
+
 .auth-google-wrap {
   width: 100%;
   min-height: 50px;
@@ -2034,6 +2084,37 @@ body.age-locked .vial-rotor {
   color: #334155;
   font-weight: 850;
   cursor: pointer;
+}
+.auth-google-redirect {
+  max-width: 420px;
+  margin: 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 96px;
+  position: relative;
+}
+.auth-google-g {
+  position: absolute;
+  left: 18px;
+  display: inline-grid;
+  place-items: center;
+  width: 22px;
+  height: 22px;
+  border-radius: 999px;
+  color: #4285f4;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+}
+.auth-google-wrap iframe,
+.auth-google-wrap > div {
+  margin-left: auto !important;
+  margin-right: auto !important;
+}
+.auth-google-fallback:disabled {
+  cursor: wait;
+  opacity: .75;
 }
 .auth-divider {
   display: flex;
@@ -2124,6 +2205,663 @@ body.age-locked .vial-rotor {
   .auth-body { padding: 24px 20px 28px; }
 }
 
+
+/* Cleaner profile page spacing and account typography */
+#account .section {
+  padding-top: 68px;
+}
+
+#account .page-head {
+  padding-bottom: 42px;
+  margin-bottom: 38px;
+}
+
+#account .page-head h1 {
+  margin-bottom: 14px;
+}
+
+#account .page-head .lead {
+  max-width: 720px;
+}
+
+.account-dashboard-head {
+  align-items: flex-end;
+  gap: 28px;
+  margin-bottom: 30px;
+  padding: 4px 0 8px;
+}
+
+.account-dashboard-copy {
+  display: grid;
+  gap: 14px;
+  min-width: 0;
+}
+
+.account-email-kicker,
+.account-panel-kicker {
+  margin-bottom: 0;
+  color: var(--gold);
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+
+.account-dashboard-head h2 {
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: clamp(34px, 4vw, 52px);
+  font-weight: 850;
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  margin: 0;
+}
+
+.account-dashboard-subtitle {
+  max-width: 650px;
+  color: var(--muted);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.75;
+  letter-spacing: 0;
+}
+
+.account-dashboard-actions {
+  margin-top: 0;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 14px;
+}
+
+.account-history-panel {
+  display: grid;
+  gap: 18px;
+  margin-bottom: 28px !important;
+  padding: 34px 36px;
+  border-radius: 30px;
+}
+
+.account-history-panel h2,
+.account-panel h2,
+.order-card h3 {
+  font-family: var(--font-body);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.account-history-panel h2 {
+  font-size: 28px;
+  margin-bottom: 0;
+}
+
+.account-history-panel .lead {
+  max-width: 860px;
+  font-family: var(--font-body);
+  font-size: 16.5px;
+  line-height: 1.85;
+  letter-spacing: 0;
+}
+
+.order-history-list {
+  gap: 20px;
+}
+
+.order-card {
+  padding: 30px 32px;
+}
+
+.order-card h3 {
+  font-size: 22px;
+  margin-bottom: 14px;
+}
+
+.order-meta {
+  margin: 10px 0 18px;
+  line-height: 1.75;
+}
+
+@media (max-width: 820px) {
+  #account .section {
+    padding-top: 46px;
+  }
+
+  .account-dashboard-head {
+    align-items: stretch;
+    gap: 22px;
+  }
+
+  .account-dashboard-actions {
+    justify-content: flex-start;
+  }
+
+  .account-history-panel {
+    padding: 26px 22px;
+  }
+}
+
+
+/* Order status, tracking, and admin dashboard additions */
+.order-history-list {
+  gap: 24px;
+}
+
+.order-status {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid rgba(214,182,106,.35);
+  border-radius: 999px;
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.order-status.is-paid,
+.order-status.is-processing,
+.order-status.is-completed {
+  border-color: rgba(74,222,128,.35);
+  background: rgba(74,222,128,.12);
+  color: #bbf7d0;
+}
+
+.order-status.is-shipped {
+  border-color: rgba(96,165,250,.40);
+  background: rgba(96,165,250,.12);
+  color: #bfdbfe;
+}
+
+.order-status.is-pending {
+  border-color: rgba(245,217,136,.40);
+  background: rgba(245,217,136,.12);
+  color: #f5d988;
+}
+
+.order-status.is-cancelled {
+  border-color: rgba(248,113,113,.42);
+  background: rgba(248,113,113,.13);
+  color: #fecaca;
+}
+
+.order-card {
+  position: relative;
+  overflow: hidden;
+  padding: 0 !important;
+  border-radius: 34px !important;
+  background:
+    radial-gradient(circle at 8% 0%, rgba(37,99,235,.22), transparent 320px),
+    linear-gradient(180deg, rgba(12,25,55,.94), rgba(3,7,18,.98)) !important;
+}
+
+.order-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+
+.order-card-head {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 22px;
+  align-items: start;
+  padding: 26px 30px 24px;
+  border-bottom: 1px solid rgba(148,163,184,.14);
+  background: linear-gradient(135deg, rgba(255,255,255,.055), rgba(30,94,255,.055));
+}
+
+.order-title-area {
+  min-width: 0;
+}
+
+.order-badges {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.order-chip {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 999px;
+  background: rgba(255,255,255,.055);
+  color: rgba(226,232,240,.92);
+  padding: 8px 12px;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .02em;
+  white-space: nowrap;
+}
+
+.order-id {
+  color: #fff;
+  font-family: var(--font-body) !important;
+  font-size: clamp(26px, 3.2vw, 42px) !important;
+  font-weight: 900 !important;
+  line-height: 1.04 !important;
+  letter-spacing: -0.055em !important;
+  margin: 0 0 10px !important;
+  overflow-wrap: anywhere;
+}
+
+.order-meta {
+  color: var(--muted);
+  line-height: 1.7;
+  font-size: 14.5px;
+  margin: 0;
+}
+
+.order-total-card {
+  min-width: 220px;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 24px;
+  background: rgba(255,255,255,.055);
+  padding: 18px 20px;
+  text-align: right;
+  box-shadow: 0 16px 34px rgba(0,0,0,.18);
+}
+
+.order-total-card span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  margin-bottom: 8px;
+}
+
+.order-total-card strong {
+  display: block;
+  color: #78b5ff;
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 950;
+  line-height: 1;
+}
+
+.order-total-card small {
+  display: block;
+  margin-top: 8px;
+  color: rgba(170,183,207,.86);
+  font-size: 12.5px;
+  line-height: 1.45;
+}
+
+.order-card-body {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 18px;
+  padding: 24px 30px 30px;
+}
+
+.order-overview-grid {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 16px;
+  align-items: stretch;
+}
+
+.order-panel {
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 24px;
+  background: rgba(255,255,255,.04);
+  padding: 18px;
+}
+
+.order-panel-title {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 950;
+  letter-spacing: -.01em;
+  margin-bottom: 14px;
+}
+
+.order-status-box {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 14px;
+  align-items: start;
+  border: 1px solid rgba(120,181,255,.22);
+  border-radius: 20px;
+  background: rgba(120,181,255,.08);
+  padding: 16px;
+}
+
+.order-status-dot {
+  width: 13px;
+  height: 13px;
+  border-radius: 999px;
+  background: #78b5ff;
+  box-shadow: 0 0 0 6px rgba(120,181,255,.13);
+  margin-top: 6px;
+}
+
+.order-status-title {
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 950;
+  letter-spacing: 0;
+  margin-bottom: 5px;
+}
+
+.order-status-text {
+  color: rgba(203,213,225,.92);
+  font-size: 14px;
+  line-height: 1.65;
+}
+
+.order-info-list {
+  display: grid;
+  gap: 0;
+}
+
+.order-kv-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-top: 1px solid rgba(148,163,184,.12);
+  color: var(--muted);
+  line-height: 1.55;
+  font-size: 14px;
+}
+
+.order-kv-row:first-child {
+  border-top: none;
+  padding-top: 0;
+}
+
+.order-kv-row strong {
+  color: #f8fafc;
+  text-align: right;
+  overflow-wrap: anywhere;
+}
+
+.tracking-box {
+  display: grid;
+  gap: 8px;
+  border: 1px solid rgba(96,165,250,.30);
+  border-radius: 20px;
+  background: rgba(96,165,250,.10);
+  padding: 16px;
+}
+
+.tracking-box strong {
+  color: #bfdbfe;
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+
+.tracking-box code {
+  display: block;
+  width: 100%;
+  overflow-wrap: anywhere;
+  border: 1px solid rgba(148,163,184,.20);
+  border-radius: 14px;
+  background: rgba(0,0,0,.22);
+  color: #fff;
+  padding: 12px;
+  font-family: var(--font-body);
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.tracking-box small,
+.order-empty-track {
+  color: var(--muted);
+  line-height: 1.65;
+  font-size: 13.5px;
+}
+
+.order-empty-track {
+  border: 1px dashed rgba(148,163,184,.22);
+  border-radius: 18px;
+  background: rgba(255,255,255,.025);
+  padding: 16px;
+}
+
+.order-items-panel {
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 24px;
+  background: rgba(255,255,255,.035);
+  padding: 18px;
+}
+
+.order-items-head {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.order-items-head strong {
+  color: #fff;
+  font-size: 16px;
+  font-weight: 950;
+}
+
+.order-items-head span {
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.order-items {
+  gap: 0;
+}
+
+.order-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: start;
+  padding: 14px 0;
+  border-bottom: 1px solid rgba(148,163,184,.12);
+}
+
+.order-item:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.order-item strong {
+  color: #fff;
+  font-family: var(--font-body);
+  font-weight: 900;
+}
+
+.order-item small {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.order-item-price {
+  color: #78b5ff !important;
+  text-align: right;
+  white-space: nowrap;
+}
+
+.order-card-topline {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: flex-start;
+  margin-bottom: 14px;
+}
+
+.admin-dashboard {
+  margin-top: 36px;
+}
+
+.admin-dashboard h2,
+.admin-order-card h3 {
+  font-family: var(--font-body);
+  font-weight: 850;
+  letter-spacing: -0.035em;
+}
+
+.admin-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  margin-top: 18px;
+}
+
+.admin-search-input,
+.admin-status-select,
+.admin-tracking-input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(148,163,184,.22);
+  border-radius: 16px;
+  background: rgba(255,255,255,.075);
+  color: #f8fafc;
+  padding: 12px 14px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.admin-status-select option {
+  background: #07152f;
+  color: #fff;
+}
+
+.admin-results {
+  display: grid;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.admin-order-card {
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 24px;
+  background: rgba(255,255,255,.045);
+  padding: 20px;
+}
+
+.admin-order-head {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 18px;
+  align-items: start;
+  margin-bottom: 14px;
+}
+
+.admin-order-meta {
+  display: grid;
+  gap: 8px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.55;
+}
+
+.admin-tracking-grid {
+  display: grid;
+  grid-template-columns: .45fr .55fr;
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.admin-tracking-grid label {
+  display: grid;
+  gap: 8px;
+  color: #e7eefc;
+  font-size: 12px;
+  font-weight: 900;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+}
+
+.admin-order-actions {
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) auto auto;
+  gap: 10px;
+  align-items: center;
+  margin-top: 16px;
+}
+
+.admin-empty {
+  color: var(--muted);
+  line-height: 1.7;
+  padding: 8px 0;
+}
+
+.admin-email-test {
+  margin-top: 16px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+}
+
+.admin-email-test-note {
+  margin-top: 10px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.65;
+}
+
+@media (max-width: 820px) {
+  .order-card-head,
+  .order-overview-grid,
+  .admin-order-head,
+  .admin-toolbar,
+  .admin-order-actions,
+  .admin-email-test,
+  .admin-tracking-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .order-total-card {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .order-card-head,
+  .order-card-body {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+
+  .order-status-box {
+    grid-template-columns: 1fr;
+  }
+
+  .order-status-dot {
+    display: none;
+  }
+
+  .order-kv-row {
+    align-items: flex-start;
+  }
+}
+
+/* Account page duplicate top header removed */
+.account-section-clean {
+  padding-top: 44px;
+}
+@media (max-width: 820px) {
+  .account-section-clean { padding-top: 28px; }
+}
+
 </style>
 </head>
 <body class="age-locked">
@@ -2153,6 +2891,7 @@ body.age-locked .vial-rotor {
       <button class="nav-link active-link" data-nav="home" onclick="showPage('home')">Home</button>
       <button class="nav-link" data-nav="peptides" onclick="showPage('peptides')">Peptides</button>
       <button class="nav-link" data-nav="faq" onclick="showHomeSection('faq')">FAQ</button>
+      <button class="nav-link" data-nav="shipping-payment" onclick="showPage('shipping-payment')">Shipping</button>
     </div>
 
     <div class="nav-actions">
@@ -2202,7 +2941,7 @@ body.age-locked .vial-rotor {
   <div class="cart-footer">
     <div class="cart-total-row"><span>Total</span><span id="cartDrawerTotal">$0.00</span></div>
     <button class="btn primary" onclick="startCheckout()">Checkout</button>
-    <p class="cart-help-text">Checkout places an order and saves it to your backend account history.</p>
+    <p class="cart-help-text">Checkout places an order and saves it to your backend account history. <button type="button" style="border:0;background:transparent;color:#93c5fd;font-weight:800;cursor:pointer;" onclick="showPage('shipping-payment'); closeOverlays();">Shipping &amp; Payment</button></p>
   </div>
 </aside>
 
@@ -2325,7 +3064,7 @@ body.age-locked .vial-rotor {
         <h1>Peptides</h1>
         <p class="lead"></p>
       </div>
-      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 39% compared with buying the same vials one at a time.</div>
+      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 56% compared with buying the same vials one at a time.</div>
       <div id="peptideCatalogGrid" class="grid"></div>
     </div>
   </section>
@@ -2364,14 +3103,7 @@ body.age-locked .vial-rotor {
 
 
   <section id="account" class="page">
-    <div class="container section">
-      <div class="page-head">
-        <button class="btn back" onclick="showPage('home')">← Home</button>
-        <p id="accountPageKicker" class="kicker">Customer account</p>
-        <h1 id="accountPageTitle">Login &amp; Orders</h1>
-        <p id="accountPageLead" class="lead">Customers can create an account, sign in, and view past orders from checkout.</p>
-      </div>
-
+    <div class="container section account-section-clean">
       <div id="accountMessage" class="account-message"></div>
       <div id="accountContent"></div>
     </div>
@@ -2389,29 +3121,57 @@ body.age-locked .vial-rotor {
       <div id="checkoutMessage" class="checkout-message"></div>
 
       <div class="checkout-grid">
-        <div class="checkout-panel">
-          <h2>Order details</h2>
-          <div class="form-grid">
-            <div class="form-field">
-              <label for="checkoutName">Full name</label>
-              <input id="checkoutName" autocomplete="name" placeholder="Customer name">
+        <div class="checkout-panel checkout-form-panel">
+          <div class="checkout-panel-head">
+            <span class="checkout-step-pill">Step 1 of 2</span>
+            <h2>Checkout details</h2>
+            <p>Enter your contact, shipping, and payment information. Card payments continue through secure processor checkout.</p>
+          </div>
+
+          <div class="checkout-form-section">
+            <div class="checkout-section-title">
+              <span>01</span>
+              <div>
+                <strong>Contact information</strong>
+                <small>Used for order updates and tracking.</small>
+              </div>
             </div>
-            <div class="form-field">
-              <label for="checkoutEmail">Email</label>
-              <input id="checkoutEmail" type="email" autocomplete="email" placeholder="email@example.com">
+            <div class="form-grid pretty-form-grid">
+              <div class="form-field">
+                <label for="checkoutName">Full name</label>
+                <input id="checkoutName" autocomplete="name" placeholder="Customer name">
+              </div>
+              <div class="form-field">
+                <label for="checkoutEmail">Email</label>
+                <input id="checkoutEmail" type="email" autocomplete="email" placeholder="email@example.com">
+              </div>
+              <div class="form-field full">
+                <label for="checkoutPhone">Phone</label>
+                <input id="checkoutPhone" autocomplete="tel" placeholder="Phone number">
+              </div>
             </div>
-            <div class="form-field">
-              <label for="checkoutPhone">Phone</label>
-              <input id="checkoutPhone" autocomplete="tel" placeholder="Phone number">
+          </div>
+
+          <div class="checkout-form-section">
+            <div class="checkout-section-title">
+              <span>02</span>
+              <div>
+                <strong>Payment method</strong>
+                <small>Crypto receives an automatic 5% discount.</small>
+              </div>
             </div>
-            <div class="form-field">
-              <label for="checkoutPaymentMethod">Payment method</label>
-              <select id="checkoutPaymentMethod" onchange="updateCryptoWalletBox()">
-                <option value="stripe">Credit card</option>
-                <option value="btc">Bitcoin (BTC)</option>
-                <option value="sol">Solana (SOL)</option>
-                <option value="usdc">USDC</option>
+            <div class="form-field full">
+              <label for="checkoutPaymentMethod">Choose payment</label>
+              <select id="checkoutPaymentMethod" onchange="renderCheckoutPage()">
+                <option value="stripe">Credit card (Visa / Mastercard)</option>
+                <option value="btc">Bitcoin (BTC) — save 5%</option>
+                <option value="sol">Solana (SOL) — save 5%</option>
+                <option value="usdc">USDC — save 5%</option>
               </select>
+              <div class="payment-help-card">
+                <strong>Secure payment note</strong>
+                <p>Credit card orders redirect to a secure processor. Card numbers are never stored on this website. BTC, SOL, and USDC orders are manually verified after payment.</p>
+              </div>
               <div id="cryptoWalletBox" class="crypto-wallet-box" style="display:none;">
                 <strong id="cryptoWalletTitle">Crypto payment</strong>
                 <p id="cryptoWalletNetwork"></p>
@@ -2420,59 +3180,72 @@ body.age-locked .vial-rotor {
                 <div class="crypto-amount-box">
                   <strong>Amount to send</strong>
                   <code id="cryptoAmountDue">Select crypto to calculate amount.</code>
-                  <p id="cryptoQuoteNote">Crypto quote updates from the current market rate.</p>
+                  <p id="cryptoQuoteNote">Crypto quote includes the 5% discount and updates from the current market rate.</p>
                 </div>
               </div>
-              <small class="auth-note">Credit card redirects to your processor when configured. For BTC, SOL, or USDC, send payment to the wallet shown and type your order number in the payment note/reference if your wallet allows it. If there is no note field, send us the transaction hash with your order number.</small>
-            </div>
-            <div class="form-field full">
-              <label for="checkoutAddress">Shipping address</label>
-              <input id="checkoutAddress" autocomplete="street-address" placeholder="Street address">
-            </div>
-            <div class="form-field">
-              <label for="checkoutCity">City</label>
-              <input id="checkoutCity" autocomplete="address-level2" placeholder="City">
-            </div>
-            <div class="form-field">
-              <label for="checkoutState">State</label>
-              <input id="checkoutState" autocomplete="address-level1" placeholder="State">
-            </div>
-            <div class="form-field">
-              <label for="checkoutZip">ZIP</label>
-              <input id="checkoutZip" autocomplete="postal-code" placeholder="ZIP code">
-            </div>
-            <div class="form-field">
-              <label for="checkoutCountry">Country</label>
-              <select id="checkoutCountry" autocomplete="country-name" onchange="renderCheckoutPage()">
-                <option value="United States">United States — $15 shipping</option>
-                <option value="Canada">Canada</option>
-                <option value="Mexico">Mexico</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <option value="Italy">Italy</option>
-                <option value="Spain">Spain</option>
-                <option value="Netherlands">Netherlands</option>
-                <option value="Switzerland">Switzerland</option>
-                <option value="Australia">Australia</option>
-                <option value="New Zealand">New Zealand</option>
-                <option value="Singapore">Singapore</option>
-                <option value="United Arab Emirates">United Arab Emirates</option>
-                <option value="Rest of World">Rest of World</option>
-              </select>
-            </div>
-            <div class="form-field full">
-              <label for="checkoutNotes">Order notes</label>
-              <textarea id="checkoutNotes" placeholder="Optional notes for this order"></textarea>
             </div>
           </div>
 
-          <label class="check-row">
-            <input id="checkoutResearchOnly" type="checkbox">
-            <span>I confirm these products are being requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</span>
-          </label>
+          <div class="checkout-form-section">
+            <div class="checkout-section-title">
+              <span>03</span>
+              <div>
+                <strong>Shipping address</strong>
+                <small>Ships from Pennsylvania after payment verification.</small>
+              </div>
+            </div>
+            <div class="form-grid pretty-form-grid">
+              <div class="form-field full">
+                <label for="checkoutAddress">Street address</label>
+                <input id="checkoutAddress" autocomplete="street-address" placeholder="Street address">
+              </div>
+              <div class="form-field">
+                <label for="checkoutCity">City</label>
+                <input id="checkoutCity" autocomplete="address-level2" placeholder="City">
+              </div>
+              <div class="form-field">
+                <label for="checkoutState">State</label>
+                <input id="checkoutState" autocomplete="address-level1" placeholder="State">
+              </div>
+              <div class="form-field">
+                <label for="checkoutZip">ZIP</label>
+                <input id="checkoutZip" autocomplete="postal-code" placeholder="ZIP code">
+              </div>
+              <div class="form-field">
+                <label for="checkoutCountry">Country</label>
+                <select id="checkoutCountry" autocomplete="country-name" onchange="renderCheckoutPage()">
+                  <option value="United States">United States — $15 shipping</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="Australia">Australia</option>
+                  <option value="New Zealand">New Zealand</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Rest of World">Rest of World</option>
+                </select>
+              </div>
+              <div class="form-field full">
+                <label for="checkoutNotes">Order notes</label>
+                <textarea id="checkoutNotes" placeholder="Optional notes for this order"></textarea>
+              </div>
+            </div>
+          </div>
 
-          <div class="actions">
+          <div class="checkout-form-section checkout-confirm-section">
+            <label class="check-row pretty-check-row">
+              <input id="checkoutResearchOnly" type="checkbox">
+              <span>I confirm these products are being requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</span>
+            </label>
+          </div>
+
+          <div class="checkout-actions-row">
             <button class="btn primary" onclick="placeOrder()">Place Order</button>
             <button class="btn" onclick="openAccount()">View Account</button>
           </div>
@@ -2483,8 +3256,9 @@ body.age-locked .vial-rotor {
           <div id="checkoutCartSummary" class="summary-list"></div>
           <div class="summary-line"><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
           <div class="summary-line"><span>Shipping</span><span id="checkoutShipping">$0.00</span></div>
+          <div id="checkoutDiscountRow" class="summary-line" style="display:none;"><span>Crypto discount</span><span id="checkoutDiscount">-$0.00</span></div>
           <div class="summary-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
-          <p class="auth-note">Orders are placed after the customer accepts the research-use-only confirmation. Credit card uses your configured payment processor; BTC, SOL, and USDC orders are saved as awaiting crypto payment.</p>
+          <p class="auth-note">Orders are placed after the customer accepts the research-use-only confirmation. Credit card redirects to secure checkout; BTC, SOL, and USDC receive 5% off and are saved as awaiting crypto payment.</p>
         </div>
       </div>
     </div>
@@ -2512,13 +3286,48 @@ body.age-locked .vial-rotor {
         </div>
 
         <div id="thankYouCryptoBox" class="crypto-confirm-box" style="display:none;"></div>
-        <p class="email-note">A confirmation email will be sent automatically once SMTP email is configured in your backend environment.</p>
+        <p class="email-note">Order confirmation details have been saved to your account. You will receive updates by email when notifications are enabled.</p>
 
         <div class="actions">
           <button class="btn primary" onclick="viewLastOrder()">View Order</button>
           <button class="btn" onclick="showPage('home')">Back to Home</button>
           <button class="btn" onclick="showPage('peptides')">Continue Shopping</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <section id="shipping-payment" class="page shipping-payment-page">
+    <div class="container section">
+      <div class="page-head">
+        <button class="btn back" onclick="showPage('home')">← Home</button>
+        <p class="kicker">Orders</p>
+        <h1>Shipping &amp; Payment</h1>
+        <p class="lead">ResearchPeps ships from Pennsylvania. Order status updates appear in your account after payment is verified. Tracking becomes available once the order has shipped.</p>
+      </div>
+
+      <div class="legal-page-card shipping-payment-card">
+        <h2>Shipping timeline</h2>
+        <p>Orders ship from <strong>United States, Pennsylvania</strong>. After an order is placed and payment is verified, please allow normal processing time before shipment is prepared.</p>
+        <p>Estimated delivery time is typically <strong>1 to 2 business weeks</strong> after shipment, depending on destination, carrier movement, holidays, weather, and other delays outside our control.</p>
+
+        <h2>Order status and tracking</h2>
+        <ul>
+          <li><strong>Payment verification:</strong> Credit card orders begin processing after payment approval. Crypto orders are manually verified after payment is received.</li>
+          <li><strong>Status updates:</strong> Your customer-facing order status updates inside <strong>My Account</strong> as the order moves from awaiting payment to processing, packed, shipped, and completed.</li>
+          <li><strong>Tracking:</strong> Tracking appears in your order history once it is added after shipment.</li>
+          <li><strong>Research-use confirmation:</strong> Every order requires research-use-only confirmation before checkout can be completed.</li>
+        </ul>
+
+        <h2>Payment options</h2>
+        <p>Credit card checkout supports Visa and Mastercard through the secure payment processor when card payments are configured. Card numbers are not stored on this website.</p>
+        <p>Crypto payments receive an automatic <strong>5% discount</strong> at checkout. For BTC, SOL, or USDC, send payment to the wallet shown at checkout. Type your order number in the payment note, memo, or reference field if your wallet allows it. If not, send the transaction hash with your order number to <strong>orders@researchpeps.us</strong>.</p>
+
+        <h2>Crypto verification</h2>
+        <p>Crypto orders are saved as awaiting payment until the payment is manually verified. After verification, the admin dashboard updates the order status shown to the customer.</p>
+
+        <h2>Questions</h2>
+        <p>For payment confirmation, shipping questions, or transaction hash updates, contact <strong>orders@researchpeps.us</strong> and include your order number.</p>
       </div>
     </div>
   </section>
@@ -2709,7 +3518,7 @@ After review, eligible damaged-shipment claims may be approved for replacement o
 
         <h2>16. Contact</h2>
         <p>For privacy questions, requests, or concerns, contact researchpeps at:</p>
-        <p><strong>Email:</strong> your@email.com<br><strong>Phone:</strong> (000) 000-0000<br><strong>Mailing Address:</strong> Your business address here</p>
+        <p><strong>Email:</strong> orders@researchpeps.us<br><strong>Mailing Address:</strong> United States, Pennsylvania</p>
       </div>
     </div>
   </section>
@@ -2724,15 +3533,15 @@ After review, eligible damaged-shipment claims may be approved for replacement o
       <button onclick="showPage('peptides')">Peptides</button>
       <button onclick="showHomeSection('faq')">FAQ</button>
       <button onclick="showHomeSection('featured-peptides')">Featured Peptides</button>
+      <button onclick="showPage('shipping-payment')">Shipping &amp; Payment</button>
       <button onclick="toggleSearch()">Search</button>
     </div>
 
     <div class="footer-col">
       <h4>Contact Us</h4>
       <div class="footer-contact-lines">
-        <p><strong>Email:</strong> your@email.com</p>
-        <p><strong>Phone:</strong> (000) 000-0000</p>
-        <p><strong>Address:</strong> Your address here</p>
+        <p><strong>Email:</strong> orders@researchpeps.us</p>
+        <p><strong>Address:</strong> United States, Pennsylvania</p>
         <p><strong>Hours:</strong> Mon – Fri, 9 AM – 5 PM</p>
       </div>
     </div>
@@ -4017,8 +4826,8 @@ let selectedPurchaseTypes = {};
 let selectedVialQuantities = {};
 let cart = [];
 
-const KIT_PRICE_MULTIPLIER = 2;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 3.5;
+const KIT_PRICE_MULTIPLIER = 1.5;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 2.8;
 
 function parsePrice(priceText) {
   return Number(String(priceText).replace(/[^0-9.]/g, ""));
@@ -4114,7 +4923,7 @@ function getStartingPrice(product) {
 }
 
 function getSingleVialSavingsPercent() {
-  return Math.round((1 - (KIT_PRICE_MULTIPLIER / SINGLE_VIAL_PRICE_MULTIPLIER)) * 100);
+  return 56;
 }
 
 function getSingleVialDisplay(option) {
@@ -4142,6 +4951,7 @@ function setActiveNav(id) {
   let navId = 'home';
   if (id === 'peptides' || id === 'product-detail') navId = 'peptides';
   if (id === 'faq') navId = 'faq';
+  if (id === 'shipping-payment') navId = 'shipping-payment';
 
   const activeButton = document.querySelector('[data-nav="' + navId + '"]');
   if (activeButton) activeButton.classList.add('active-link');
@@ -4541,7 +5351,7 @@ function renderPeptideCatalog() {
 
   const featured = document.getElementById('featuredPeptideGrid');
   if (featured) {
-    const featuredNames = ['Retatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'TB-500', 'CJC-1295 WO/Dac', 'CJC-1295 DAC + Ipamorelin', 'Sermorelin', 'GHRP-2', 'GHRP-6', 'NAD+'];
+    const featuredNames = ['Retatrutide', 'HGH', 'GHK-CU', 'BPC-157', 'NAD+', 'CJC-1295 DAC + Ipamorelin', 'Semax', 'IGF-1LR3'];
     featured.innerHTML = products.filter(function(product) {
       return featuredNames.includes(product.name);
     }).map(function(product) {
@@ -4571,10 +5381,35 @@ function initHeroVial() {
 }
 
 
-function confirmAgeGate() {
+function hideAgeGate() {
   const gate = document.getElementById('ageGate');
   if (gate) gate.classList.add('hidden');
   document.body.classList.remove('age-locked');
+}
+
+function rememberAgeVerification() {
+  try {
+    localStorage.setItem(AGE_GATE_STORAGE_KEY, new Date().toISOString());
+  } catch (error) {}
+}
+
+function hasRememberedAgeVerification() {
+  try {
+    return !!localStorage.getItem(AGE_GATE_STORAGE_KEY);
+  } catch (error) {
+    return false;
+  }
+}
+
+function applyAgeGateState() {
+  if (hasRememberedAgeVerification() || backendAccount) {
+    hideAgeGate();
+  }
+}
+
+function confirmAgeGate() {
+  rememberAgeVerification();
+  hideAgeGate();
 }
 
 function denyAgeGate() {
@@ -4600,6 +5435,7 @@ function leaveAgeGate() {
 const CART_STORAGE_KEY = 'researchpeps_cart_v2';
 const ACCOUNTS_STORAGE_KEY = 'researchpeps_accounts_v1';
 const SESSION_STORAGE_KEY = 'researchpeps_current_user_v1';
+const AGE_GATE_STORAGE_KEY = 'researchpeps_age_verified_v1';
 
 function loadJsonStorage(key, fallback) {
   try {
@@ -4734,8 +5570,16 @@ function getCheckoutShipping() {
   return getShippingRateForCountry(getSelectedShippingCountry());
 }
 
+function getCurrentPaymentMethod() {
+  return String(document.getElementById('checkoutPaymentMethod')?.value || 'stripe').toLowerCase();
+}
+
+function getCryptoDiscountAmount() {
+  return isCryptoMethod(getCurrentPaymentMethod()) ? getCartSubtotal() * 0.05 : 0;
+}
+
 function getCartTotal() {
-  return getCartSubtotal() + getCheckoutShipping();
+  return Math.max(0, getCartSubtotal() + getCheckoutShipping() - getCryptoDiscountAmount());
 }
 
 function getCartCount() {
@@ -4831,9 +5675,17 @@ function logoutAccount() {
 }
 
 let authMode = 'login';
+let passwordResetRequestMode = false;
 
 function setAuthMode(mode) {
+  passwordResetRequestMode = false;
   authMode = mode === 'register' ? 'register' : 'login';
+  renderAccountPage();
+}
+
+function startPasswordResetRequest() {
+  passwordResetRequestMode = true;
+  authMode = 'login';
   renderAccountPage();
 }
 
@@ -4907,6 +5759,45 @@ function renderAccountPage() {
       return;
     }
 
+    if (passwordResetRequestMode) {
+      container.innerHTML = `
+        <div class="auth-shell">
+          <div class="auth-wrap">
+            <div class="auth-head">
+              <p class="kicker">Password Help</p>
+              <h2 class="auth-title">Reset Password</h2>
+              <p class="auth-subtitle">Enter the email address on your account and we will send a reset link.</p>
+            </div>
+
+            <div class="auth-card">
+              <div class="auth-body">
+                <div id="authInlineMessage" class="auth-message-inline"></div>
+
+                <form onsubmit="event.preventDefault(); requestPasswordReset();">
+                  <div class="auth-field">
+                    <label for="resetEmail">Email Address</label>
+                    <input class="auth-input" id="resetEmail" type="email" placeholder="you@example.com" autocomplete="email">
+                  </div>
+                  <button class="auth-submit" type="submit">SEND RESET LINK →</button>
+                </form>
+
+                <div class="auth-links">
+                  <div>Remembered it? <button onclick="setAuthMode('login')">Back to sign in</button></div>
+                </div>
+
+                <p class="auth-small-note">The reset email comes from the site email system. Check your inbox and spam folder after sending.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      `;
+      setTimeout(function() {
+        const resetEmail = document.getElementById('resetEmail');
+        if (resetEmail) resetEmail.focus();
+      }, 0);
+      return;
+    }
+
     const isLogin = authMode === 'login';
     container.innerHTML = `
       <div class="auth-shell">
@@ -4926,7 +5817,9 @@ function renderAccountPage() {
             <div class="auth-body">
               <div id="authInlineMessage" class="auth-message-inline"></div>
 
-              <div id="googleSignInWrap" class="auth-google-wrap"></div>
+              <div id="googleSignInWrap" class="auth-google-wrap">
+                <button class="auth-google-fallback" type="button" disabled>Loading Google...</button>
+              </div>
 
               <div class="auth-divider">or</div>
 
@@ -4943,7 +5836,7 @@ function renderAccountPage() {
                   <button class="auth-submit" type="submit">SIGN IN →</button>
                 </form>
                 <div class="auth-links">
-                  <div>Can't sign in? <button onclick="requestPasswordReset()">Reset your password</button></div>
+                  <div>Can't sign in? <button onclick="startPasswordResetRequest()">Reset your password</button></div>
                   <div>Don't have an account? <button onclick="setAuthMode('register')">Create one</button></div>
                 </div>
               ` : `
@@ -4980,145 +5873,389 @@ function renderAccountPage() {
   const orders = Array.isArray(account.orders) ? account.orders.slice().reverse() : [];
   container.innerHTML = `
     <div class="account-dashboard-head">
-      <div>
-        <p class="kicker">Signed in as ${escapeHtml(account.email)}</p>
+      <div class="account-dashboard-copy">
+        <p class="kicker account-email-kicker">Signed in as ${escapeHtml(account.email)}</p>
         <h2>Welcome, ${escapeHtml(account.name)}</h2>
+        <p class="account-dashboard-subtitle">Manage checkout, saved session details, and order history from one clean account area.</p>
       </div>
-      <div class="actions">
+      <div class="actions account-dashboard-actions">
         <button class="btn primary" onclick="startCheckout()">Checkout Cart</button>
         <button class="btn" onclick="logoutAccount()">Sign Out</button>
       </div>
     </div>
 
-    <div class="account-panel" style="margin-bottom: 22px;">
-      <h2>Order history</h2>
+    <div class="account-panel account-history-panel">
+      <div>
+        <p class="kicker account-panel-kicker">Orders</p>
+        <h2>Order history</h2>
+      </div>
       <p class="lead">${orders.length ? 'Past orders are listed below.' : 'No orders yet. Add products to your cart and checkout to place an order.'}</p>
     </div>
 
     <div class="order-history-list">
       ${orders.length ? orders.map(renderOrderCard).join('') : ''}
     </div>
+
+    ${account.isAdmin ? renderAdminDashboardShell() : ''}
   `;
+
+  if (account.isAdmin) {
+    setTimeout(loadAdminOrders, 0);
+  }
+}
+
+function getOrderStatusMessage(order) {
+  const status = String(order.status || 'Order Submitted');
+  const lower = status.toLowerCase();
+
+  if (lower.includes('awaiting') && lower.includes('payment')) {
+    return 'Waiting for payment confirmation. Once payment is verified, the order status will update here.';
+  }
+  if (lower.includes('payment received') || lower.includes('paid') || lower.includes('processing')) {
+    return 'Payment has been verified. Your order is now being prepared.';
+  }
+  if (lower.includes('ship')) {
+    return order.trackingNumber ? 'Your order has shipped. Tracking details are shown below.' : 'Your order has shipped. Tracking will be added here when available.';
+  }
+  if (lower.includes('complete')) {
+    return 'This order has been completed.';
+  }
+  if (lower.includes('cancel')) {
+    return 'This order was cancelled. Contact support if you have questions.';
+  }
+  return 'Your order was received and is waiting for the next update.';
 }
 
 function getOrderStatusClass(status) {
   const value = String(status || '').toLowerCase();
-  if (value.includes('completed')) return 'is-completed';
-  if (value.includes('shipped') || value.includes('tracking')) return 'is-shipped';
-  if (value.includes('paid') || value.includes('processing')) return 'is-paid';
-  if (value.includes('pending')) return 'is-pending';
-  if (value.includes('cancel')) return 'is-cancelled';
+  if (value.includes('cancel') || value.includes('refund')) return 'is-cancelled';
+  if (value.includes('complete')) return 'is-completed';
+  if (value.includes('ship') || value.includes('tracking')) return 'is-shipped';
+  if (value.includes('paid') || value.includes('payment received') || value.includes('processing') || value.includes('packed')) return 'is-paid';
+  if (value.includes('awaiting') || value.includes('pending') || value.includes('submitted')) return 'is-pending';
   return 'is-default';
 }
 
-function getOrderStatusMessage(status) {
-  const value = String(status || '').toLowerCase();
-  if (value.includes('completed')) return 'This order has been completed. Thank you for shopping with ResearchPeps.';
-  if (value.includes('shipped') || value.includes('tracking')) return 'Your order has shipped. Use the tracking details to follow the delivery progress.';
-  if (value.includes('paid') || value.includes('processing')) return 'Payment has been received and the order is being prepared for fulfillment.';
-  if (value.includes('pending')) return 'Your order is saved and currently waiting for the next payment or processing update.';
-  if (value.includes('cancel')) return 'This order has been cancelled. Contact support if you need help with it.';
-  return 'Your order has been saved to your account. Any status updates will appear here.';
-}
-
-function extractTrackingData(order) {
-  if (!order) return null;
-  if (order.trackingNumber) {
-    return {
-      carrier: order.trackingCarrier || 'Tracking',
-      number: String(order.trackingNumber)
-    };
-  }
-  const notes = String(order.notes || '');
-  const regexes = [
-    /tracking\s*[—:-]\s*(USPS|UPS|FedEx|DHL)?\s*([A-Za-z0-9-]{6,})/i,
-    /(USPS|UPS|FedEx|DHL)\s+([A-Za-z0-9-]{6,})/i
-  ];
-  for (const regex of regexes) {
-    const match = notes.match(regex);
-    if (match) {
-      return {
-        carrier: match[1] || 'Tracking',
-        number: match[2]
-      };
-    }
-  }
-  return null;
-}
-
 function renderOrderCard(order) {
-  const date = new Date(order.createdAt).toLocaleString();
-  const updated = new Date(order.updatedAt || order.createdAt).toLocaleString();
-  const status = order.status || 'Order Submitted';
-  const statusClass = getOrderStatusClass(status);
-  const statusMessage = getOrderStatusMessage(status);
-  const tracking = extractTrackingData(order);
-  const items = order.items || [];
-  const itemCount = items.reduce(function(sum, item) { return sum + Number(item.quantity || 0); }, 0) || items.length;
-  const itemsMarkup = items.map(function(item) {
+  const date = order.createdAt ? new Date(order.createdAt).toLocaleString() : '—';
+  const updated = order.updatedAt ? new Date(order.updatedAt).toLocaleString() : date;
+  const statusText = order.status || 'Order Submitted';
+  const statusClass = getOrderStatusClass(statusText);
+  const paymentLabel = order.paymentMethodLabel || getPaymentMethodLabel(order.paymentMethod) || 'Invoice / payment link';
+  const orderItems = Array.isArray(order.items) ? order.items : [];
+  const itemCount = orderItems.reduce(function(sum, item) {
+    return sum + Number(item.quantity || 0);
+  }, 0) || orderItems.length;
+  const subtotal = Number(order.subtotal || orderItems.reduce(function(sum, item) {
+    return sum + Number(item.lineTotal || 0);
+  }, 0) || 0);
+  const shippingCharge = Number(order.shippingCharge || order.shippingCost || order.shippingRate || 0);
+  const discount = Number(order.discount || 0);
+  const total = Number(order.total || 0);
+  const trackingNumber = String(order.trackingNumber || '').trim();
+  const trackingCarrier = String(order.trackingCarrier || '').trim();
+  const shipping = order.shipping || order.customer || {};
+  const destinationParts = [shipping.city, shipping.state, shipping.zip, shipping.country].filter(Boolean);
+  const destination = destinationParts.length ? destinationParts.join(', ').replace(', '+String(shipping.zip || ''), ' ' + String(shipping.zip || '')) : 'Shipping details saved with order';
+
+  const items = orderItems.length ? orderItems.map(function(item) {
     return `
       <div class="order-item">
         <div>
           <strong>${escapeHtml(item.name)}</strong><br>
           <small>${escapeHtml(item.spec)} • Qty ${escapeHtml(item.quantity)}</small>
         </div>
-        <strong>${escapeHtml(formatMoney(item.lineTotal))}</strong>
+        <strong class="order-item-price">${escapeHtml(formatMoney(item.lineTotal))}</strong>
       </div>
     `;
-  }).join('');
+  }).join('') : '<div class="order-empty-track">No item details were saved with this order.</div>';
+
+  const discountRow = discount > 0 ? `
+    <div class="order-kv-row"><span>Discount</span><strong>-${escapeHtml(formatMoney(discount))}</strong></div>
+  ` : '';
+
+  const trackingBlock = trackingNumber ? `
+    <div class="tracking-box">
+      <strong>Tracking${trackingCarrier ? ' — ' + escapeHtml(trackingCarrier) : ''}</strong>
+      <code>${escapeHtml(trackingNumber)}</code>
+      <small>Use this tracking number on the carrier website for delivery updates.</small>
+    </div>
+  ` : `
+    <div class="order-empty-track">Tracking details will appear here once the order has shipped and a carrier number has been added.</div>
+  `;
 
   return `
-    <article class="order-card order-card-premium">
-      <div class="order-card-top">
-        <div>
+    <article class="order-card">
+      <div class="order-card-head">
+        <div class="order-title-area">
           <div class="order-badges">
-            <span class="order-status ${statusClass}">${escapeHtml(status)}</span>
-            <span class="order-chip">${escapeHtml(order.paymentMethodLabel || 'Invoice / payment link')}</span>
+            <span class="order-status ${statusClass}">${escapeHtml(statusText)}</span>
+            <span class="order-chip">${escapeHtml(paymentLabel)}</span>
           </div>
           <h3 class="order-id">${escapeHtml(order.id)}</h3>
           <p class="order-meta">Placed ${escapeHtml(date)}</p>
         </div>
-        <div class="order-total-box">
-          <span class="eyebrow">Order total</span>
-          <strong>${escapeHtml(formatMoney(order.total || 0))}</strong>
+
+        <div class="order-total-card">
+          <span>Order total</span>
+          <strong>${escapeHtml(formatMoney(total))}</strong>
           <small>${escapeHtml(itemCount)} item${itemCount === 1 ? '' : 's'} in this order</small>
         </div>
       </div>
 
-      <div class="order-layout">
-        <div class="order-info-card">
-          <h4>Order summary</h4>
-          <div class="order-kv"><span>Status</span><strong>${escapeHtml(status)}</strong></div>
-          <div class="order-kv"><span>Payment</span><strong>${escapeHtml(order.paymentMethodLabel || 'Invoice / payment link')}</strong></div>
-          <div class="order-kv"><span>Subtotal</span><strong>${escapeHtml(formatMoney(order.subtotal || 0))}</strong></div>
-          <div class="order-kv"><span>Shipping</span><strong>${escapeHtml(formatMoney(order.shippingCharge || 0))}</strong></div>
-          <div class="order-kv"><span>Last updated</span><strong>${escapeHtml(updated)}</strong></div>
-          <p class="order-status-note">${escapeHtml(statusMessage)}</p>
-        </div>
-
-        <div class="order-info-card">
-          <h4>Shipping & tracking</h4>
-          ${tracking ? `
-            <div class="tracking-banner">
-              <span class="tracking-label">Tracking</span>
-              <strong>${escapeHtml(tracking.carrier)} — ${escapeHtml(tracking.number)}</strong>
-              <small>Use this tracking number on the carrier website for delivery updates.</small>
+      <div class="order-card-body">
+        <div class="order-overview-grid">
+          <div class="order-panel">
+            <div class="order-panel-title">Current status</div>
+            <div class="order-status-box">
+              <span class="order-status-dot"></span>
+              <div>
+                <div class="order-status-title">${escapeHtml(statusText)}</div>
+                <div class="order-status-text">${escapeHtml(getOrderStatusMessage(order))}<br>Last updated: ${escapeHtml(updated)}</div>
+              </div>
             </div>
-          ` : `
-            <div class="empty-order-note">Tracking details will appear here once the order has shipped and a carrier number has been added.</div>
-          `}
-        </div>
-      </div>
+          </div>
 
-      <div class="order-items-card">
-        <div class="order-section-head">
-          <h4>Items in this order</h4>
-          <span>${escapeHtml(itemCount)} unit${itemCount === 1 ? '' : 's'}</span>
+          <div class="order-panel">
+            <div class="order-panel-title">Payment summary</div>
+            <div class="order-info-list">
+              <div class="order-kv-row"><span>Payment</span><strong>${escapeHtml(paymentLabel)}</strong></div>
+              <div class="order-kv-row"><span>Subtotal</span><strong>${escapeHtml(formatMoney(subtotal))}</strong></div>
+              <div class="order-kv-row"><span>Shipping</span><strong>${escapeHtml(formatMoney(shippingCharge))}</strong></div>
+              ${discountRow}
+              <div class="order-kv-row"><span>Total</span><strong>${escapeHtml(formatMoney(total))}</strong></div>
+            </div>
+          </div>
         </div>
-        <div class="order-items">${itemsMarkup}</div>
+
+        <div class="order-overview-grid">
+          <div class="order-panel">
+            <div class="order-panel-title">Shipping & tracking</div>
+            ${trackingBlock}
+          </div>
+
+          <div class="order-panel">
+            <div class="order-panel-title">Destination</div>
+            <div class="order-info-list">
+              <div class="order-kv-row"><span>Name</span><strong>${escapeHtml((order.customer && order.customer.name) || shipping.name || '—')}</strong></div>
+              <div class="order-kv-row"><span>Email</span><strong>${escapeHtml((order.customer && order.customer.email) || shipping.email || '—')}</strong></div>
+              <div class="order-kv-row"><span>Ship to</span><strong>${escapeHtml(destination)}</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="order-items-panel">
+          <div class="order-items-head">
+            <strong>Items in this order</strong>
+            <span>${escapeHtml(itemCount)} unit${itemCount === 1 ? '' : 's'}</span>
+          </div>
+          <div class="order-items">${items}</div>
+        </div>
       </div>
     </article>
   `;
+}
+
+function renderAdminDashboardShell() {
+  return `
+    <div class="account-panel admin-dashboard">
+      <div>
+        <p class="kicker account-panel-kicker">Admin</p>
+        <h2>Order dashboard</h2>
+        <p class="lead">Search by order number, customer email, customer name, payment method, status, or tracking number. Use this to verify crypto orders, update status, and add tracking details customers can see.</p>
+      </div>
+
+      <div class="admin-toolbar">
+        <input id="adminOrderSearch" class="admin-search-input" placeholder="Search order number, email, name, payment, or status" onkeydown="if(event.key === 'Enter') loadAdminOrders()">
+        <button class="btn primary" onclick="loadAdminOrders()">Search Orders</button>
+      </div>
+
+      <div class="admin-email-test">
+        <input id="adminTestEmail" class="admin-search-input" placeholder="Send test email to address">
+        <button class="btn" onclick="sendAdminTestEmail()">Test Email</button>
+      </div>
+      <p class="admin-email-test-note">Use this to test the same SMTP settings used by password resets, customer order emails, and owner order notifications.</p>
+
+      <div id="adminDashboardMessage" class="auth-note"></div>
+      <div id="adminOrdersResults" class="admin-results">
+        <div class="admin-empty">Loading admin orders...</div>
+      </div>
+    </div>
+  `;
+}
+
+let adminOrders = [];
+
+function getAdminStatusOptions(currentStatus) {
+  const statuses = [
+    'Order Submitted',
+    'Awaiting Bitcoin (BTC) Payment',
+    'Awaiting Solana (SOL) Payment',
+    'Awaiting USDC (Solana) Payment',
+    'Payment Received - Processing',
+    'Paid - Processing',
+    'Packed',
+    'Shipped',
+    'Shipped - Tracking Added',
+    'Completed',
+    'Cancelled',
+    'Refunded'
+  ];
+  const cleanCurrent = String(currentStatus || 'Order Submitted');
+  if (!statuses.includes(cleanCurrent)) statuses.unshift(cleanCurrent);
+  return statuses;
+}
+
+function renderAdminOrderResults() {
+  const results = document.getElementById('adminOrdersResults');
+  if (!results) return;
+
+  if (!adminOrders.length) {
+    results.innerHTML = '<div class="admin-empty">No orders found.</div>';
+    return;
+  }
+
+  results.innerHTML = adminOrders.map(function(order) {
+    const date = order.createdAt ? new Date(order.createdAt).toLocaleString() : '';
+    const customer = order.customer || {};
+    const shipping = order.shipping || {};
+    const statusOptions = getAdminStatusOptions(order.status).map(function(status) {
+      return `<option value="${escapeForAttribute(status)}" ${status === order.status ? 'selected' : ''}>${escapeHtml(status)}</option>`;
+    }).join('');
+    const safeId = String(order.id).replace(/[^a-zA-Z0-9]/g, '');
+    const selectId = 'adminStatus' + safeId;
+    const trackingId = 'adminTracking' + safeId;
+    const carrierId = 'adminCarrier' + safeId;
+
+    return `
+      <article class="admin-order-card">
+        <div class="admin-order-head">
+          <div>
+            <span class="order-status">${escapeHtml(order.status || 'Order Submitted')}</span>
+            <h3 class="order-id">${escapeHtml(order.id)}</h3>
+            <div class="admin-order-meta">
+              <span><strong>Customer:</strong> ${escapeHtml(customer.name || '—')} • ${escapeHtml(customer.email || '—')}</span>
+              <span><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel || order.paymentMethod || '—')} • <strong>Total:</strong> ${escapeHtml(formatMoney(order.total || 0))}</span>
+              <span><strong>Shipping:</strong> ${escapeHtml(shipping.city || '')}${shipping.city ? ', ' : ''}${escapeHtml(shipping.state || '')} ${escapeHtml(shipping.zip || '')} ${escapeHtml(shipping.country || '')}</span>
+              <span><strong>Tracking:</strong> ${escapeHtml(order.trackingCarrier || '—')} ${escapeHtml(order.trackingNumber || '')}</span>
+              <span><strong>Placed:</strong> ${escapeHtml(date)}</span>
+            </div>
+          </div>
+          <button class="btn" onclick="copyOrderNumber('${escapeForAttribute(order.id)}')">Copy Order #</button>
+        </div>
+
+        <div class="admin-tracking-grid">
+          <label>
+            Carrier
+            <input id="${carrierId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingCarrier || '')}" placeholder="USPS, UPS, FedEx, etc.">
+          </label>
+          <label>
+            Tracking number
+            <input id="${trackingId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingNumber || '')}" placeholder="Paste tracking number">
+          </label>
+        </div>
+
+        <div class="admin-order-actions">
+          <select id="${selectId}" class="admin-status-select">
+            ${statusOptions}
+          </select>
+          <button class="btn primary" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}', '${trackingId}', '${carrierId}')">Update Order</button>
+          <button class="btn" onclick="sendAdminOrderEmail('${escapeForAttribute(order.id)}')">Send Order Email</button>
+        </div>
+      </article>
+    `;
+  }).join('');
+}
+
+async function loadAdminOrders() {
+  const message = document.getElementById('adminDashboardMessage');
+  const results = document.getElementById('adminOrdersResults');
+  const q = String(document.getElementById('adminOrderSearch')?.value || '').trim();
+
+  if (results) results.innerHTML = '<div class="admin-empty">Loading orders...</div>';
+  if (message) message.textContent = '';
+
+  try {
+    const data = await apiRequest('/api/admin/orders?q=' + encodeURIComponent(q), { method: 'GET' });
+    adminOrders = data.orders || [];
+    renderAdminOrderResults();
+  } catch (error) {
+    adminOrders = [];
+    if (results) results.innerHTML = '<div class="admin-empty">Admin orders could not be loaded.</div>';
+    if (message) message.textContent = error.message || 'Admin orders could not be loaded.';
+  }
+}
+
+
+async function sendAdminTestEmail() {
+  const message = document.getElementById('adminDashboardMessage');
+  const email = normalizeEmail(document.getElementById('adminTestEmail')?.value || backendAccount?.email || '');
+
+  if (!email) {
+    if (message) message.textContent = 'Enter an email address to test.';
+    return;
+  }
+
+  if (message) message.textContent = 'Sending test email to ' + email + '...';
+
+  try {
+    const data = await apiRequest('/api/admin/test-email', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+    if (message) message.textContent = data.message || 'Test email sent. Check inbox and spam.';
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Test email failed. Check Render SMTP environment variables and logs.';
+  }
+}
+
+async function sendAdminOrderEmail(orderId) {
+  const message = document.getElementById('adminDashboardMessage');
+  if (message) message.textContent = 'Sending order email for ' + orderId + '...';
+
+  try {
+    const data = await apiRequest('/api/admin/orders/' + encodeURIComponent(orderId) + '/send-email', {
+      method: 'POST'
+    });
+    if (message) message.textContent = data.message || 'Order email sent. Check customer inbox and owner notification inbox.';
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Order email failed. Check SMTP settings and Render logs.';
+  }
+}
+
+async function updateAdminOrderStatus(orderId, selectId, trackingId, carrierId) {
+  const select = document.getElementById(selectId);
+  const status = String(select?.value || '').trim();
+  const trackingNumber = String(document.getElementById(trackingId)?.value || '').trim();
+  const trackingCarrier = String(document.getElementById(carrierId)?.value || '').trim();
+  const message = document.getElementById('adminDashboardMessage');
+
+  if (!status) return;
+  if (message) message.textContent = 'Updating ' + orderId + '...';
+
+  try {
+    const data = await apiRequest('/api/admin/orders/' + encodeURIComponent(orderId) + '/status', {
+      method: 'PATCH',
+      body: JSON.stringify({ status, trackingNumber, trackingCarrier })
+    });
+
+    adminOrders = adminOrders.map(function(order) {
+      return order.id === orderId ? data.order : order;
+    });
+    renderAdminOrderResults();
+    await initBackendSession();
+    if (message) message.textContent = 'Updated ' + orderId + ' to: ' + status + (trackingNumber ? ' with tracking.' : '.');
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Could not update order.';
+  }
+}
+
+async function copyOrderNumber(orderId) {
+  try {
+    await navigator.clipboard.writeText(orderId);
+    const message = document.getElementById('adminDashboardMessage');
+    if (message) message.textContent = 'Copied order number ' + orderId;
+  } catch (error) {}
 }
 
 function addProductToCart(productName) {
@@ -5233,6 +6370,8 @@ function renderCheckoutPage() {
   const summary = document.getElementById('checkoutCartSummary');
   const subtotalEl = document.getElementById('checkoutSubtotal');
   const shippingEl = document.getElementById('checkoutShipping');
+  const discountRow = document.getElementById('checkoutDiscountRow');
+  const discountEl = document.getElementById('checkoutDiscount');
   const total = document.getElementById('checkoutTotal');
   if (!summary || !total) return;
 
@@ -5248,6 +6387,8 @@ function renderCheckoutPage() {
     summary.innerHTML = '<div class="empty-search">Your cart is empty.</div>';
     if (subtotalEl) subtotalEl.textContent = '$0.00';
     if (shippingEl) shippingEl.textContent = '$0.00';
+    if (discountRow) discountRow.style.display = 'none';
+    if (discountEl) discountEl.textContent = '-$0.00';
     total.textContent = '$0.00';
     return;
   }
@@ -5266,8 +6407,11 @@ function renderCheckoutPage() {
       </div>
     `;
   }).join('');
+  const cryptoDiscount = getCryptoDiscountAmount();
   if (subtotalEl) subtotalEl.textContent = formatMoney(getCartSubtotal());
   if (shippingEl) shippingEl.textContent = formatMoney(getCheckoutShipping()) + ' (' + getSelectedShippingCountry() + ')';
+  if (discountRow) discountRow.style.display = cryptoDiscount > 0 ? 'flex' : 'none';
+  if (discountEl) discountEl.textContent = '-' + formatMoney(cryptoDiscount);
   total.textContent = formatMoney(getCartTotal());
   updateCryptoWalletBox();
 }
@@ -5276,7 +6420,7 @@ function getPaymentMethodLabel(value) {
   if (value === 'btc') return 'Bitcoin (BTC)';
   if (value === 'sol') return 'Solana (SOL)';
   if (value === 'usdc') return 'USDC';
-  if (value === 'stripe') return 'Credit card';
+  if (value === 'stripe') return 'Credit card (Visa / Mastercard)';
   return 'Credit card';
 }
 
@@ -5370,134 +6514,15 @@ function placeOrder() {
    This replaces the localStorage account/order prototype with secure server calls.
    Keep cart UI local for speed, but prices/orders are recalculated on the server. */
 let backendAccount = null;
-let googleClientId = '';
-let passwordResetToken = new URLSearchParams(window.location.search).get('reset') || '';
 let cryptoWallets = {};
+let cryptoDiscountPercent = 5;
 let shippingRates = { defaultRate: 80, rates: [{ country: 'United States', code: 'US', rate: 15 }] };
 let lastCompletedOrder = null;
 let lastCryptoPayment = null;
 let lastCryptoQuote = null;
 let currentCryptoQuote = null;
-
-
-async function loadAuthConfig() {
-  try {
-    const data = await apiRequest('/api/auth/config', { method: 'GET' });
-    googleClientId = data.googleClientId || '';
-  } catch (error) {
-    googleClientId = '';
-  }
-}
-
-function renderGoogleButton() {
-  const wrap = document.getElementById('googleSignInWrap');
-  if (!wrap) return;
-
-  if (!googleClientId) {
-    wrap.innerHTML = `
-      <button class="auth-google-fallback" type="button" onclick="showAuthMessage('Google Client ID is missing in Render environment variables.', 'error')">
-        Continue with Google
-      </button>
-    `;
-    return;
-  }
-
-  if (!window.google || !google.accounts || !google.accounts.id) {
-    wrap.innerHTML = `
-      <button class="auth-google-fallback" type="button" disabled>
-        Loading Google...
-      </button>
-    `;
-    setTimeout(renderGoogleButton, 300);
-    return;
-  }
-
-  wrap.innerHTML = '';
-  google.accounts.id.initialize({
-    client_id: googleClientId,
-    callback: handleGoogleCredential
-  });
-
-  google.accounts.id.renderButton(wrap, {
-    theme: 'outline',
-    size: 'large',
-    type: 'standard',
-    text: 'continue_with',
-    shape: 'rectangular',
-    width: Math.min(wrap.offsetWidth || 486, 486)
-  });
-}
-
-async function handleGoogleCredential(response) {
-  try {
-    if (!response || !response.credential) {
-      showAuthMessage('Google did not return a sign-in credential.', 'error');
-      return;
-    }
-
-    const data = await apiRequest('/api/auth/google', {
-      method: 'POST',
-      body: JSON.stringify({ credential: response.credential })
-    });
-
-    backendAccount = data.account;
-    updateAccountNav();
-    renderAccountPage();
-    showMessage('accountMessage', 'Signed in with Google successfully.');
-  } catch (error) {
-    showAuthMessage(error.message || 'Google sign-in failed.', 'error');
-  }
-}
-
-async function requestPasswordReset() {
-  const email = normalizeEmail(document.getElementById('loginEmail')?.value);
-
-  if (!email) {
-    showAuthMessage('Enter your email address first, then click reset password.', 'error');
-    return;
-  }
-
-  try {
-    const data = await apiRequest('/api/auth/password-reset', {
-      method: 'POST',
-      body: JSON.stringify({ email })
-    });
-
-    showAuthMessage(data.message || 'If an account exists for that email, a reset link was sent.', 'success');
-  } catch (error) {
-    showAuthMessage(error.message || 'Password reset request failed.', 'error');
-  }
-}
-
-async function resetPasswordWithToken() {
-  const password = String(document.getElementById('resetPassword')?.value || '');
-
-  if (!passwordResetToken) {
-    showAuthMessage('Reset token is missing. Request a new password reset email.', 'error');
-    return;
-  }
-
-  if (password.length < 8) {
-    showAuthMessage('Password must be at least 8 characters.', 'error');
-    return;
-  }
-
-  try {
-    const data = await apiRequest('/api/auth/password-reset/confirm', {
-      method: 'POST',
-      body: JSON.stringify({ token: passwordResetToken, password })
-    });
-
-    backendAccount = data.account;
-    passwordResetToken = '';
-    window.history.replaceState({}, document.title, window.location.pathname);
-    updateAccountNav();
-    renderAccountPage();
-    showMessage('accountMessage', 'Password reset successfully. You are signed in.');
-  } catch (error) {
-    showAuthMessage(error.message || 'Password reset failed.', 'error');
-  }
-}
+let googleClientId = '';
+let passwordResetToken = new URLSearchParams(window.location.search).get('reset') || '';
 
 function isCryptoMethod(value) {
   return ['btc', 'sol', 'usdc'].includes(String(value || '').toLowerCase());
@@ -5507,6 +6532,7 @@ async function loadPaymentOptions() {
   try {
     const data = await apiRequest('/api/payment-options', { method: 'GET' });
     cryptoWallets = data.cryptoWallets || {};
+    cryptoDiscountPercent = Number(data.cryptoDiscountPercent || 5);
   } catch (error) {
     cryptoWallets = {};
   }
@@ -5560,7 +6586,7 @@ async function loadCryptoQuote(method) {
 
     if (currentCryptoQuote && note) {
       const expires = new Date(currentCryptoQuote.expiresAt).toLocaleTimeString();
-      note.textContent = 'Send this amount before ' + expires + '. Network fees are paid separately by the customer.';
+      note.textContent = '5% crypto discount applied. Send this amount before ' + expires + '. Network fees are paid separately by the customer.';
     }
   } catch (error) {
     currentCryptoQuote = null;
@@ -5621,7 +6647,13 @@ function renderThankYouPage(order, cryptoPayment, cryptoQuote) {
   if (payment) payment.textContent = order?.paymentMethodLabel || getPaymentMethodLabel(order?.paymentMethod);
   if (shipping) shipping.textContent = formatMoney(order?.shippingCharge || 0);
   if (total) total.textContent = formatMoney(order?.total || 0);
-  if (intro) intro.textContent = 'Order ' + (order?.id || '') + ' was saved to your account. Keep this order number for payment and support.';
+  if (intro) {
+    if (order?.paymentMethod === 'stripe' && String(order?.status || '').toLowerCase().includes('paid')) {
+      intro.textContent = 'Payment confirmed for order ' + (order?.id || '') + '. Your order was saved to your account and is now processing.';
+    } else {
+      intro.textContent = 'Order ' + (order?.id || '') + ' was saved to your account. Keep this order number for payment and support.';
+    }
+  }
 
   if (cryptoBox) {
     if (cryptoPayment) {
@@ -5639,6 +6671,47 @@ function renderThankYouPage(order, cryptoPayment, cryptoQuote) {
       cryptoBox.innerHTML = '';
     }
   }
+}
+
+
+async function handleCheckoutReturn(urlParams) {
+  const checkoutStatus = urlParams.get('checkout');
+  const orderId = urlParams.get('order');
+
+  if (checkoutStatus === 'success' && orderId) {
+    try {
+      const data = await apiRequest('/api/checkout/stripe/confirm', {
+        method: 'POST',
+        body: JSON.stringify({ orderId })
+      });
+
+      backendAccount = data.account || backendAccount;
+      cart = [];
+      saveCart();
+      renderCart();
+      renderCheckoutPage();
+      renderAccountPage();
+      updateAccountNav();
+      renderThankYouPage(data.order, null, null);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showPage('thank-you');
+      return true;
+    } catch (error) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showPage('account');
+      showMessage('accountMessage', error.message || 'Payment completed, but the order could not be refreshed. Check the admin dashboard.');
+      return true;
+    }
+  }
+
+  if (checkoutStatus === 'cancel') {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showPage('checkout');
+    showMessage('checkoutMessage', 'Card checkout was canceled. You can try again or choose crypto payment.');
+    return true;
+  }
+
+  return false;
 }
 
 function viewLastOrder() {
@@ -5665,10 +6738,118 @@ async function apiRequest(path, options) {
   return payload;
 }
 
+async function loadAuthConfig() {
+  try {
+    const data = await apiRequest('/api/auth/config', { method: 'GET' });
+    googleClientId = data.googleClientId || '';
+  } catch (error) {
+    googleClientId = '';
+  }
+}
+
+function renderGoogleButton() {
+  const wrap = document.getElementById('googleSignInWrap');
+  if (!wrap) return;
+
+  wrap.innerHTML = `
+    <button class="auth-google-fallback auth-google-redirect" type="button" onclick="startGoogleRedirectLogin()">
+      <span class="auth-google-g">G</span>
+      <span>Continue with Google</span>
+    </button>
+  `;
+}
+
+function startGoogleRedirectLogin() {
+  window.location.href = '/api/auth/google/start';
+}
+
+async function handleGoogleCredential(response) {
+  try {
+    if (!response || !response.credential) {
+      showAuthMessage('Google did not return a sign-in credential.', 'error');
+      return;
+    }
+
+    const data = await apiRequest('/api/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ credential: response.credential })
+    });
+
+    backendAccount = data.account || data.user || null;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
+    updateAccountNav();
+    renderAccountPage();
+    showMessage('accountMessage', 'Signed in with Google successfully.');
+  } catch (error) {
+    showAuthMessage(error.message || 'Google sign-in failed.', 'error');
+  }
+}
+
+async function requestPasswordReset() {
+  const emailInput = document.getElementById('resetEmail') || document.getElementById('loginEmail');
+  const email = normalizeEmail(emailInput?.value);
+
+  if (!email) {
+    showAuthMessage('Enter the email address for your account.', 'error');
+    if (emailInput) emailInput.focus();
+    return;
+  }
+
+  try {
+    const data = await apiRequest('/api/auth/password-reset-request', {
+      method: 'POST',
+      body: JSON.stringify({ email })
+    });
+
+    showAuthMessage(data.message || 'If an account exists for that email, a reset link was sent. Check inbox and spam.', 'success');
+  } catch (error) {
+    showAuthMessage(error.message || 'Password reset request failed. Check SMTP email settings in Render.', 'error');
+  }
+}
+
+async function resetPasswordWithToken() {
+  const password = String(document.getElementById('resetPassword')?.value || '');
+
+  if (!passwordResetToken) {
+    showAuthMessage('Reset token is missing. Request a new password reset email.', 'error');
+    return;
+  }
+
+  if (password.length < 8) {
+    showAuthMessage('Password must be at least 8 characters.', 'error');
+    return;
+  }
+
+  try {
+    const data = await apiRequest('/api/auth/password-reset/confirm', {
+      method: 'POST',
+      body: JSON.stringify({ token: passwordResetToken, password })
+    });
+
+    backendAccount = data.account || null;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
+    passwordResetToken = '';
+    window.history.replaceState({}, document.title, window.location.pathname);
+    updateAccountNav();
+    renderAccountPage();
+    showMessage('accountMessage', 'Password reset successfully. You are signed in.');
+  } catch (error) {
+    showAuthMessage(error.message || 'Password reset failed.', 'error');
+  }
+}
+
+
 async function initBackendSession() {
   try {
     const data = await apiRequest('/api/session', { method: 'GET' });
     backendAccount = data.account || null;
+    if (backendAccount) rememberAgeVerification();
   } catch (error) {
     backendAccount = null;
   }
@@ -5705,6 +6886,10 @@ async function createAccount() {
       body: JSON.stringify({ name, email, password })
     });
     backendAccount = data.account;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
     updateAccountNav();
     renderAccountPage();
     showAuthMessage('Account created. You can now checkout and view past orders here.', 'success');
@@ -5724,6 +6909,10 @@ async function loginAccount() {
       body: JSON.stringify({ email, password })
     });
     backendAccount = data.account;
+    if (backendAccount) {
+      rememberAgeVerification();
+      applyAgeGateState();
+    }
     updateAccountNav();
     renderAccountPage();
     showAuthMessage('Signed in successfully.', 'success');
@@ -5852,7 +7041,12 @@ async function placeOrder() {
 
 async function initializeLiveStorefront() {
   loadStorefrontState();
+  applyAgeGateState();
   await initBackendSession();
+  if (backendAccount) {
+    rememberAgeVerification();
+    applyAgeGateState();
+  }
   await loadAuthConfig();
   await loadPaymentOptions();
   await loadShippingRates();
@@ -5864,8 +7058,23 @@ async function initializeLiveStorefront() {
   updateCryptoWalletBox();
   updateAccountNav();
   initHeroVial();
+  const urlParams = new URLSearchParams(window.location.search);
+  const handledCheckoutReturn = await handleCheckoutReturn(urlParams);
+  if (handledCheckoutReturn) return;
+
+  const googleStatus = urlParams.get('google');
+  const googleMessage = urlParams.get('message');
+
   if (passwordResetToken) {
     showPage('account');
+  } else if (googleStatus) {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showPage('account');
+    if (googleStatus === 'success') {
+      showMessage('accountMessage', 'Signed in with Google successfully.');
+    } else {
+      showMessage('accountMessage', googleMessage || 'Google sign-in failed. Check your Google OAuth settings.');
+    }
   } else {
     showPage('home');
   }
