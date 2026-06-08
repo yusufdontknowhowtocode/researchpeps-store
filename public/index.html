@@ -2864,23 +2864,103 @@ body.age-locked .vial-rotor {
 
 
 /* Discount code checkout + admin controls */
-.discount-code-card { margin-top: 16px; border: 1px solid rgba(148,163,184,.18); border-radius: 20px; background: rgba(255,255,255,.04); padding: 16px; display: grid; gap: 12px; }
+.discount-code-card {
+  margin-top: 16px;
+  border: 1px solid rgba(148,163,184,.18);
+  border-radius: 20px;
+  background: rgba(255,255,255,.04);
+  padding: 16px;
+  display: grid;
+  gap: 12px;
+}
 .discount-code-card strong { color: #fff; font-size: 14px; font-weight: 950; }
 .discount-code-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; }
-.discount-code-row input, .admin-discount-input { width: 100%; min-height: 48px; border: 1px solid rgba(148,163,184,.24); border-radius: 16px; background: rgba(15,23,42,.62); color: #f8fafc; padding: 12px 14px; outline: none; font-size: 14px; font-weight: 800; text-transform: uppercase; }
-.discount-code-row input:focus, .admin-discount-input:focus { border-color: rgba(96,165,250,.78); box-shadow: 0 0 0 4px rgba(37,99,235,.13); }
-.discount-code-message { min-height: 20px; color: var(--muted); font-size: 13px; line-height: 1.55; font-weight: 700; }
+.discount-code-row input,
+.admin-discount-input {
+  width: 100%;
+  min-height: 48px;
+  border: 1px solid rgba(148,163,184,.24);
+  border-radius: 16px;
+  background: rgba(15,23,42,.62);
+  color: #f8fafc;
+  padding: 12px 14px;
+  outline: none;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.discount-code-row input:focus,
+.admin-discount-input:focus {
+  border-color: rgba(96,165,250,.78);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.13);
+}
+.discount-code-message {
+  min-height: 20px;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.55;
+  font-weight: 700;
+}
 .discount-code-message.success { color: #9df0bf; }
 .discount-code-message.error { color: #fca5a5; }
-.admin-discount-manager { margin-top: 30px; padding-top: 26px; border-top: 1px solid rgba(148,163,184,.16); }
-.admin-discount-grid { display: grid; grid-template-columns: 1fr 180px auto; gap: 12px; align-items: center; margin-top: 16px; }
-.admin-discount-results { display: grid; gap: 12px; margin-top: 18px; }
-.admin-discount-card { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; border: 1px solid rgba(148,163,184,.16); border-radius: 18px; background: rgba(255,255,255,.04); padding: 14px; }
+.admin-discount-manager {
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(148,163,184,.16);
+}
+.admin-discount-manager h3 {
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+}
+.admin-discount-manager .lead {
+  max-width: 900px;
+  font-size: 14.5px;
+  line-height: 1.75;
+}
+.admin-discount-grid {
+  display: grid;
+  grid-template-columns: 1fr 180px auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+.admin-discount-results {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+.admin-discount-card {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  padding: 14px;
+}
 .admin-discount-code { color: #fff; font-weight: 950; letter-spacing: .08em; }
 .admin-discount-meta { color: var(--muted); font-size: 13px; line-height: 1.55; }
-.admin-discount-percent { display: inline-flex; border: 1px solid rgba(92,234,162,.28); border-radius: 999px; background: rgba(92,234,162,.10); color: #9df0bf; padding: 8px 11px; font-size: 12px; font-weight: 950; }
+.admin-discount-percent {
+  display: inline-flex;
+  border: 1px solid rgba(92,234,162,.28);
+  border-radius: 999px;
+  background: rgba(92,234,162,.10);
+  color: #9df0bf;
+  padding: 8px 11px;
+  font-size: 12px;
+  font-weight: 950;
+}
 .summary-line.discount-line span:last-child { color: #9df0bf; }
-@media (max-width: 820px) { .discount-code-row, .admin-discount-grid, .admin-discount-card { grid-template-columns: 1fr; } }
+@media (max-width: 820px) {
+  .discount-code-row,
+  .admin-discount-grid,
+  .admin-discount-card { grid-template-columns: 1fr; }
+}
 
 </style>
 </head>
@@ -6182,6 +6262,20 @@ function renderAdminDashboardShell() {
       </div>
       <p class="admin-email-test-note">Use this to test the same SMTP settings used by password resets, customer order emails, and owner order notifications.</p>
 
+      <div class="admin-discount-manager">
+        <h3>Creator / promo codes</h3>
+        <p class="lead">Create discount codes for TikTok, Twitter/X, creator partners, soft launches, and customer promos. Customers enter the code at checkout.</p>
+        <div class="admin-discount-grid">
+          <input id="adminDiscountCode" class="admin-discount-input" placeholder="CODE, e.g. CREATOR10">
+          <input id="adminDiscountPercent" class="admin-discount-input" type="number" min="1" max="100" step="1" placeholder="Percent off">
+          <button class="btn primary" onclick="saveAdminDiscountCode()">Save Code</button>
+        </div>
+        <div id="adminDiscountMessage" class="auth-note"></div>
+        <div id="adminDiscountResults" class="admin-discount-results">
+          <div class="admin-empty">Loading discount codes...</div>
+        </div>
+      </div>
+
       <div id="adminDashboardMessage" class="auth-note"></div>
       <div id="adminOrdersResults" class="admin-results">
         <div class="admin-empty">Loading admin orders...</div>
@@ -6189,6 +6283,7 @@ function renderAdminDashboardShell() {
     </div>
   `;
 }
+
 
 function renderAdminDiscountCodes() {
   const results = document.getElementById('adminDiscountResults');
@@ -6223,7 +6318,7 @@ async function loadAdminDiscountCodes() {
     renderAdminDiscountCodes();
   } catch (error) {
     adminDiscountCodes = [];
-    if (results) results.innerHTML = '<div class="admin-empty">Discount codes could not be loaded.</div>';
+    if (results) results.innerHTML = '<div class="admin-empty">Discount codes could not be loaded. Make sure the updated server.js is deployed.</div>';
     if (message) message.textContent = error.message || 'Discount codes could not be loaded.';
   }
 }
@@ -6238,9 +6333,16 @@ async function saveAdminDiscountCode() {
     if (message) message.textContent = 'Enter a code and discount percentage.';
     return;
   }
+  if (percentOff < 1 || percentOff > 100) {
+    if (message) message.textContent = 'Discount percentage must be between 1 and 100.';
+    return;
+  }
   if (message) message.textContent = 'Saving discount code...';
   try {
-    const data = await apiRequest('/api/admin/discount-codes', { method: 'POST', body: JSON.stringify({ code, percentOff }) });
+    const data = await apiRequest('/api/admin/discount-codes', {
+      method: 'POST',
+      body: JSON.stringify({ code, percentOff })
+    });
     if (codeInput) codeInput.value = '';
     if (percentInput) percentInput.value = '';
     if (message) message.textContent = 'Saved ' + data.code.code + ' for ' + data.code.percentOff + '% off.';
@@ -7137,7 +7239,7 @@ function buildCheckoutPayload() {
     },
     notes: String(document.getElementById('checkoutNotes')?.value || '').trim(),
     paymentMethod: document.getElementById('checkoutPaymentMethod')?.value || 'stripe',
-    discountCode: appliedDiscountCode,
+    discountCode: appliedDiscountCode || normalizeDiscountInput(document.getElementById('checkoutDiscountCode')?.value || ''),
     researchUseAccepted: !!document.getElementById('checkoutResearchOnly')?.checked,
     items: cart.map(function(item) {
       return {
@@ -7203,12 +7305,6 @@ async function placeOrder() {
     return;
   }
 
-  const typedDiscountCode = normalizeDiscountInput(document.getElementById('checkoutDiscountCode')?.value);
-  if (typedDiscountCode && typedDiscountCode !== appliedDiscountCode) {
-    showMessage('checkoutMessage', 'Click Apply on your discount code before placing the order.');
-    return;
-  }
-
   try {
     const payload = buildCheckoutPayload();
     const endpoint = payload.paymentMethod === 'stripe' ? '/api/checkout/stripe' : '/api/orders';
@@ -7223,6 +7319,8 @@ async function placeOrder() {
     }
 
     backendAccount = data.account;
+    appliedDiscountCode = '';
+    appliedDiscountCodeData = null;
     cart = [];
     saveCart();
     renderCart();
