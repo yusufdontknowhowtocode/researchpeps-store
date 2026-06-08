@@ -1366,6 +1366,58 @@ app.post('/api/orders', requireAuth, async (req, res, next) => {
   }
 });
 
+
+app.post('/api/checkout/stripe/confirm', requireAuth, async (req, res, next) => {
+  try {
+    const orderId = String(req.body.orderId || req.query.orderId || '').trim();
+    if (!orderId) {
+      return res.status(400).json({ error: 'Order number is required.' });
+    }
+
+    const row = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(orderId, req.session.userId);
+    if (!row) {
+      return res.status(404).json({ error: 'Order not found for this account.' });
+    }
+
+    if (row.payment_method !== 'stripe') {
+      return res.json({
+        order: publicOrder(row),
+        account: publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId))
+      });
+    }
+
+    if (!stripe) {
+      return res.status(503).json({ error: 'Stripe is not configured on the server.' });
+    }
+
+    if (!row.stripe_session_id) {
+      return res.status(400).json({ error: 'This order is missing a Stripe checkout session.' });
+    }
+
+    const session = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
+    const isPaid = session && (session.payment_status === 'paid' || session.status === 'complete');
+
+    if (isPaid && row.status !== 'Paid - Processing') {
+      db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
+        .run('Paid - Processing', nowIso(), orderId);
+    }
+
+    const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
+
+    res.json({
+      order: publicOrder(updatedOrder),
+      account: publicUser(user),
+      stripeStatus: {
+        sessionStatus: session.status,
+        paymentStatus: session.payment_status
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
 app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
   try {
     if (!stripe) {

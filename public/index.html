@@ -6172,7 +6172,13 @@ function renderThankYouPage(order, cryptoPayment, cryptoQuote) {
   if (payment) payment.textContent = order?.paymentMethodLabel || getPaymentMethodLabel(order?.paymentMethod);
   if (shipping) shipping.textContent = formatMoney(order?.shippingCharge || 0);
   if (total) total.textContent = formatMoney(order?.total || 0);
-  if (intro) intro.textContent = 'Order ' + (order?.id || '') + ' was saved to your account. Keep this order number for payment and support.';
+  if (intro) {
+    if (order?.paymentMethod === 'stripe' && String(order?.status || '').toLowerCase().includes('paid')) {
+      intro.textContent = 'Payment confirmed for order ' + (order?.id || '') + '. Your order was saved to your account and is now processing.';
+    } else {
+      intro.textContent = 'Order ' + (order?.id || '') + ' was saved to your account. Keep this order number for payment and support.';
+    }
+  }
 
   if (cryptoBox) {
     if (cryptoPayment) {
@@ -6190,6 +6196,47 @@ function renderThankYouPage(order, cryptoPayment, cryptoQuote) {
       cryptoBox.innerHTML = '';
     }
   }
+}
+
+
+async function handleCheckoutReturn(urlParams) {
+  const checkoutStatus = urlParams.get('checkout');
+  const orderId = urlParams.get('order');
+
+  if (checkoutStatus === 'success' && orderId) {
+    try {
+      const data = await apiRequest('/api/checkout/stripe/confirm', {
+        method: 'POST',
+        body: JSON.stringify({ orderId })
+      });
+
+      backendAccount = data.account || backendAccount;
+      cart = [];
+      saveCart();
+      renderCart();
+      renderCheckoutPage();
+      renderAccountPage();
+      updateAccountNav();
+      renderThankYouPage(data.order, null, null);
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showPage('thank-you');
+      return true;
+    } catch (error) {
+      window.history.replaceState({}, document.title, window.location.pathname);
+      showPage('account');
+      showMessage('accountMessage', error.message || 'Payment completed, but the order could not be refreshed. Check the admin dashboard.');
+      return true;
+    }
+  }
+
+  if (checkoutStatus === 'cancel') {
+    window.history.replaceState({}, document.title, window.location.pathname);
+    showPage('checkout');
+    showMessage('checkoutMessage', 'Card checkout was canceled. You can try again or choose crypto payment.');
+    return true;
+  }
+
+  return false;
 }
 
 function viewLastOrder() {
@@ -6537,6 +6584,9 @@ async function initializeLiveStorefront() {
   updateAccountNav();
   initHeroVial();
   const urlParams = new URLSearchParams(window.location.search);
+  const handledCheckoutReturn = await handleCheckoutReturn(urlParams);
+  if (handledCheckoutReturn) return;
+
   const googleStatus = urlParams.get('google');
   const googleMessage = urlParams.get('message');
 
