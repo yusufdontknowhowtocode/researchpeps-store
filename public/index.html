@@ -1716,6 +1716,186 @@ body.age-locked .vial-rotor {
   margin-top: 14px;
 }
 
+
+
+/* Polished checkout form redesign */
+.checkout-form-panel {
+  position: relative;
+  overflow: hidden;
+  padding: 0 !important;
+  border-radius: 34px !important;
+  background:
+    radial-gradient(circle at 18% 0%, rgba(59,130,246,.22), transparent 260px),
+    linear-gradient(180deg, rgba(15,30,65,.96), rgba(3,7,18,.98)) !important;
+}
+.checkout-form-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+}
+.checkout-panel-head {
+  padding: 30px 32px 24px;
+  border-bottom: 1px solid rgba(148,163,184,.16);
+  background: linear-gradient(135deg, rgba(255,255,255,.06), rgba(30,94,255,.06));
+}
+.checkout-panel-head h2 {
+  margin: 12px 0 8px !important;
+  font-size: clamp(30px, 3.4vw, 44px) !important;
+  line-height: .95;
+}
+.checkout-panel-head p {
+  max-width: 620px;
+  color: rgba(203,213,225,.88);
+  line-height: 1.7;
+  font-size: 15px;
+}
+.checkout-step-pill {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border: 1px solid rgba(214,182,106,.35);
+  border-radius: 999px;
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  padding: 7px 11px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+}
+.checkout-form-section {
+  margin: 22px 26px;
+  padding: 22px;
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 24px;
+  background: rgba(255,255,255,.045);
+  box-shadow: 0 16px 42px rgba(0,0,0,.18);
+}
+.checkout-section-title {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  margin-bottom: 18px;
+}
+.checkout-section-title > span {
+  width: 38px;
+  height: 38px;
+  flex: 0 0 38px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: white;
+  font-size: 12px;
+  font-weight: 950;
+  box-shadow: 0 10px 24px rgba(37,99,235,.30);
+}
+.checkout-section-title strong {
+  display: block;
+  color: white;
+  font-size: 17px;
+  font-weight: 950;
+  letter-spacing: -.01em;
+}
+.checkout-section-title small {
+  display: block;
+  margin-top: 4px;
+  color: rgba(170,183,207,.88);
+  line-height: 1.45;
+  font-size: 13px;
+}
+.pretty-form-grid {
+  gap: 16px !important;
+}
+.checkout-form-panel .form-field {
+  gap: 9px;
+}
+.checkout-form-panel .form-field label {
+  color: rgba(226,232,240,.94);
+  font-size: 12px;
+  font-weight: 950;
+  letter-spacing: .055em;
+  text-transform: uppercase;
+}
+.checkout-form-panel .form-field input,
+.checkout-form-panel .form-field select,
+.checkout-form-panel .form-field textarea {
+  border-radius: 18px;
+  border-color: rgba(148,163,184,.26);
+  background: rgba(15,23,42,.58);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.035);
+  transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+.checkout-form-panel .form-field input,
+.checkout-form-panel .form-field select {
+  height: 54px;
+  min-height: 54px;
+}
+.checkout-form-panel .form-field textarea {
+  min-height: 112px;
+}
+.checkout-form-panel .form-field input:focus,
+.checkout-form-panel .form-field select:focus,
+.checkout-form-panel .form-field textarea:focus {
+  border-color: rgba(96,165,250,.78);
+  background: rgba(15,23,42,.78);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.13), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.payment-help-card {
+  margin-top: 14px;
+  padding: 15px 16px;
+  border-radius: 18px;
+  border: 1px solid rgba(59,130,246,.28);
+  background: rgba(30,94,255,.10);
+}
+.payment-help-card strong {
+  display: block;
+  color: #dbeafe;
+  font-size: 13px;
+  font-weight: 950;
+  margin-bottom: 6px;
+}
+.payment-help-card p {
+  color: rgba(203,213,225,.90);
+  line-height: 1.65;
+  font-size: 13.5px;
+}
+.checkout-confirm-section {
+  border-color: rgba(214,182,106,.28);
+  background: rgba(214,182,106,.08);
+}
+.pretty-check-row {
+  margin: 0 !important;
+  color: rgba(248,250,252,.92) !important;
+}
+.pretty-check-row input {
+  width: 18px;
+  height: 18px;
+  accent-color: #2563eb;
+}
+.checkout-actions-row {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  padding: 0 26px 28px;
+}
+.checkout-actions-row .btn {
+  min-height: 48px;
+  padding-inline: 22px;
+}
+.checkout-actions-row .btn.primary {
+  flex: 1;
+  min-width: 220px;
+}
+@media (max-width: 820px) {
+  .checkout-panel-head { padding: 26px 22px 22px; }
+  .checkout-form-section { margin: 18px 16px; padding: 18px; border-radius: 22px; }
+  .checkout-actions-row { padding: 0 16px 22px; }
+}
+
 @media (max-width: 820px) {
   .account-status { display: none; }
   .checkout-grid,
@@ -2563,29 +2743,57 @@ body.age-locked .vial-rotor {
       <div id="checkoutMessage" class="checkout-message"></div>
 
       <div class="checkout-grid">
-        <div class="checkout-panel">
-          <h2>Order details</h2>
-          <div class="form-grid">
-            <div class="form-field">
-              <label for="checkoutName">Full name</label>
-              <input id="checkoutName" autocomplete="name" placeholder="Customer name">
+        <div class="checkout-panel checkout-form-panel">
+          <div class="checkout-panel-head">
+            <span class="checkout-step-pill">Step 1 of 2</span>
+            <h2>Checkout details</h2>
+            <p>Enter your contact, shipping, and payment information. Card payments continue through secure processor checkout.</p>
+          </div>
+
+          <div class="checkout-form-section">
+            <div class="checkout-section-title">
+              <span>01</span>
+              <div>
+                <strong>Contact information</strong>
+                <small>Used for order updates and tracking.</small>
+              </div>
             </div>
-            <div class="form-field">
-              <label for="checkoutEmail">Email</label>
-              <input id="checkoutEmail" type="email" autocomplete="email" placeholder="email@example.com">
+            <div class="form-grid pretty-form-grid">
+              <div class="form-field">
+                <label for="checkoutName">Full name</label>
+                <input id="checkoutName" autocomplete="name" placeholder="Customer name">
+              </div>
+              <div class="form-field">
+                <label for="checkoutEmail">Email</label>
+                <input id="checkoutEmail" type="email" autocomplete="email" placeholder="email@example.com">
+              </div>
+              <div class="form-field full">
+                <label for="checkoutPhone">Phone</label>
+                <input id="checkoutPhone" autocomplete="tel" placeholder="Phone number">
+              </div>
             </div>
-            <div class="form-field">
-              <label for="checkoutPhone">Phone</label>
-              <input id="checkoutPhone" autocomplete="tel" placeholder="Phone number">
+          </div>
+
+          <div class="checkout-form-section">
+            <div class="checkout-section-title">
+              <span>02</span>
+              <div>
+                <strong>Payment method</strong>
+                <small>Crypto receives an automatic 5% discount.</small>
+              </div>
             </div>
-            <div class="form-field">
-              <label for="checkoutPaymentMethod">Payment method</label>
+            <div class="form-field full">
+              <label for="checkoutPaymentMethod">Choose payment</label>
               <select id="checkoutPaymentMethod" onchange="renderCheckoutPage()">
                 <option value="stripe">Credit card (Visa / Mastercard)</option>
                 <option value="btc">Bitcoin (BTC) — save 5%</option>
                 <option value="sol">Solana (SOL) — save 5%</option>
                 <option value="usdc">USDC — save 5%</option>
               </select>
+              <div class="payment-help-card">
+                <strong>Secure payment note</strong>
+                <p>Credit card orders redirect to a secure processor. Card numbers are never stored on this website. BTC, SOL, and USDC orders are manually verified after payment.</p>
+              </div>
               <div id="cryptoWalletBox" class="crypto-wallet-box" style="display:none;">
                 <strong id="cryptoWalletTitle">Crypto payment</strong>
                 <p id="cryptoWalletNetwork"></p>
@@ -2597,56 +2805,69 @@ body.age-locked .vial-rotor {
                   <p id="cryptoQuoteNote">Crypto quote includes the 5% discount and updates from the current market rate.</p>
                 </div>
               </div>
-              <small class="auth-note">Credit card uses secure processor checkout. Card numbers are never stored on this website. BTC, SOL, and USDC receive an automatic 5% crypto discount and are manually verified after payment.</small>
-            </div>
-            <div class="form-field full">
-              <label for="checkoutAddress">Shipping address</label>
-              <input id="checkoutAddress" autocomplete="street-address" placeholder="Street address">
-            </div>
-            <div class="form-field">
-              <label for="checkoutCity">City</label>
-              <input id="checkoutCity" autocomplete="address-level2" placeholder="City">
-            </div>
-            <div class="form-field">
-              <label for="checkoutState">State</label>
-              <input id="checkoutState" autocomplete="address-level1" placeholder="State">
-            </div>
-            <div class="form-field">
-              <label for="checkoutZip">ZIP</label>
-              <input id="checkoutZip" autocomplete="postal-code" placeholder="ZIP code">
-            </div>
-            <div class="form-field">
-              <label for="checkoutCountry">Country</label>
-              <select id="checkoutCountry" autocomplete="country-name" onchange="renderCheckoutPage()">
-                <option value="United States">United States — $15 shipping</option>
-                <option value="Canada">Canada</option>
-                <option value="Mexico">Mexico</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Germany">Germany</option>
-                <option value="France">France</option>
-                <option value="Italy">Italy</option>
-                <option value="Spain">Spain</option>
-                <option value="Netherlands">Netherlands</option>
-                <option value="Switzerland">Switzerland</option>
-                <option value="Australia">Australia</option>
-                <option value="New Zealand">New Zealand</option>
-                <option value="Singapore">Singapore</option>
-                <option value="United Arab Emirates">United Arab Emirates</option>
-                <option value="Rest of World">Rest of World</option>
-              </select>
-            </div>
-            <div class="form-field full">
-              <label for="checkoutNotes">Order notes</label>
-              <textarea id="checkoutNotes" placeholder="Optional notes for this order"></textarea>
             </div>
           </div>
 
-          <label class="check-row">
-            <input id="checkoutResearchOnly" type="checkbox">
-            <span>I confirm these products are being requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</span>
-          </label>
+          <div class="checkout-form-section">
+            <div class="checkout-section-title">
+              <span>03</span>
+              <div>
+                <strong>Shipping address</strong>
+                <small>Ships from Pennsylvania after payment verification.</small>
+              </div>
+            </div>
+            <div class="form-grid pretty-form-grid">
+              <div class="form-field full">
+                <label for="checkoutAddress">Street address</label>
+                <input id="checkoutAddress" autocomplete="street-address" placeholder="Street address">
+              </div>
+              <div class="form-field">
+                <label for="checkoutCity">City</label>
+                <input id="checkoutCity" autocomplete="address-level2" placeholder="City">
+              </div>
+              <div class="form-field">
+                <label for="checkoutState">State</label>
+                <input id="checkoutState" autocomplete="address-level1" placeholder="State">
+              </div>
+              <div class="form-field">
+                <label for="checkoutZip">ZIP</label>
+                <input id="checkoutZip" autocomplete="postal-code" placeholder="ZIP code">
+              </div>
+              <div class="form-field">
+                <label for="checkoutCountry">Country</label>
+                <select id="checkoutCountry" autocomplete="country-name" onchange="renderCheckoutPage()">
+                  <option value="United States">United States — $15 shipping</option>
+                  <option value="Canada">Canada</option>
+                  <option value="Mexico">Mexico</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Italy">Italy</option>
+                  <option value="Spain">Spain</option>
+                  <option value="Netherlands">Netherlands</option>
+                  <option value="Switzerland">Switzerland</option>
+                  <option value="Australia">Australia</option>
+                  <option value="New Zealand">New Zealand</option>
+                  <option value="Singapore">Singapore</option>
+                  <option value="United Arab Emirates">United Arab Emirates</option>
+                  <option value="Rest of World">Rest of World</option>
+                </select>
+              </div>
+              <div class="form-field full">
+                <label for="checkoutNotes">Order notes</label>
+                <textarea id="checkoutNotes" placeholder="Optional notes for this order"></textarea>
+              </div>
+            </div>
+          </div>
 
-          <div class="actions">
+          <div class="checkout-form-section checkout-confirm-section">
+            <label class="check-row pretty-check-row">
+              <input id="checkoutResearchOnly" type="checkbox">
+              <span>I confirm these products are being requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</span>
+            </label>
+          </div>
+
+          <div class="checkout-actions-row">
             <button class="btn primary" onclick="placeOrder()">Place Order</button>
             <button class="btn" onclick="openAccount()">View Account</button>
           </div>
