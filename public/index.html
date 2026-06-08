@@ -2862,6 +2862,26 @@ body.age-locked .vial-rotor {
   .account-section-clean { padding-top: 28px; }
 }
 
+
+/* Discount code checkout + admin controls */
+.discount-code-card { margin-top: 16px; border: 1px solid rgba(148,163,184,.18); border-radius: 20px; background: rgba(255,255,255,.04); padding: 16px; display: grid; gap: 12px; }
+.discount-code-card strong { color: #fff; font-size: 14px; font-weight: 950; }
+.discount-code-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; }
+.discount-code-row input, .admin-discount-input { width: 100%; min-height: 48px; border: 1px solid rgba(148,163,184,.24); border-radius: 16px; background: rgba(15,23,42,.62); color: #f8fafc; padding: 12px 14px; outline: none; font-size: 14px; font-weight: 800; text-transform: uppercase; }
+.discount-code-row input:focus, .admin-discount-input:focus { border-color: rgba(96,165,250,.78); box-shadow: 0 0 0 4px rgba(37,99,235,.13); }
+.discount-code-message { min-height: 20px; color: var(--muted); font-size: 13px; line-height: 1.55; font-weight: 700; }
+.discount-code-message.success { color: #9df0bf; }
+.discount-code-message.error { color: #fca5a5; }
+.admin-discount-manager { margin-top: 30px; padding-top: 26px; border-top: 1px solid rgba(148,163,184,.16); }
+.admin-discount-grid { display: grid; grid-template-columns: 1fr 180px auto; gap: 12px; align-items: center; margin-top: 16px; }
+.admin-discount-results { display: grid; gap: 12px; margin-top: 18px; }
+.admin-discount-card { display: grid; grid-template-columns: 1fr auto auto; gap: 14px; align-items: center; border: 1px solid rgba(148,163,184,.16); border-radius: 18px; background: rgba(255,255,255,.04); padding: 14px; }
+.admin-discount-code { color: #fff; font-weight: 950; letter-spacing: .08em; }
+.admin-discount-meta { color: var(--muted); font-size: 13px; line-height: 1.55; }
+.admin-discount-percent { display: inline-flex; border: 1px solid rgba(92,234,162,.28); border-radius: 999px; background: rgba(92,234,162,.10); color: #9df0bf; padding: 8px 11px; font-size: 12px; font-weight: 950; }
+.summary-line.discount-line span:last-child { color: #9df0bf; }
+@media (max-width: 820px) { .discount-code-row, .admin-discount-grid, .admin-discount-card { grid-template-columns: 1fr; } }
+
 </style>
 </head>
 <body class="age-locked">
@@ -3183,6 +3203,15 @@ body.age-locked .vial-rotor {
                   <p id="cryptoQuoteNote">Crypto quote includes the 5% discount and updates from the current market rate.</p>
                 </div>
               </div>
+              <div class="discount-code-card">
+                <strong>Discount code</strong>
+                <div class="discount-code-row">
+                  <input id="checkoutDiscountCode" type="text" placeholder="ENTER CODE" autocomplete="off" oninput="handleDiscountCodeInput()">
+                  <button type="button" class="btn primary" onclick="applyDiscountCode()">Apply</button>
+                  <button type="button" class="btn" onclick="removeDiscountCode()">Remove</button>
+                </div>
+                <div id="checkoutDiscountMessage" class="discount-code-message">Have a creator or launch code? Enter it here before placing the order.</div>
+              </div>
             </div>
           </div>
 
@@ -3256,7 +3285,8 @@ body.age-locked .vial-rotor {
           <div id="checkoutCartSummary" class="summary-list"></div>
           <div class="summary-line"><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
           <div class="summary-line"><span>Shipping</span><span id="checkoutShipping">$0.00</span></div>
-          <div id="checkoutDiscountRow" class="summary-line" style="display:none;"><span>Crypto discount</span><span id="checkoutDiscount">-$0.00</span></div>
+          <div id="checkoutCryptoDiscountRow" class="summary-line discount-line" style="display:none;"><span>Crypto discount</span><span id="checkoutCryptoDiscount">-$0.00</span></div>
+          <div id="checkoutCodeDiscountRow" class="summary-line discount-line" style="display:none;"><span id="checkoutCodeDiscountLabel">Code discount</span><span id="checkoutCodeDiscount">-$0.00</span></div>
           <div class="summary-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
           <p class="auth-note">Orders are placed after the customer accepts the research-use-only confirmation. Credit card redirects to secure checkout; BTC, SOL, and USDC receive 5% off and are saved as awaiting crypto payment.</p>
         </div>
@@ -5574,12 +5604,85 @@ function getCurrentPaymentMethod() {
   return String(document.getElementById('checkoutPaymentMethod')?.value || 'stripe').toLowerCase();
 }
 
+function normalizeDiscountInput(value) {
+  return String(value || '').trim().toUpperCase();
+}
+
+function getAppliedDiscountPercent() {
+  return appliedDiscountCodeData ? Number(appliedDiscountCodeData.percentOff || 0) : 0;
+}
+
 function getCryptoDiscountAmount() {
   return isCryptoMethod(getCurrentPaymentMethod()) ? getCartSubtotal() * 0.05 : 0;
 }
 
+function getCodeDiscountAmount() {
+  const percent = getAppliedDiscountPercent();
+  if (!percent || percent <= 0) return 0;
+  return getCartSubtotal() * (percent / 100);
+}
+
 function getCartTotal() {
-  return Math.max(0, getCartSubtotal() + getCheckoutShipping() - getCryptoDiscountAmount());
+  const subtotal = getCartSubtotal();
+  const discountTotal = Math.min(subtotal, getCryptoDiscountAmount() + getCodeDiscountAmount());
+  return Math.max(0, subtotal + getCheckoutShipping() - discountTotal);
+}
+
+function setDiscountMessage(message, type) {
+  const element = document.getElementById('checkoutDiscountMessage');
+  if (!element) return;
+  element.textContent = message || '';
+  element.className = 'discount-code-message' + (type ? ' ' + type : '');
+}
+
+function handleDiscountCodeInput() {
+  const input = document.getElementById('checkoutDiscountCode');
+  const typed = normalizeDiscountInput(input?.value);
+  if (input && input.value !== typed) input.value = typed;
+  if (appliedDiscountCode && typed !== appliedDiscountCode) {
+    appliedDiscountCode = '';
+    appliedDiscountCodeData = null;
+    setDiscountMessage('Click Apply to validate this code before checkout.', '');
+    renderCheckoutPage();
+  }
+}
+
+async function applyDiscountCode() {
+  const input = document.getElementById('checkoutDiscountCode');
+  const code = normalizeDiscountInput(input?.value);
+  if (!code) {
+    appliedDiscountCode = '';
+    appliedDiscountCodeData = null;
+    setDiscountMessage('Enter a discount code first.', 'error');
+    renderCheckoutPage();
+    return;
+  }
+  setDiscountMessage('Checking code...', '');
+  try {
+    const data = await apiRequest('/api/discount-codes/validate', {
+      method: 'POST',
+      body: JSON.stringify({ code })
+    });
+    appliedDiscountCodeData = data.code || null;
+    appliedDiscountCode = appliedDiscountCodeData ? appliedDiscountCodeData.code : code;
+    if (input) input.value = appliedDiscountCode;
+    setDiscountMessage(appliedDiscountCode + ' applied — ' + Number(appliedDiscountCodeData.percentOff || 0) + '% off products.', 'success');
+    renderCheckoutPage();
+  } catch (error) {
+    appliedDiscountCode = '';
+    appliedDiscountCodeData = null;
+    setDiscountMessage(error.message || 'That discount code is not available.', 'error');
+    renderCheckoutPage();
+  }
+}
+
+function removeDiscountCode() {
+  appliedDiscountCode = '';
+  appliedDiscountCodeData = null;
+  const input = document.getElementById('checkoutDiscountCode');
+  if (input) input.value = '';
+  setDiscountMessage('Discount code removed.', '');
+  renderCheckoutPage();
 }
 
 function getCartCount() {
@@ -5900,7 +6003,10 @@ function renderAccountPage() {
   `;
 
   if (account.isAdmin) {
-    setTimeout(loadAdminOrders, 0);
+    setTimeout(function() {
+      loadAdminOrders();
+      loadAdminDiscountCodes();
+    }, 0);
   }
 }
 
@@ -6082,6 +6188,78 @@ function renderAdminDashboardShell() {
       </div>
     </div>
   `;
+}
+
+function renderAdminDiscountCodes() {
+  const results = document.getElementById('adminDiscountResults');
+  if (!results) return;
+  if (!adminDiscountCodes.length) {
+    results.innerHTML = '<div class="admin-empty">No discount codes yet.</div>';
+    return;
+  }
+  results.innerHTML = adminDiscountCodes.map(function(code) {
+    const updated = code.updatedAt ? new Date(code.updatedAt).toLocaleString() : '';
+    return `
+      <div class="admin-discount-card">
+        <div>
+          <div class="admin-discount-code">${escapeHtml(code.code)}</div>
+          <div class="admin-discount-meta">${code.isActive ? 'Active' : 'Inactive'}${updated ? ' • Updated ' + escapeHtml(updated) : ''}</div>
+        </div>
+        <span class="admin-discount-percent">${escapeHtml(code.percentOff)}% off</span>
+        <button class="btn" onclick="deactivateAdminDiscountCode('${escapeForAttribute(code.code)}')">Deactivate</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function loadAdminDiscountCodes() {
+  const results = document.getElementById('adminDiscountResults');
+  const message = document.getElementById('adminDiscountMessage');
+  if (results) results.innerHTML = '<div class="admin-empty">Loading discount codes...</div>';
+  if (message) message.textContent = '';
+  try {
+    const data = await apiRequest('/api/admin/discount-codes', { method: 'GET' });
+    adminDiscountCodes = data.codes || [];
+    renderAdminDiscountCodes();
+  } catch (error) {
+    adminDiscountCodes = [];
+    if (results) results.innerHTML = '<div class="admin-empty">Discount codes could not be loaded.</div>';
+    if (message) message.textContent = error.message || 'Discount codes could not be loaded.';
+  }
+}
+
+async function saveAdminDiscountCode() {
+  const codeInput = document.getElementById('adminDiscountCode');
+  const percentInput = document.getElementById('adminDiscountPercent');
+  const message = document.getElementById('adminDiscountMessage');
+  const code = normalizeDiscountInput(codeInput?.value);
+  const percentOff = Number(percentInput?.value || 0);
+  if (!code || !percentOff) {
+    if (message) message.textContent = 'Enter a code and discount percentage.';
+    return;
+  }
+  if (message) message.textContent = 'Saving discount code...';
+  try {
+    const data = await apiRequest('/api/admin/discount-codes', { method: 'POST', body: JSON.stringify({ code, percentOff }) });
+    if (codeInput) codeInput.value = '';
+    if (percentInput) percentInput.value = '';
+    if (message) message.textContent = 'Saved ' + data.code.code + ' for ' + data.code.percentOff + '% off.';
+    await loadAdminDiscountCodes();
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Could not save discount code.';
+  }
+}
+
+async function deactivateAdminDiscountCode(code) {
+  const message = document.getElementById('adminDiscountMessage');
+  if (message) message.textContent = 'Deactivating ' + code + '...';
+  try {
+    await apiRequest('/api/admin/discount-codes/' + encodeURIComponent(code), { method: 'DELETE' });
+    if (message) message.textContent = code + ' deactivated.';
+    await loadAdminDiscountCodes();
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Could not deactivate discount code.';
+  }
 }
 
 let adminOrders = [];
@@ -6370,8 +6548,11 @@ function renderCheckoutPage() {
   const summary = document.getElementById('checkoutCartSummary');
   const subtotalEl = document.getElementById('checkoutSubtotal');
   const shippingEl = document.getElementById('checkoutShipping');
-  const discountRow = document.getElementById('checkoutDiscountRow');
-  const discountEl = document.getElementById('checkoutDiscount');
+  const cryptoDiscountRow = document.getElementById('checkoutCryptoDiscountRow');
+  const cryptoDiscountEl = document.getElementById('checkoutCryptoDiscount');
+  const codeDiscountRow = document.getElementById('checkoutCodeDiscountRow');
+  const codeDiscountEl = document.getElementById('checkoutCodeDiscount');
+  const codeDiscountLabel = document.getElementById('checkoutCodeDiscountLabel');
   const total = document.getElementById('checkoutTotal');
   if (!summary || !total) return;
 
@@ -6387,8 +6568,10 @@ function renderCheckoutPage() {
     summary.innerHTML = '<div class="empty-search">Your cart is empty.</div>';
     if (subtotalEl) subtotalEl.textContent = '$0.00';
     if (shippingEl) shippingEl.textContent = '$0.00';
-    if (discountRow) discountRow.style.display = 'none';
-    if (discountEl) discountEl.textContent = '-$0.00';
+    if (cryptoDiscountRow) cryptoDiscountRow.style.display = 'none';
+    if (cryptoDiscountEl) cryptoDiscountEl.textContent = '-$0.00';
+    if (codeDiscountRow) codeDiscountRow.style.display = 'none';
+    if (codeDiscountEl) codeDiscountEl.textContent = '-$0.00';
     total.textContent = '$0.00';
     return;
   }
@@ -6408,10 +6591,14 @@ function renderCheckoutPage() {
     `;
   }).join('');
   const cryptoDiscount = getCryptoDiscountAmount();
+  const codeDiscount = getCodeDiscountAmount();
   if (subtotalEl) subtotalEl.textContent = formatMoney(getCartSubtotal());
   if (shippingEl) shippingEl.textContent = formatMoney(getCheckoutShipping()) + ' (' + getSelectedShippingCountry() + ')';
-  if (discountRow) discountRow.style.display = cryptoDiscount > 0 ? 'flex' : 'none';
-  if (discountEl) discountEl.textContent = '-' + formatMoney(cryptoDiscount);
+  if (cryptoDiscountRow) cryptoDiscountRow.style.display = cryptoDiscount > 0 ? 'flex' : 'none';
+  if (cryptoDiscountEl) cryptoDiscountEl.textContent = '-' + formatMoney(cryptoDiscount);
+  if (codeDiscountRow) codeDiscountRow.style.display = codeDiscount > 0 ? 'flex' : 'none';
+  if (codeDiscountEl) codeDiscountEl.textContent = '-' + formatMoney(codeDiscount);
+  if (codeDiscountLabel) codeDiscountLabel.textContent = appliedDiscountCode ? appliedDiscountCode + ' discount' : 'Code discount';
   total.textContent = formatMoney(getCartTotal());
   updateCryptoWalletBox();
 }
@@ -6517,6 +6704,9 @@ let backendAccount = null;
 let cryptoWallets = {};
 let cryptoDiscountPercent = 5;
 let shippingRates = { defaultRate: 80, rates: [{ country: 'United States', code: 'US', rate: 15 }] };
+let appliedDiscountCode = '';
+let appliedDiscountCodeData = null;
+let adminDiscountCodes = [];
 let lastCompletedOrder = null;
 let lastCryptoPayment = null;
 let lastCryptoQuote = null;
@@ -6947,6 +7137,7 @@ function buildCheckoutPayload() {
     },
     notes: String(document.getElementById('checkoutNotes')?.value || '').trim(),
     paymentMethod: document.getElementById('checkoutPaymentMethod')?.value || 'stripe',
+    discountCode: appliedDiscountCode,
     researchUseAccepted: !!document.getElementById('checkoutResearchOnly')?.checked,
     items: cart.map(function(item) {
       return {
@@ -7009,6 +7200,12 @@ async function placeOrder() {
 
   if (!document.getElementById('checkoutResearchOnly')?.checked) {
     showMessage('checkoutMessage', 'Please confirm the research-use-only statement before placing the order.');
+    return;
+  }
+
+  const typedDiscountCode = normalizeDiscountInput(document.getElementById('checkoutDiscountCode')?.value);
+  if (typedDiscountCode && typedDiscountCode !== appliedDiscountCode) {
+    showMessage('checkoutMessage', 'Click Apply on your discount code before placing the order.');
     return;
   }
 

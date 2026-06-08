@@ -267,6 +267,14 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   created_at TEXT NOT NULL,
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
+
+CREATE TABLE IF NOT EXISTS discount_codes (
+  code TEXT PRIMARY KEY,
+  percent_off REAL NOT NULL,
+  is_active INTEGER NOT NULL DEFAULT 1,
+  created_at TEXT NOT NULL,
+  updated_at TEXT NOT NULL
+);
 `);
 
 function ensureOrderColumn(name, definition) {
@@ -280,6 +288,8 @@ ensureOrderColumn('subtotal_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('tax_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('shipping_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('discount_cents', 'INTEGER NOT NULL DEFAULT 0');
+ensureOrderColumn('discount_code', 'TEXT');
+ensureOrderColumn('discount_percent', 'REAL NOT NULL DEFAULT 0');
 ensureOrderColumn('tracking_number', 'TEXT');
 ensureOrderColumn('tracking_carrier', 'TEXT');
 
@@ -556,8 +566,8 @@ function publicShippingRates() {
   };
 }
 
-const KIT_PRICE_MULTIPLIER = 2;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 3.5;
+const KIT_PRICE_MULTIPLIER = 1.5;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 2.8;
 
 function parsePrice(priceText) {
   const number = Number(String(priceText).replace(/[^0-9.]/g, ''));
@@ -619,6 +629,59 @@ function getCryptoDiscountCents(subtotalCents, paymentMethod) {
 function getCryptoDiscountPercentLabel() {
   return `${Math.round(CRYPTO_DISCOUNT_RATE * 100)}%`;
 }
+function normalizeDiscountCode(code) {
+  return String(code || '')
+    .trim()
+    .toUpperCase()
+    .replace(/[^A-Z0-9_-]/g, '')
+    .slice(0, 40);
+}
+
+function publicDiscountCode(row) {
+  return {
+    code: row.code,
+    percentOff: Number(row.percent_off || 0),
+    isActive: !!row.is_active,
+    createdAt: row.created_at,
+    updatedAt: row.updated_at
+  };
+}
+
+function getActiveDiscountCode(code) {
+  const normalized = normalizeDiscountCode(code);
+  if (!normalized) return null;
+  return db.prepare('SELECT * FROM discount_codes WHERE code = ? AND is_active = 1').get(normalized) || null;
+}
+
+function getDiscountCodeForCheckout(code) {
+  const normalized = normalizeDiscountCode(code);
+  if (!normalized) return null;
+  const row = getActiveDiscountCode(normalized);
+  if (!row) {
+    const error = new Error('Discount code is invalid or inactive.');
+    error.status = 400;
+    throw error;
+  }
+  return row;
+}
+
+function getDiscountCodeDiscountCents(subtotalCents, discountCodeRow) {
+  if (!discountCodeRow) return 0;
+  const percent = Math.max(0, Math.min(100, Number(discountCodeRow.percent_off || 0)));
+  if (!percent) return 0;
+  return Math.round(Number(subtotalCents || 0) * (percent / 100));
+}
+
+function validateDiscountPercent(value) {
+  const percent = Number(value);
+  if (!Number.isFinite(percent) || percent <= 0 || percent > 90) {
+    const error = new Error('Discount percentage must be between 1 and 90.');
+    error.status = 400;
+    throw error;
+  }
+  return Math.round(percent * 100) / 100;
+}
+
 
 function getCryptoPayment(method, orderId) {
   const value = String(method || '').toLowerCase();
@@ -772,6 +835,8 @@ function publicOrder(row) {
     tax: (row.tax_cents || 0) / 100,
     shippingCharge: (row.shipping_cents || 0) / 100,
     discount: (row.discount_cents || 0) / 100,
+    discountCode: row.discount_code || '',
+    discountPercent: Number(row.discount_percent || 0),
     total: row.total_cents / 100,
     currency: row.currency,
     customer: JSON.parse(row.customer_json),
@@ -868,17 +933,20 @@ function validateCartItems(items) {
   });
 }
 
-function calculateOrderTotals(items, shippingCountry, paymentMethod) {
+function calculateOrderTotals(items, shippingCountry, paymentMethod, discountCode) {
   const validatedItems = validateCartItems(items);
   const subtotalCents = validatedItems.reduce((sum, item) => sum + item.lineTotalCents, 0);
 
   const taxCents = 0;
   const shippingCents = subtotalCents > 0 ? getShippingCentsForCountry(shippingCountry || 'United States') : 0;
   const normalizedPaymentMethod = normalizePaymentMethod(paymentMethod);
-  const discountCents = getCryptoDiscountCents(subtotalCents, normalizedPaymentMethod);
+  const discountCodeRow = getDiscountCodeForCheckout(discountCode);
+  const cryptoDiscountCents = getCryptoDiscountCents(subtotalCents, normalizedPaymentMethod);
+  const codeDiscountCents = getDiscountCodeDiscountCents(subtotalCents, discountCodeRow);
+  const discountCents = Math.min(subtotalCents, cryptoDiscountCents + codeDiscountCents);
   const totalCents = Math.max(0, subtotalCents + taxCents + shippingCents - discountCents);
 
-  return { items: validatedItems, subtotalCents, taxCents, shippingCents, discountCents, totalCents };
+  return { items: validatedItems, subtotalCents, taxCents, shippingCents, discountCents, cryptoDiscountCents, codeDiscountCents, discountCode: discountCodeRow ? discountCodeRow.code : '', discountPercent: discountCodeRow ? Number(discountCodeRow.percent_off || 0) : 0, totalCents };
 }
 
 function validateCheckoutPayload(body) {
@@ -925,6 +993,7 @@ function validateCheckoutPayload(body) {
     },
     notes: String(body.notes || '').trim(),
     paymentMethod: String(body.paymentMethod || 'stripe'),
+    discountCode: normalizeDiscountCode(body.discountCode || body.couponCode || ''),
     researchUseAccepted: true
   };
 }
@@ -934,18 +1003,18 @@ function createOrderForUser(userId, body, statusOverride) {
   const orderId = createOrderId();
   const timestamp = nowIso();
   const paymentMethod = normalizePaymentMethod(validated.paymentMethod);
-  const totals = calculateOrderTotals(body.items, validated.shipping.country, paymentMethod);
+  const totals = calculateOrderTotals(body.items, validated.shipping.country, paymentMethod, validated.discountCode);
   const status = statusOverride || (isCryptoPaymentMethod(paymentMethod) ? `Awaiting ${getPaymentMethodLabel(paymentMethod)} Payment` : 'Order Submitted');
 
   const insertOrder = db.transaction(() => {
     db.prepare(`
       INSERT INTO orders (
         id, user_id, status, payment_method, payment_method_label,
-        subtotal_cents, tax_cents, shipping_cents, discount_cents, total_cents,
+        subtotal_cents, tax_cents, shipping_cents, discount_cents, discount_code, discount_percent, total_cents,
         currency, customer_json, shipping_json, notes, research_use_accepted,
         created_at, updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?, ?, ?, ?, ?, ?)
     `).run(
       orderId,
       userId,
@@ -956,6 +1025,8 @@ function createOrderForUser(userId, body, statusOverride) {
       totals.taxCents,
       totals.shippingCents,
       totals.discountCents,
+      totals.discountCode,
+      totals.discountPercent,
       totals.totalCents,
       JSON.stringify(validated.customer),
       JSON.stringify(validated.shipping),
@@ -1338,7 +1409,7 @@ app.post('/api/cart/quote', (req, res, next) => {
   try {
     const shippingCountry = req.body.shippingCountry || (req.body.shipping && req.body.shipping.country) || 'United States';
     const paymentMethod = normalizePaymentMethod(req.body.paymentMethod || 'stripe');
-    const totals = calculateOrderTotals(req.body.items, shippingCountry, paymentMethod);
+    const totals = calculateOrderTotals(req.body.items, shippingCountry, paymentMethod, req.body.discountCode || req.body.couponCode || '');
     res.json({
       items: totals.items.map((item) => ({
         productName: item.productName,
@@ -1352,6 +1423,10 @@ app.post('/api/cart/quote', (req, res, next) => {
       tax: totals.taxCents / 100,
       shipping: totals.shippingCents / 100,
       discount: totals.discountCents / 100,
+      cryptoDiscount: totals.cryptoDiscountCents / 100,
+      codeDiscount: totals.codeDiscountCents / 100,
+      discountCode: totals.discountCode,
+      discountPercent: totals.discountPercent,
       cryptoDiscountPercent: isCryptoPaymentMethod(paymentMethod) ? CRYPTO_DISCOUNT_RATE * 100 : 0,
       total: totals.totalCents / 100,
       totalLabel: formatMoneyFromCents(totals.totalCents)
@@ -1484,16 +1559,29 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
       });
     }
 
-    const session = await stripe.checkout.sessions.create({
+    const sessionOptions = {
       mode: 'payment',
       line_items: lineItems,
       success_url: `${PUBLIC_URL}/?checkout=success&order=${encodeURIComponent(order.id)}`,
       cancel_url: `${PUBLIC_URL}/?checkout=cancel&order=${encodeURIComponent(order.id)}`,
       metadata: {
         orderId: order.id,
-        userId: req.session.userId
+        userId: req.session.userId,
+        discountCode: order.discountCode || ''
       }
-    });
+    };
+
+    if (order.discount && order.discount > 0) {
+      const coupon = await stripe.coupons.create({
+        amount_off: Math.round(order.discount * 100),
+        currency: 'usd',
+        duration: 'once',
+        name: order.discountCode ? `ResearchPeps discount ${order.discountCode}` : 'ResearchPeps discount'
+      });
+      sessionOptions.discounts = [{ coupon: coupon.id }];
+    }
+
+    const session = await stripe.checkout.sessions.create(sessionOptions);
 
     db.prepare('UPDATE orders SET stripe_session_id = ?, updated_at = ? WHERE id = ?')
       .run(session.id, nowIso(), order.id);
@@ -1504,6 +1592,52 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
   }
 });
 
+
+app.post('/api/discount-codes/validate', (req, res, next) => {
+  try {
+    const code = normalizeDiscountCode(req.body.code || req.body.discountCode || '');
+    if (!code) return res.status(400).json({ error: 'Enter a discount code.' });
+    const row = getActiveDiscountCode(code);
+    if (!row) return res.status(404).json({ error: 'Discount code is invalid or inactive.' });
+    res.json({ code: publicDiscountCode(row) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.get('/api/admin/discount-codes', requireAdmin, (req, res) => {
+  const rows = db.prepare('SELECT * FROM discount_codes ORDER BY is_active DESC, updated_at DESC, code ASC').all();
+  res.json({ codes: rows.map(publicDiscountCode) });
+});
+
+app.post('/api/admin/discount-codes', requireAdmin, (req, res, next) => {
+  try {
+    const code = normalizeDiscountCode(req.body.code);
+    const percentOff = validateDiscountPercent(req.body.percentOff);
+    if (!code) return res.status(400).json({ error: 'Code is required.' });
+    const timestamp = nowIso();
+    db.prepare(`
+      INSERT INTO discount_codes (code, percent_off, is_active, created_at, updated_at)
+      VALUES (?, ?, 1, ?, ?)
+      ON CONFLICT(code) DO UPDATE SET
+        percent_off = excluded.percent_off,
+        is_active = 1,
+        updated_at = excluded.updated_at
+    `).run(code, percentOff, timestamp, timestamp);
+    res.json({ code: publicDiscountCode(db.prepare('SELECT * FROM discount_codes WHERE code = ?').get(code)) });
+  } catch (error) {
+    next(error);
+  }
+});
+
+app.delete('/api/admin/discount-codes/:code', requireAdmin, (req, res) => {
+  const code = normalizeDiscountCode(req.params.code);
+  if (!code) return res.status(400).json({ error: 'Code is required.' });
+  const row = db.prepare('SELECT * FROM discount_codes WHERE code = ?').get(code);
+  if (!row) return res.status(404).json({ error: 'Discount code not found.' });
+  db.prepare('UPDATE discount_codes SET is_active = 0, updated_at = ? WHERE code = ?').run(nowIso(), code);
+  res.json({ code: publicDiscountCode(db.prepare('SELECT * FROM discount_codes WHERE code = ?').get(code)) });
+});
 
 app.post('/api/admin/test-email', requireAdmin, async (req, res, next) => {
   try {
@@ -1579,11 +1713,12 @@ app.get('/api/admin/orders', requireAdmin, (req, res) => {
         OR lower(customer_json) LIKE ?
         OR lower(shipping_json) LIKE ?
         OR lower(notes) LIKE ?
+        OR lower(COALESCE(discount_code, '')) LIKE ?
         OR lower(COALESCE(tracking_number, '')) LIKE ?
         OR lower(COALESCE(tracking_carrier, '')) LIKE ?
       ORDER BY created_at DESC
       LIMIT 500
-    `).all(like, like, like, like, like, like, like, like, like);
+    `).all(like, like, like, like, like, like, like, like, like, like);
   } else {
     rows = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 500').all();
   }
