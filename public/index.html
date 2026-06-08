@@ -2580,11 +2580,11 @@ body.age-locked .vial-rotor {
             </div>
             <div class="form-field">
               <label for="checkoutPaymentMethod">Payment method</label>
-              <select id="checkoutPaymentMethod" onchange="updateCryptoWalletBox()">
-                <option value="stripe">Credit card</option>
-                <option value="btc">Bitcoin (BTC)</option>
-                <option value="sol">Solana (SOL)</option>
-                <option value="usdc">USDC</option>
+              <select id="checkoutPaymentMethod" onchange="renderCheckoutPage()">
+                <option value="stripe">Credit card (Visa / Mastercard)</option>
+                <option value="btc">Bitcoin (BTC) — save 5%</option>
+                <option value="sol">Solana (SOL) — save 5%</option>
+                <option value="usdc">USDC — save 5%</option>
               </select>
               <div id="cryptoWalletBox" class="crypto-wallet-box" style="display:none;">
                 <strong id="cryptoWalletTitle">Crypto payment</strong>
@@ -2594,10 +2594,10 @@ body.age-locked .vial-rotor {
                 <div class="crypto-amount-box">
                   <strong>Amount to send</strong>
                   <code id="cryptoAmountDue">Select crypto to calculate amount.</code>
-                  <p id="cryptoQuoteNote">Crypto quote updates from the current market rate.</p>
+                  <p id="cryptoQuoteNote">Crypto quote includes the 5% discount and updates from the current market rate.</p>
                 </div>
               </div>
-              <small class="auth-note">Credit card redirects to your processor when configured. For BTC, SOL, or USDC, send payment to the wallet shown and type your order number in the payment note/reference if your wallet allows it. If there is no note field, send us the transaction hash with your order number.</small>
+              <small class="auth-note">Credit card uses secure processor checkout. Card numbers are never stored on this website. BTC, SOL, and USDC receive an automatic 5% crypto discount and are manually verified after payment.</small>
             </div>
             <div class="form-field full">
               <label for="checkoutAddress">Shipping address</label>
@@ -2657,8 +2657,9 @@ body.age-locked .vial-rotor {
           <div id="checkoutCartSummary" class="summary-list"></div>
           <div class="summary-line"><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
           <div class="summary-line"><span>Shipping</span><span id="checkoutShipping">$0.00</span></div>
+          <div id="checkoutDiscountRow" class="summary-line" style="display:none;"><span>Crypto discount</span><span id="checkoutDiscount">-$0.00</span></div>
           <div class="summary-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
-          <p class="auth-note">Orders are placed after the customer accepts the research-use-only confirmation. Credit card uses your configured payment processor; BTC, SOL, and USDC orders are saved as awaiting crypto payment.</p>
+          <p class="auth-note">Orders are placed after the customer accepts the research-use-only confirmation. Credit card redirects to secure checkout; BTC, SOL, and USDC receive 5% off and are saved as awaiting crypto payment.</p>
         </div>
       </div>
     </div>
@@ -2715,11 +2716,11 @@ body.age-locked .vial-rotor {
         <p>Once your order ships, the tracking number will be added to your order history. Sign in to your account and open <strong>My Account</strong> to check the latest status and tracking information.</p>
 
         <h2>Payment options</h2>
-        <p>Credit card checkout will redirect to the payment processor when card payments are configured. Crypto orders are saved as awaiting payment until payment is manually verified.</p>
-        <p>For BTC, SOL, or USDC, send payment to the wallet shown at checkout. Type your order number in the payment note, memo, or reference field if your wallet allows it. If not, send the transaction hash with your order number to <strong>orders@researchpeps.us</strong>.</p>
+        <p>Credit card checkout supports Visa and Mastercard through the secure payment processor when card payments are configured. Card numbers are not stored on this website.</p>
+        <p>Crypto payments receive an automatic <strong>5% discount</strong> at checkout. For BTC, SOL, or USDC, send payment to the wallet shown at checkout. Type your order number in the payment note, memo, or reference field if your wallet allows it. If not, send the transaction hash with your order number to <strong>orders@researchpeps.us</strong>.</p>
 
-        
-        
+        <h2>Crypto verification</h2>
+        <p>After payment is received, the admin dashboard updates your customer-facing order status. Statuses may include awaiting payment, payment received, processing, packed, shipped, completed, or cancelled.</p>
 
         <h2>Research-use confirmation</h2>
         <p>All orders require confirmation that products are requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</p>
@@ -4965,8 +4966,16 @@ function getCheckoutShipping() {
   return getShippingRateForCountry(getSelectedShippingCountry());
 }
 
+function getCurrentPaymentMethod() {
+  return String(document.getElementById('checkoutPaymentMethod')?.value || 'stripe').toLowerCase();
+}
+
+function getCryptoDiscountAmount() {
+  return isCryptoMethod(getCurrentPaymentMethod()) ? getCartSubtotal() * 0.05 : 0;
+}
+
 function getCartTotal() {
-  return getCartSubtotal() + getCheckoutShipping();
+  return Math.max(0, getCartSubtotal() + getCheckoutShipping() - getCryptoDiscountAmount());
 }
 
 function getCartCount() {
@@ -5330,6 +5339,8 @@ function renderOrderCard(order) {
   }).join('');
   const trackingNumber = String(order.trackingNumber || '').trim();
   const trackingCarrier = String(order.trackingCarrier || '').trim();
+  const discount = Number(order.discount || 0);
+  const discountBlock = discount > 0 ? `<p class="order-meta">Crypto discount applied: -${escapeHtml(formatMoney(discount))}</p>` : '';
   const trackingBlock = trackingNumber ? `
       <div class="tracking-box">
         <strong>Tracking${trackingCarrier ? ' — ' + escapeHtml(trackingCarrier) : ''}</strong>
@@ -5345,6 +5356,7 @@ function renderOrderCard(order) {
           <span class="order-status">${escapeHtml(statusText)}</span>
           <h3 class="order-id">${escapeHtml(order.id)}</h3>
           <p class="order-meta">Placed ${escapeHtml(date)} • ${escapeHtml(order.paymentMethodLabel || 'Invoice / payment link')}</p>
+          ${discountBlock}
         </div>
         <div class="summary-total" style="border-top: none; margin: 0; padding: 0;"><span>Total</span><span>${escapeHtml(formatMoney(order.total || 0))}</span></div>
       </div>
@@ -5662,6 +5674,8 @@ function renderCheckoutPage() {
   const summary = document.getElementById('checkoutCartSummary');
   const subtotalEl = document.getElementById('checkoutSubtotal');
   const shippingEl = document.getElementById('checkoutShipping');
+  const discountRow = document.getElementById('checkoutDiscountRow');
+  const discountEl = document.getElementById('checkoutDiscount');
   const total = document.getElementById('checkoutTotal');
   if (!summary || !total) return;
 
@@ -5677,6 +5691,8 @@ function renderCheckoutPage() {
     summary.innerHTML = '<div class="empty-search">Your cart is empty.</div>';
     if (subtotalEl) subtotalEl.textContent = '$0.00';
     if (shippingEl) shippingEl.textContent = '$0.00';
+    if (discountRow) discountRow.style.display = 'none';
+    if (discountEl) discountEl.textContent = '-$0.00';
     total.textContent = '$0.00';
     return;
   }
@@ -5695,8 +5711,11 @@ function renderCheckoutPage() {
       </div>
     `;
   }).join('');
+  const cryptoDiscount = getCryptoDiscountAmount();
   if (subtotalEl) subtotalEl.textContent = formatMoney(getCartSubtotal());
   if (shippingEl) shippingEl.textContent = formatMoney(getCheckoutShipping()) + ' (' + getSelectedShippingCountry() + ')';
+  if (discountRow) discountRow.style.display = cryptoDiscount > 0 ? 'flex' : 'none';
+  if (discountEl) discountEl.textContent = '-' + formatMoney(cryptoDiscount);
   total.textContent = formatMoney(getCartTotal());
   updateCryptoWalletBox();
 }
@@ -5705,7 +5724,7 @@ function getPaymentMethodLabel(value) {
   if (value === 'btc') return 'Bitcoin (BTC)';
   if (value === 'sol') return 'Solana (SOL)';
   if (value === 'usdc') return 'USDC';
-  if (value === 'stripe') return 'Credit card';
+  if (value === 'stripe') return 'Credit card (Visa / Mastercard)';
   return 'Credit card';
 }
 
@@ -5800,6 +5819,7 @@ function placeOrder() {
    Keep cart UI local for speed, but prices/orders are recalculated on the server. */
 let backendAccount = null;
 let cryptoWallets = {};
+let cryptoDiscountPercent = 5;
 let shippingRates = { defaultRate: 80, rates: [{ country: 'United States', code: 'US', rate: 15 }] };
 let lastCompletedOrder = null;
 let lastCryptoPayment = null;
@@ -5816,6 +5836,7 @@ async function loadPaymentOptions() {
   try {
     const data = await apiRequest('/api/payment-options', { method: 'GET' });
     cryptoWallets = data.cryptoWallets || {};
+    cryptoDiscountPercent = Number(data.cryptoDiscountPercent || 5);
   } catch (error) {
     cryptoWallets = {};
   }
@@ -5869,7 +5890,7 @@ async function loadCryptoQuote(method) {
 
     if (currentCryptoQuote && note) {
       const expires = new Date(currentCryptoQuote.expiresAt).toLocaleTimeString();
-      note.textContent = 'Send this amount before ' + expires + '. Network fees are paid separately by the customer.';
+      note.textContent = '5% crypto discount applied. Send this amount before ' + expires + '. Network fees are paid separately by the customer.';
     }
   } catch (error) {
     currentCryptoQuote = null;

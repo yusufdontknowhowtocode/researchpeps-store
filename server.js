@@ -37,6 +37,7 @@ const DEFAULT_USDC_PAYMENT_NETWORK = 'Solana';
 const CRYPTO_QUOTE_CACHE_MS = 60 * 1000;
 const CRYPTO_QUOTE_EXPIRES_MINUTES = Number(process.env.CRYPTO_QUOTE_EXPIRES_MINUTES || 15);
 const CRYPTO_QUOTE_BUFFER = Number(process.env.CRYPTO_QUOTE_BUFFER || 0);
+const CRYPTO_DISCOUNT_RATE = Number(process.env.CRYPTO_DISCOUNT_RATE || 0.05);
 let cryptoRateCache = { fetchedAt: 0, rates: null };
 const CRYPTO_WALLETS = {
   btc: {
@@ -115,7 +116,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
     <p><strong>Order number:</strong> ${escapeHtml(order.id)}</p>
     <p><strong>Status:</strong> ${escapeHtml(order.status)}</p>
     <p><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel)}</p>
-    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
+    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}${discountHtml}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
     <h3>Items</h3>
     <ul>${orderItemsHtml(order)}</ul>
     ${cryptoPayment ? `<h3>Crypto payment</h3><p>Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.</p>${cryptoQuote ? `<p><strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p><p><strong>Quote expires:</strong> ${escapeHtml(cryptoQuote.expiresAt)}</p>` : ''}<p><strong>Address:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p><p>Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send the transaction hash with your order number.</p>` : ''}
@@ -129,7 +130,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
     <p><strong>Order number:</strong> ${escapeHtml(order.id)}</p>
     <p><strong>Status:</strong> ${escapeHtml(order.status)}</p>
     <p><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel)}</p>
-    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
+    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}${discountHtml}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
     <h3>Customer</h3>
     <p>${escapeHtml(order.customer.name)}<br>${escapeHtml(order.customer.email)}<br>${escapeHtml(order.customer.phone)}</p>
     <h3>Shipping</h3>
@@ -200,6 +201,7 @@ CREATE TABLE IF NOT EXISTS orders (
   subtotal_cents INTEGER NOT NULL DEFAULT 0,
   tax_cents INTEGER NOT NULL DEFAULT 0,
   shipping_cents INTEGER NOT NULL DEFAULT 0,
+  discount_cents INTEGER NOT NULL DEFAULT 0,
   total_cents INTEGER NOT NULL,
   currency TEXT NOT NULL DEFAULT 'usd',
   customer_json TEXT NOT NULL,
@@ -253,6 +255,7 @@ function ensureOrderColumn(name, definition) {
 ensureOrderColumn('subtotal_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('tax_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('shipping_cents', 'INTEGER NOT NULL DEFAULT 0');
+ensureOrderColumn('discount_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('tracking_number', 'TEXT');
 ensureOrderColumn('tracking_carrier', 'TEXT');
 
@@ -582,6 +585,17 @@ function normalizePaymentMethod(method) {
   return 'stripe';
 }
 
+function getCryptoDiscountCents(subtotalCents, paymentMethod) {
+  if (!isCryptoPaymentMethod(paymentMethod)) return 0;
+  const subtotal = Number(subtotalCents || 0);
+  if (!Number.isFinite(subtotal) || subtotal <= 0) return 0;
+  return Math.round(subtotal * CRYPTO_DISCOUNT_RATE);
+}
+
+function getCryptoDiscountPercentLabel() {
+  return `${Math.round(CRYPTO_DISCOUNT_RATE * 100)}%`;
+}
+
 function getCryptoPayment(method, orderId) {
   const value = String(method || '').toLowerCase();
   const wallet = CRYPTO_WALLETS[value];
@@ -733,6 +747,7 @@ function publicOrder(row) {
     subtotal: (row.subtotal_cents || items.reduce((sum, item) => sum + Math.round(item.lineTotal * 100), 0)) / 100,
     tax: (row.tax_cents || 0) / 100,
     shippingCharge: (row.shipping_cents || 0) / 100,
+    discount: (row.discount_cents || 0) / 100,
     total: row.total_cents / 100,
     currency: row.currency,
     customer: JSON.parse(row.customer_json),
@@ -829,15 +844,17 @@ function validateCartItems(items) {
   });
 }
 
-function calculateOrderTotals(items, shippingCountry) {
+function calculateOrderTotals(items, shippingCountry, paymentMethod) {
   const validatedItems = validateCartItems(items);
   const subtotalCents = validatedItems.reduce((sum, item) => sum + item.lineTotalCents, 0);
 
   const taxCents = 0;
   const shippingCents = subtotalCents > 0 ? getShippingCentsForCountry(shippingCountry || 'United States') : 0;
-  const totalCents = subtotalCents + taxCents + shippingCents;
+  const normalizedPaymentMethod = normalizePaymentMethod(paymentMethod);
+  const discountCents = getCryptoDiscountCents(subtotalCents, normalizedPaymentMethod);
+  const totalCents = Math.max(0, subtotalCents + taxCents + shippingCents - discountCents);
 
-  return { items: validatedItems, subtotalCents, taxCents, shippingCents, totalCents };
+  return { items: validatedItems, subtotalCents, taxCents, shippingCents, discountCents, totalCents };
 }
 
 function validateCheckoutPayload(body) {
@@ -890,21 +907,21 @@ function validateCheckoutPayload(body) {
 
 function createOrderForUser(userId, body, statusOverride) {
   const validated = validateCheckoutPayload(body);
-  const totals = calculateOrderTotals(body.items, validated.shipping.country);
   const orderId = createOrderId();
   const timestamp = nowIso();
   const paymentMethod = normalizePaymentMethod(validated.paymentMethod);
+  const totals = calculateOrderTotals(body.items, validated.shipping.country, paymentMethod);
   const status = statusOverride || (isCryptoPaymentMethod(paymentMethod) ? `Awaiting ${getPaymentMethodLabel(paymentMethod)} Payment` : 'Order Submitted');
 
   const insertOrder = db.transaction(() => {
     db.prepare(`
       INSERT INTO orders (
         id, user_id, status, payment_method, payment_method_label,
-        subtotal_cents, tax_cents, shipping_cents, total_cents,
+        subtotal_cents, tax_cents, shipping_cents, discount_cents, total_cents,
         currency, customer_json, shipping_json, notes, research_use_accepted,
         created_at, updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?, ?, ?, ?, ?, ?)
     `).run(
       orderId,
       userId,
@@ -914,6 +931,7 @@ function createOrderForUser(userId, body, statusOverride) {
       totals.subtotalCents,
       totals.taxCents,
       totals.shippingCents,
+      totals.discountCents,
       totals.totalCents,
       JSON.stringify(validated.customer),
       JSON.stringify(validated.shipping),
@@ -1045,6 +1063,7 @@ app.get('/api/session', (req, res) => {
 
 app.get('/api/payment-options', (req, res) => {
   res.json({
+    cryptoDiscountPercent: CRYPTO_DISCOUNT_RATE * 100,
     cryptoWallets: {
       btc: getCryptoPayment('btc', 'YOUR_ORDER_NUMBER'),
       sol: getCryptoPayment('sol', 'YOUR_ORDER_NUMBER'),
@@ -1288,7 +1307,8 @@ app.post('/api/auth/logout', (req, res) => {
 app.post('/api/cart/quote', (req, res, next) => {
   try {
     const shippingCountry = req.body.shippingCountry || (req.body.shipping && req.body.shipping.country) || 'United States';
-    const totals = calculateOrderTotals(req.body.items, shippingCountry);
+    const paymentMethod = normalizePaymentMethod(req.body.paymentMethod || 'stripe');
+    const totals = calculateOrderTotals(req.body.items, shippingCountry, paymentMethod);
     res.json({
       items: totals.items.map((item) => ({
         productName: item.productName,
@@ -1301,6 +1321,8 @@ app.post('/api/cart/quote', (req, res, next) => {
       subtotal: totals.subtotalCents / 100,
       tax: totals.taxCents / 100,
       shipping: totals.shippingCents / 100,
+      discount: totals.discountCents / 100,
+      cryptoDiscountPercent: isCryptoPaymentMethod(paymentMethod) ? CRYPTO_DISCOUNT_RATE * 100 : 0,
       total: totals.totalCents / 100,
       totalLabel: formatMoneyFromCents(totals.totalCents)
       
