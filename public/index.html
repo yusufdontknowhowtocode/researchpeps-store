@@ -3672,7 +3672,7 @@ const VIAL_TEMPLATE_IMAGE = "/images/pep.png";
 
 const products = [
   {
-    "name": "Retatrutide",
+    "name": "R3tatrutide",
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
@@ -5099,7 +5099,7 @@ function renderSearchResults() {
 
   if (query.length === 0) {
     matches = products.filter(function(product) {
-      return ['Retatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'CJC-1295 WO/Dac'].includes(product.name);
+      return ['R3tatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'CJC-1295 WO/Dac'].includes(product.name);
     });
   }
 
@@ -5461,7 +5461,7 @@ function renderPeptideCatalog() {
 
   const featured = document.getElementById('featuredPeptideGrid');
   if (featured) {
-    const featuredNames = ['Retatrutide', 'HGH', 'GHK-CU', 'BPC-157', 'NAD+', 'CJC-1295 DAC + Ipamorelin', 'Semax', 'IGF-1LR3'];
+    const featuredNames = ['R3tatrutide', 'HGH', 'GHK-CU', 'BPC-157', 'NAD+', 'CJC-1295 DAC + Ipamorelin', 'Semax', 'IGF-1LR3'];
     featured.innerHTML = products.filter(function(product) {
       return featuredNames.includes(product.name);
     }).map(function(product) {
