@@ -2908,7 +2908,7 @@ body.age-locked .vial-rotor {
         </div>
 
         <div id="thankYouCryptoBox" class="crypto-confirm-box" style="display:none;"></div>
-        <p class="email-note">Order confirmation details have been saved to your account.</p>
+        <p class="email-note">Order confirmation details have been saved to your account. You will receive updates by email when notifications are enabled.</p>
 
         <div class="actions">
           <button class="btn primary" onclick="viewLastOrder()">View Order</button>
@@ -2933,18 +2933,23 @@ body.age-locked .vial-rotor {
         <p>Orders ship from <strong>United States, Pennsylvania</strong>. After an order is placed and payment is verified, please allow normal processing time before shipment is prepared.</p>
         <p>Estimated delivery time is typically <strong>1 to 2 business weeks</strong> after shipment, depending on destination, carrier movement, holidays, weather, and other delays outside our control.</p>
 
-        <h2>Tracking numbers</h2>
-        <p>Once your order ships, the tracking number will be added to your order history. Sign in to your account and open <strong>My Account</strong> to check the latest status and tracking information.</p>
+        <h2>Order status and tracking</h2>
+        <ul>
+          <li><strong>Payment verification:</strong> Credit card orders begin processing after payment approval. Crypto orders are manually verified after payment is received.</li>
+          <li><strong>Status updates:</strong> Your customer-facing order status updates inside <strong>My Account</strong> as the order moves from awaiting payment to processing, packed, shipped, and completed.</li>
+          <li><strong>Tracking:</strong> Tracking appears in your order history once it is added after shipment.</li>
+          <li><strong>Research-use confirmation:</strong> Every order requires research-use-only confirmation before checkout can be completed.</li>
+        </ul>
 
         <h2>Payment options</h2>
         <p>Credit card checkout supports Visa and Mastercard through the secure payment processor when card payments are configured. Card numbers are not stored on this website.</p>
         <p>Crypto payments receive an automatic <strong>5% discount</strong> at checkout. For BTC, SOL, or USDC, send payment to the wallet shown at checkout. Type your order number in the payment note, memo, or reference field if your wallet allows it. If not, send the transaction hash with your order number to <strong>orders@researchpeps.us</strong>.</p>
 
         <h2>Crypto verification</h2>
-        <p>After payment is received, the admin dashboard updates your customer-facing order status. Statuses may include awaiting payment, payment received, processing, packed, shipped, completed, or cancelled.</p>
+        <p>Crypto orders are saved as awaiting payment until the payment is manually verified. After verification, the admin dashboard updates the order status shown to the customer.</p>
 
-        <h2>Research-use confirmation</h2>
-        <p>All orders require confirmation that products are requested only for lawful research, laboratory, analytical, or scientific purposes and not for human or animal consumption.</p>
+        <h2>Questions</h2>
+        <p>For payment confirmation, shipping questions, or transaction hash updates, contact <strong>orders@researchpeps.us</strong> and include your order number.</p>
       </div>
     </div>
   </section>
@@ -5614,7 +5619,7 @@ function renderAdminDashboardShell() {
         <input id="adminTestEmail" class="admin-search-input" placeholder="Send test email to address">
         <button class="btn" onclick="sendAdminTestEmail()">Test Email</button>
       </div>
-      <p class="admin-email-test-note">Use this if password reset emails are not arriving. It checks the same SMTP settings used by password reset.</p>
+      <p class="admin-email-test-note">Use this to test the same SMTP settings used by password resets, customer order emails, and owner order notifications.</p>
 
       <div id="adminDashboardMessage" class="auth-note"></div>
       <div id="adminOrdersResults" class="admin-results">
@@ -5700,6 +5705,7 @@ function renderAdminOrderResults() {
             ${statusOptions}
           </select>
           <button class="btn primary" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}', '${trackingId}', '${carrierId}')">Update Order</button>
+          <button class="btn" onclick="sendAdminOrderEmail('${escapeForAttribute(order.id)}')">Send Order Email</button>
         </div>
       </article>
     `;
@@ -5745,6 +5751,20 @@ async function sendAdminTestEmail() {
     if (message) message.textContent = data.message || 'Test email sent. Check inbox and spam.';
   } catch (error) {
     if (message) message.textContent = error.message || 'Test email failed. Check Render SMTP environment variables and logs.';
+  }
+}
+
+async function sendAdminOrderEmail(orderId) {
+  const message = document.getElementById('adminDashboardMessage');
+  if (message) message.textContent = 'Sending order email for ' + orderId + '...';
+
+  try {
+    const data = await apiRequest('/api/admin/orders/' + encodeURIComponent(orderId) + '/send-email', {
+      method: 'POST'
+    });
+    if (message) message.textContent = data.message || 'Order email sent. Check customer inbox and owner notification inbox.';
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Order email failed. Check SMTP settings and Render logs.';
   }
 }
 

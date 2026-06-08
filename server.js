@@ -105,11 +105,14 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
 
   const customerEmail = order.customer && order.customer.email;
   const notifyEmail = ORDER_NOTIFY_EMAIL || ADMIN_EMAILS[0] || '';
+  const discountAmount = Number(order.discount || 0);
+  const discountText = discountAmount > 0 ? `\nDiscount: -$${discountAmount.toFixed(2)}` : '';
+  const discountHtml = discountAmount > 0 ? `<br><strong>Discount:</strong> -$${discountAmount.toFixed(2)}` : '';
   const paymentLines = cryptoPayment
     ? `\n\nCrypto payment:\n${cryptoPayment.label}\nNetwork: ${cryptoPayment.network}\nAddress: ${cryptoPayment.address}\nPut order number ${order.id} in the payment note/reference if possible. If not, send the transaction hash with the order number.`
     : '';
 
-  const customerText = `Thank you for your order.\n\nOrder number: ${order.id}\nStatus: ${order.status}\nPayment: ${order.paymentMethodLabel}\nSubtotal: $${Number(order.subtotal || 0).toFixed(2)}\nShipping: $${Number(order.shippingCharge || 0).toFixed(2)}\nTotal: $${Number(order.total || 0).toFixed(2)}\n\nItems:\n${orderItemsText(order)}${paymentLines}\n\nResearch-use confirmation was accepted at checkout.`;
+  const customerText = `Thank you for your order.\n\nOrder number: ${order.id}\nStatus: ${order.status}\nPayment: ${order.paymentMethodLabel}\nSubtotal: $${Number(order.subtotal || 0).toFixed(2)}\nShipping: $${Number(order.shippingCharge || 0).toFixed(2)}${discountText}\nTotal: $${Number(order.total || 0).toFixed(2)}\n\nItems:\n${orderItemsText(order)}${paymentLines}\n\nResearch-use confirmation was accepted at checkout.`;
 
   const customerHtml = `
     <h2>Thank you for your order</h2>
@@ -989,11 +992,17 @@ app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), (req
     const session = event.data.object;
     const orderId = session.metadata && session.metadata.orderId;
     if (orderId) {
+      const existingOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
       db.prepare(`
         UPDATE orders
         SET status = ?, stripe_session_id = ?, updated_at = ?
         WHERE id = ?
       `).run('Paid - Processing', session.id, nowIso(), orderId);
+
+      if (existingOrder && existingOrder.status !== 'Paid - Processing') {
+        const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+        sendOrderEmailsSafely(publicOrder(updatedOrder), null);
+      }
     }
   }
 
@@ -1400,6 +1409,8 @@ app.post('/api/checkout/stripe/confirm', requireAuth, async (req, res, next) => 
     if (isPaid && row.status !== 'Paid - Processing') {
       db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
         .run('Paid - Processing', nowIso(), orderId);
+      const paidOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+      sendOrderEmailsSafely(publicOrder(paidOrder), null);
     }
 
     const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
@@ -1465,7 +1476,6 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
 
     db.prepare('UPDATE orders SET stripe_session_id = ?, updated_at = ? WHERE id = ?')
       .run(session.id, nowIso(), order.id);
-    sendOrderEmailsSafely(order, null);
 
     res.status(201).json({ order, checkoutUrl: session.url });
   } catch (error) {
@@ -1490,8 +1500,8 @@ app.post('/api/admin/test-email', requireAdmin, async (req, res, next) => {
       from: MAIL_FROM,
       to: email,
       subject: 'ResearchPeps email test',
-      text: 'This is a ResearchPeps SMTP test email. If you received this, password reset email sending is configured.',
-      html: '<p>This is a <strong>ResearchPeps SMTP test email</strong>.</p><p>If you received this, password reset email sending is configured.</p>'
+      text: 'This is a ResearchPeps SMTP test email. If you received this, password reset and order notification email sending are configured.',
+      html: '<p>This is a <strong>ResearchPeps SMTP test email</strong>.</p><p>If you received this, password reset and order notification email sending are configured.</p>'
     });
 
     res.json({ ok: true, message: `Test email sent to ${email}. Check inbox and spam.` });
@@ -1499,6 +1509,30 @@ app.post('/api/admin/test-email', requireAdmin, async (req, res, next) => {
     console.error('Admin test email failed:', error);
     error.status = 500;
     error.message = 'Test email failed. Check SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, MAIL_FROM, and Render logs.';
+    next(error);
+  }
+});
+
+app.post('/api/admin/orders/:id/send-email', requireAdmin, async (req, res, next) => {
+  try {
+    const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
+    if (!row) return res.status(404).json({ error: 'Order not found.' });
+
+    if (!mailTransporter) {
+      return res.status(503).json({
+        error: 'SMTP email is not configured. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, and MAIL_FROM in Render.'
+      });
+    }
+
+    const order = publicOrder(row);
+    const cryptoPayment = isCryptoPaymentMethod(order.paymentMethod) ? getCryptoPayment(order.paymentMethod, order.id) : null;
+    await sendOrderEmails(order, cryptoPayment, null);
+
+    res.json({ ok: true, message: `Order email sent for ${order.id}. Check customer inbox and owner notification inbox.` });
+  } catch (error) {
+    console.error('Admin order email resend failed:', error);
+    error.status = 500;
+    error.message = 'Order email failed. Check SMTP settings, ORDER_NOTIFY_EMAIL, customer email, and Render logs.';
     next(error);
   }
 });
