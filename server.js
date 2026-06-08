@@ -97,14 +97,19 @@ function orderItemsHtml(order) {
     .join('');
 }
 
+function emailsMatch(a, b) {
+  return normalizeEmail(a) && normalizeEmail(a) === normalizeEmail(b);
+}
+
 async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
   if (!mailTransporter) {
     console.log('Email not configured. Skipping order emails.');
-    return;
+    return { customerSent: false, ownerSent: false, skipped: 'smtp_not_configured' };
   }
 
-  const customerEmail = order.customer && order.customer.email;
-  const notifyEmail = ORDER_NOTIFY_EMAIL || ADMIN_EMAILS[0] || '';
+  const customerEmail = normalizeEmail(order.customer && order.customer.email);
+  const notifyEmail = normalizeEmail(ORDER_NOTIFY_EMAIL || ADMIN_EMAILS[0] || '');
+  const customerSameAsOwner = customerEmail && notifyEmail && emailsMatch(customerEmail, notifyEmail);
   const discountAmount = Number(order.discount || 0);
   const discountText = discountAmount > 0 ? `\nDiscount: -$${discountAmount.toFixed(2)}` : '';
   const discountHtml = discountAmount > 0 ? `<br><strong>Discount:</strong> -$${discountAmount.toFixed(2)}` : '';
@@ -146,7 +151,12 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
   `;
 
   const messages = [];
-  if (customerEmail) {
+  const sentTo = { customer: '', owner: '' };
+
+  // Customer receipt must only go to the email typed at checkout.
+  // If the site owner tests using the same email as ORDER_NOTIFY_EMAIL, skip the duplicate
+  // customer receipt so the owner inbox only receives the owner/admin notification.
+  if (customerEmail && !customerSameAsOwner) {
     messages.push(mailTransporter.sendMail({
       from: MAIL_FROM,
       to: customerEmail,
@@ -154,19 +164,30 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
       text: customerText,
       html: customerHtml
     }));
+    sentTo.customer = customerEmail;
   }
 
   if (notifyEmail) {
     messages.push(mailTransporter.sendMail({
       from: MAIL_FROM,
       to: notifyEmail,
+      replyTo: customerEmail || undefined,
       subject: `New ResearchPeps order ${order.id}`,
       text: ownerText,
       html: ownerHtml
     }));
+    sentTo.owner = notifyEmail;
   }
 
   await Promise.all(messages);
+  console.log('Order emails sent:', { orderId: order.id, customerEmail, notifyEmail, customerSameAsOwner, sentTo });
+  return {
+    customerSent: Boolean(sentTo.customer),
+    ownerSent: Boolean(sentTo.owner),
+    customerEmail,
+    notifyEmail,
+    customerSameAsOwner
+  };
 }
 
 function sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote) {
@@ -1526,9 +1547,14 @@ app.post('/api/admin/orders/:id/send-email', requireAdmin, async (req, res, next
 
     const order = publicOrder(row);
     const cryptoPayment = isCryptoPaymentMethod(order.paymentMethod) ? getCryptoPayment(order.paymentMethod, order.id) : null;
-    await sendOrderEmails(order, cryptoPayment, null);
+    const emailResult = await sendOrderEmails(order, cryptoPayment, null);
 
-    res.json({ ok: true, message: `Order email sent for ${order.id}. Check customer inbox and owner notification inbox.` });
+    const parts = [];
+    if (emailResult.customerSent) parts.push(`customer receipt to ${emailResult.customerEmail}`);
+    if (emailResult.ownerSent) parts.push(`owner notification to ${emailResult.notifyEmail}`);
+    if (emailResult.customerSameAsOwner) parts.push('customer receipt skipped because checkout email matches owner notification email');
+
+    res.json({ ok: true, message: `Order email processed for ${order.id}: ${parts.join('; ') || 'no recipients configured'}.` });
   } catch (error) {
     console.error('Admin order email resend failed:', error);
     error.status = 500;
