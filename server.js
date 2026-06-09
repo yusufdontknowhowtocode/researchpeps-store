@@ -28,7 +28,6 @@ const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'tru
 const MAIL_FROM = process.env.MAIL_FROM || SMTP_USER || '';
 const ORDER_NOTIFY_EMAIL = process.env.ORDER_NOTIFY_EMAIL || process.env.OWNER_EMAIL || '';
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
-const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const PASSWORD_RESET_EXPIRES_MINUTES = Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES || 60);
 const DEFAULT_BTC_PAYMENT_ADDRESS = '3QaBoxDHEWnuGy5emvYawoFCM5E5yMEvap';
 const DEFAULT_SOL_PAYMENT_ADDRESS = '7NVysM4pSWVq4ZYKnnCwz3fnaA1BgkCex6tARvv7vqBT';
@@ -37,7 +36,6 @@ const DEFAULT_USDC_PAYMENT_NETWORK = 'Solana';
 const CRYPTO_QUOTE_CACHE_MS = 60 * 1000;
 const CRYPTO_QUOTE_EXPIRES_MINUTES = Number(process.env.CRYPTO_QUOTE_EXPIRES_MINUTES || 15);
 const CRYPTO_QUOTE_BUFFER = Number(process.env.CRYPTO_QUOTE_BUFFER || 0);
-const CRYPTO_DISCOUNT_RATE = Number(process.env.CRYPTO_DISCOUNT_RATE || 0.05);
 let cryptoRateCache = { fetchedAt: 0, rates: null };
 const CRYPTO_WALLETS = {
   btc: {
@@ -97,34 +95,26 @@ function orderItemsHtml(order) {
     .join('');
 }
 
-function emailsMatch(a, b) {
-  return normalizeEmail(a) && normalizeEmail(a) === normalizeEmail(b);
-}
-
 async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
   if (!mailTransporter) {
     console.log('Email not configured. Skipping order emails.');
-    return { customerSent: false, ownerSent: false, skipped: 'smtp_not_configured' };
+    return;
   }
 
-  const customerEmail = normalizeEmail(order.customer && order.customer.email);
-  const notifyEmail = normalizeEmail(ORDER_NOTIFY_EMAIL || ADMIN_EMAILS[0] || '');
-  const customerSameAsOwner = customerEmail && notifyEmail && emailsMatch(customerEmail, notifyEmail);
-  const discountAmount = Number(order.discount || 0);
-  const discountText = discountAmount > 0 ? `\nDiscount: -$${discountAmount.toFixed(2)}` : '';
-  const discountHtml = discountAmount > 0 ? `<br><strong>Discount:</strong> -$${discountAmount.toFixed(2)}` : '';
+  const customerEmail = order.customer && order.customer.email;
+  const notifyEmail = ORDER_NOTIFY_EMAIL || ADMIN_EMAILS[0] || '';
   const paymentLines = cryptoPayment
     ? `\n\nCrypto payment:\n${cryptoPayment.label}\nNetwork: ${cryptoPayment.network}\nAddress: ${cryptoPayment.address}\nPut order number ${order.id} in the payment note/reference if possible. If not, send the transaction hash with the order number.`
     : '';
 
-  const customerText = `Thank you for your order.\n\nOrder number: ${order.id}\nStatus: ${order.status}\nPayment: ${order.paymentMethodLabel}\nSubtotal: $${Number(order.subtotal || 0).toFixed(2)}\nShipping: $${Number(order.shippingCharge || 0).toFixed(2)}${discountText}\nTotal: $${Number(order.total || 0).toFixed(2)}\n\nItems:\n${orderItemsText(order)}${paymentLines}\n\nResearch-use confirmation was accepted at checkout.`;
+  const customerText = `Thank you for your order.\n\nOrder number: ${order.id}\nStatus: ${order.status}\nPayment: ${order.paymentMethodLabel}\nSubtotal: $${Number(order.subtotal || 0).toFixed(2)}\nShipping: $${Number(order.shippingCharge || 0).toFixed(2)}\nTotal: $${Number(order.total || 0).toFixed(2)}\n\nItems:\n${orderItemsText(order)}${paymentLines}\n\nResearch-use confirmation was accepted at checkout.`;
 
   const customerHtml = `
     <h2>Thank you for your order</h2>
     <p><strong>Order number:</strong> ${escapeHtml(order.id)}</p>
     <p><strong>Status:</strong> ${escapeHtml(order.status)}</p>
     <p><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel)}</p>
-    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}${discountHtml}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
+    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
     <h3>Items</h3>
     <ul>${orderItemsHtml(order)}</ul>
     ${cryptoPayment ? `<h3>Crypto payment</h3><p>Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.</p>${cryptoQuote ? `<p><strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p><p><strong>Quote expires:</strong> ${escapeHtml(cryptoQuote.expiresAt)}</p>` : ''}<p><strong>Address:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p><p>Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send the transaction hash with your order number.</p>` : ''}
@@ -138,7 +128,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
     <p><strong>Order number:</strong> ${escapeHtml(order.id)}</p>
     <p><strong>Status:</strong> ${escapeHtml(order.status)}</p>
     <p><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel)}</p>
-    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}${discountHtml}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
+    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
     <h3>Customer</h3>
     <p>${escapeHtml(order.customer.name)}<br>${escapeHtml(order.customer.email)}<br>${escapeHtml(order.customer.phone)}</p>
     <h3>Shipping</h3>
@@ -151,12 +141,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
   `;
 
   const messages = [];
-  const sentTo = { customer: '', owner: '' };
-
-  // Customer receipt must only go to the email typed at checkout.
-  // If the site owner tests using the same email as ORDER_NOTIFY_EMAIL, skip the duplicate
-  // customer receipt so the owner inbox only receives the owner/admin notification.
-  if (customerEmail && !customerSameAsOwner) {
+  if (customerEmail) {
     messages.push(mailTransporter.sendMail({
       from: MAIL_FROM,
       to: customerEmail,
@@ -164,30 +149,19 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
       text: customerText,
       html: customerHtml
     }));
-    sentTo.customer = customerEmail;
   }
 
   if (notifyEmail) {
     messages.push(mailTransporter.sendMail({
       from: MAIL_FROM,
       to: notifyEmail,
-      replyTo: customerEmail || undefined,
       subject: `New ResearchPeps order ${order.id}`,
       text: ownerText,
       html: ownerHtml
     }));
-    sentTo.owner = notifyEmail;
   }
 
   await Promise.all(messages);
-  console.log('Order emails sent:', { orderId: order.id, customerEmail, notifyEmail, customerSameAsOwner, sentTo });
-  return {
-    customerSent: Boolean(sentTo.customer),
-    ownerSent: Boolean(sentTo.owner),
-    customerEmail,
-    notifyEmail,
-    customerSameAsOwner
-  };
 }
 
 function sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote) {
@@ -225,7 +199,6 @@ CREATE TABLE IF NOT EXISTS orders (
   subtotal_cents INTEGER NOT NULL DEFAULT 0,
   tax_cents INTEGER NOT NULL DEFAULT 0,
   shipping_cents INTEGER NOT NULL DEFAULT 0,
-  discount_cents INTEGER NOT NULL DEFAULT 0,
   total_cents INTEGER NOT NULL,
   currency TEXT NOT NULL DEFAULT 'usd',
   customer_json TEXT NOT NULL,
@@ -233,8 +206,6 @@ CREATE TABLE IF NOT EXISTS orders (
   notes TEXT,
   research_use_accepted INTEGER NOT NULL DEFAULT 0,
   stripe_session_id TEXT,
-  tracking_number TEXT,
-  tracking_carrier TEXT,
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL,
   FOREIGN KEY(user_id) REFERENCES users(id)
@@ -267,14 +238,6 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
   created_at TEXT NOT NULL,
   FOREIGN KEY(user_id) REFERENCES users(id)
 );
-
-CREATE TABLE IF NOT EXISTS discount_codes (
-  code TEXT PRIMARY KEY,
-  percent_off REAL NOT NULL,
-  is_active INTEGER NOT NULL DEFAULT 1,
-  created_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL
-);
 `);
 
 function ensureOrderColumn(name, definition) {
@@ -287,11 +250,6 @@ function ensureOrderColumn(name, definition) {
 ensureOrderColumn('subtotal_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('tax_cents', 'INTEGER NOT NULL DEFAULT 0');
 ensureOrderColumn('shipping_cents', 'INTEGER NOT NULL DEFAULT 0');
-ensureOrderColumn('discount_cents', 'INTEGER NOT NULL DEFAULT 0');
-ensureOrderColumn('discount_code', 'TEXT');
-ensureOrderColumn('discount_percent', 'REAL NOT NULL DEFAULT 0');
-ensureOrderColumn('tracking_number', 'TEXT');
-ensureOrderColumn('tracking_carrier', 'TEXT');
 
 function ensureUserColumn(name, definition) {
   const columns = db.prepare('PRAGMA table_info(users)').all().map((column) => column.name);
@@ -301,8 +259,6 @@ function ensureUserColumn(name, definition) {
 }
 
 ensureUserColumn('google_sub', 'TEXT');
-ensureUserColumn('email_verified', 'INTEGER NOT NULL DEFAULT 0');
-ensureUserColumn('last_login_at', 'TEXT');
 
 class BetterSqliteSessionStore extends session.Store {
   constructor(database) {
@@ -421,52 +377,13 @@ async function verifyGoogleCredential(credential) {
   };
 }
 
-
-function getGoogleRedirectUri() {
-  return `${PUBLIC_URL.replace(/\/$/, '')}/api/auth/google/callback`;
-}
-
-function getPublicRedirectPath(pathAndQuery) {
-  return `${PUBLIC_URL.replace(/\/$/, '')}${pathAndQuery}`;
-}
-
-async function signInGoogleProfile(req, profile) {
-  const timestamp = nowIso();
-  let row = db.prepare('SELECT * FROM users WHERE google_sub = ?').get(profile.googleSub);
-
-  if (!row) {
-    row = db.prepare('SELECT * FROM users WHERE email = ?').get(profile.email);
-
-    if (row) {
-      db.prepare("UPDATE users SET name = COALESCE(NULLIF(name, ''), ?), google_sub = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?")
-        .run(profile.name, profile.googleSub, timestamp, timestamp, row.id);
-      row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
-    } else {
-      const id = crypto.randomUUID();
-      const randomPasswordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
-      db.prepare(`
-        INSERT INTO users (id, name, email, password_hash, google_sub, email_verified, created_at, updated_at, last_login_at)
-        VALUES (?, ?, ?, ?, ?, 1, ?, ?, ?)
-      `).run(id, profile.name, profile.email, randomPasswordHash, profile.googleSub, timestamp, timestamp, timestamp);
-      row = db.prepare('SELECT * FROM users WHERE id = ?').get(id);
-    }
-  } else {
-    db.prepare("UPDATE users SET name = COALESCE(NULLIF(name, ''), ?), email = ?, email_verified = 1, updated_at = ?, last_login_at = ? WHERE id = ?")
-      .run(profile.name, profile.email, timestamp, timestamp, row.id);
-    row = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
-  }
-
-  req.session.userId = row.id;
-  return publicUser(row);
-}
-
 async function sendPasswordResetEmail(user, token) {
-  const resetUrl = `${PUBLIC_URL}/?reset=${encodeURIComponent(token)}`;
-
   if (!mailTransporter) {
-    console.log(`Password reset link for ${user.email}: ${resetUrl}`);
+    console.log('Email not configured. Skipping password reset email.');
     return;
   }
+
+  const resetUrl = `${PUBLIC_URL}/?reset=${encodeURIComponent(token)}`;
   const expiresText = `${PASSWORD_RESET_EXPIRES_MINUTES} minutes`;
   const text = `Reset your ResearchPeps password.\n\nUse this link within ${expiresText}:\n${resetUrl}\n\nIf you did not request this, you can ignore this email.`;
   const html = `
@@ -484,8 +401,6 @@ async function sendPasswordResetEmail(user, token) {
     text,
     html
   });
-
-  console.log(`Password reset email sent to ${user.email}`);
 }
 
 function dollarsToCents(priceText) {
@@ -566,8 +481,8 @@ function publicShippingRates() {
   };
 }
 
-const KIT_PRICE_MULTIPLIER = 1.5;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 2.8;
+const KIT_PRICE_MULTIPLIER = 2;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 3.5;
 
 function parsePrice(priceText) {
   const number = Number(String(priceText).replace(/[^0-9.]/g, ''));
@@ -618,70 +533,6 @@ function normalizePaymentMethod(method) {
   if (isCryptoPaymentMethod(value)) return value;
   return 'stripe';
 }
-
-function getCryptoDiscountCents(subtotalCents, paymentMethod) {
-  if (!isCryptoPaymentMethod(paymentMethod)) return 0;
-  const subtotal = Number(subtotalCents || 0);
-  if (!Number.isFinite(subtotal) || subtotal <= 0) return 0;
-  return Math.round(subtotal * CRYPTO_DISCOUNT_RATE);
-}
-
-function getCryptoDiscountPercentLabel() {
-  return `${Math.round(CRYPTO_DISCOUNT_RATE * 100)}%`;
-}
-function normalizeDiscountCode(code) {
-  return String(code || '')
-    .trim()
-    .toUpperCase()
-    .replace(/[^A-Z0-9_-]/g, '')
-    .slice(0, 40);
-}
-
-function publicDiscountCode(row) {
-  return {
-    code: row.code,
-    percentOff: Number(row.percent_off || 0),
-    isActive: !!row.is_active,
-    createdAt: row.created_at,
-    updatedAt: row.updated_at
-  };
-}
-
-function getActiveDiscountCode(code) {
-  const normalized = normalizeDiscountCode(code);
-  if (!normalized) return null;
-  return db.prepare('SELECT * FROM discount_codes WHERE code = ? AND is_active = 1').get(normalized) || null;
-}
-
-function getDiscountCodeForCheckout(code) {
-  const normalized = normalizeDiscountCode(code);
-  if (!normalized) return null;
-  const row = getActiveDiscountCode(normalized);
-  if (!row) {
-    const error = new Error('Discount code is invalid or inactive.');
-    error.status = 400;
-    throw error;
-  }
-  return row;
-}
-
-function getDiscountCodeDiscountCents(subtotalCents, discountCodeRow) {
-  if (!discountCodeRow) return 0;
-  const percent = Math.max(0, Math.min(100, Number(discountCodeRow.percent_off || 0)));
-  if (!percent) return 0;
-  return Math.round(Number(subtotalCents || 0) * (percent / 100));
-}
-
-function validateDiscountPercent(value) {
-  const percent = Number(value);
-  if (!Number.isFinite(percent) || percent <= 0 || percent > 90) {
-    const error = new Error('Discount percentage must be between 1 and 90.');
-    error.status = 400;
-    throw error;
-  }
-  return Math.round(percent * 100) / 100;
-}
-
 
 function getCryptoPayment(method, orderId) {
   const value = String(method || '').toLowerCase();
@@ -802,7 +653,6 @@ function publicUser(row) {
     id: row.id,
     name: row.name,
     email: row.email,
-    isAdmin: ADMIN_EMAILS.includes(String(row.email || '').toLowerCase()),
     createdAt: row.created_at,
     updatedAt: row.updated_at,
     orders
@@ -834,9 +684,6 @@ function publicOrder(row) {
     subtotal: (row.subtotal_cents || items.reduce((sum, item) => sum + Math.round(item.lineTotal * 100), 0)) / 100,
     tax: (row.tax_cents || 0) / 100,
     shippingCharge: (row.shipping_cents || 0) / 100,
-    discount: (row.discount_cents || 0) / 100,
-    discountCode: row.discount_code || '',
-    discountPercent: Number(row.discount_percent || 0),
     total: row.total_cents / 100,
     currency: row.currency,
     customer: JSON.parse(row.customer_json),
@@ -844,8 +691,6 @@ function publicOrder(row) {
     notes: row.notes || '',
     researchUseAccepted: !!row.research_use_accepted,
     stripeSessionId: row.stripe_session_id || null,
-    trackingNumber: row.tracking_number || '',
-    trackingCarrier: row.tracking_carrier || '',
     items
   };
 }
@@ -933,20 +778,15 @@ function validateCartItems(items) {
   });
 }
 
-function calculateOrderTotals(items, shippingCountry, paymentMethod, discountCode) {
+function calculateOrderTotals(items, shippingCountry) {
   const validatedItems = validateCartItems(items);
   const subtotalCents = validatedItems.reduce((sum, item) => sum + item.lineTotalCents, 0);
 
   const taxCents = 0;
   const shippingCents = subtotalCents > 0 ? getShippingCentsForCountry(shippingCountry || 'United States') : 0;
-  const normalizedPaymentMethod = normalizePaymentMethod(paymentMethod);
-  const discountCodeRow = getDiscountCodeForCheckout(discountCode);
-  const cryptoDiscountCents = getCryptoDiscountCents(subtotalCents, normalizedPaymentMethod);
-  const codeDiscountCents = getDiscountCodeDiscountCents(subtotalCents, discountCodeRow);
-  const discountCents = Math.min(subtotalCents, cryptoDiscountCents + codeDiscountCents);
-  const totalCents = Math.max(0, subtotalCents + taxCents + shippingCents - discountCents);
+  const totalCents = subtotalCents + taxCents + shippingCents;
 
-  return { items: validatedItems, subtotalCents, taxCents, shippingCents, discountCents, cryptoDiscountCents, codeDiscountCents, discountCode: discountCodeRow ? discountCodeRow.code : '', discountPercent: discountCodeRow ? Number(discountCodeRow.percent_off || 0) : 0, totalCents };
+  return { items: validatedItems, subtotalCents, taxCents, shippingCents, totalCents };
 }
 
 function validateCheckoutPayload(body) {
@@ -993,28 +833,27 @@ function validateCheckoutPayload(body) {
     },
     notes: String(body.notes || '').trim(),
     paymentMethod: String(body.paymentMethod || 'stripe'),
-    discountCode: normalizeDiscountCode(body.discountCode || body.couponCode || ''),
     researchUseAccepted: true
   };
 }
 
 function createOrderForUser(userId, body, statusOverride) {
   const validated = validateCheckoutPayload(body);
+  const totals = calculateOrderTotals(body.items, validated.shipping.country);
   const orderId = createOrderId();
   const timestamp = nowIso();
   const paymentMethod = normalizePaymentMethod(validated.paymentMethod);
-  const totals = calculateOrderTotals(body.items, validated.shipping.country, paymentMethod, validated.discountCode);
   const status = statusOverride || (isCryptoPaymentMethod(paymentMethod) ? `Awaiting ${getPaymentMethodLabel(paymentMethod)} Payment` : 'Order Submitted');
 
   const insertOrder = db.transaction(() => {
     db.prepare(`
       INSERT INTO orders (
         id, user_id, status, payment_method, payment_method_label,
-        subtotal_cents, tax_cents, shipping_cents, discount_cents, discount_code, discount_percent, total_cents,
+        subtotal_cents, tax_cents, shipping_cents, total_cents,
         currency, customer_json, shipping_json, notes, research_use_accepted,
         created_at, updated_at
       )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?, ?, ?, ?, ?, ?)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'usd', ?, ?, ?, ?, ?, ?)
     `).run(
       orderId,
       userId,
@@ -1024,9 +863,6 @@ function createOrderForUser(userId, body, statusOverride) {
       totals.subtotalCents,
       totals.taxCents,
       totals.shippingCents,
-      totals.discountCents,
-      totals.discountCode,
-      totals.discountPercent,
       totals.totalCents,
       JSON.stringify(validated.customer),
       JSON.stringify(validated.shipping),
@@ -1084,17 +920,11 @@ app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), (req
     const session = event.data.object;
     const orderId = session.metadata && session.metadata.orderId;
     if (orderId) {
-      const existingOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
       db.prepare(`
         UPDATE orders
         SET status = ?, stripe_session_id = ?, updated_at = ?
         WHERE id = ?
       `).run('Paid - Processing', session.id, nowIso(), orderId);
-
-      if (existingOrder && existingOrder.status !== 'Paid - Processing') {
-        const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
-        sendOrderEmailsSafely(publicOrder(updatedOrder), null);
-      }
     }
   }
 
@@ -1136,15 +966,7 @@ app.get('/api/products', (req, res) => {
 
 app.get('/api/auth/config', (req, res) => {
   res.json({
-    googleClientId: GOOGLE_CLIENT_ID || '',
-    googleRedirectEnabled: Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET)
-  });
-});
-
-app.get('/api/auth/google/config', (req, res) => {
-  res.json({
-    googleClientId: GOOGLE_CLIENT_ID || '',
-    googleRedirectEnabled: Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET)
+    googleClientId: GOOGLE_CLIENT_ID || ''
   });
 });
 
@@ -1164,7 +986,6 @@ app.get('/api/session', (req, res) => {
 
 app.get('/api/payment-options', (req, res) => {
   res.json({
-    cryptoDiscountPercent: CRYPTO_DISCOUNT_RATE * 100,
     cryptoWallets: {
       btc: getCryptoPayment('btc', 'YOUR_ORDER_NUMBER'),
       sol: getCryptoPayment('sol', 'YOUR_ORDER_NUMBER'),
@@ -1189,71 +1010,6 @@ app.get('/api/crypto-quote', requireAuth, async (req, res, next) => {
   }
 });
 
-
-async function createPasswordResetForEmail(email) {
-  const genericMessage = 'If an account exists for that email, a reset link was sent.';
-  const user = db.prepare('SELECT * FROM users WHERE email = ?').get(normalizeEmail(email));
-
-  if (user && !mailTransporter) {
-    const error = new Error('Password reset email is not configured yet. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, and MAIL_FROM in Render, then redeploy.');
-    error.status = 503;
-    throw error;
-  }
-
-  if (user) {
-    const token = crypto.randomBytes(32).toString('hex');
-    const tokenHash = sha256(token);
-    const expiresAt = Date.now() + PASSWORD_RESET_EXPIRES_MINUTES * 60 * 1000;
-    const timestamp = nowIso();
-
-    db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ? AND used_at IS NULL').run(user.id);
-    db.prepare(`
-      INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at)
-      VALUES (?, ?, ?, ?, ?)
-    `).run(crypto.randomUUID(), user.id, tokenHash, expiresAt, timestamp);
-
-    await sendPasswordResetEmail(user, token);
-  }
-
-  return { ok: true, message: genericMessage };
-}
-
-async function confirmPasswordResetToken(token, password, req) {
-  const cleanToken = String(token || '').trim();
-  const cleanPassword = String(password || '');
-
-  if (!cleanToken || cleanPassword.length < 8) {
-    const error = new Error('Reset token and a password with at least 8 characters are required.');
-    error.status = 400;
-    throw error;
-  }
-
-  const tokenHash = sha256(cleanToken);
-  const reset = db.prepare(`
-    SELECT * FROM password_reset_tokens
-    WHERE token_hash = ? AND used_at IS NULL
-  `).get(tokenHash);
-
-  if (!reset || reset.expires_at <= Date.now()) {
-    const error = new Error('Reset link is invalid or expired. Request a new password reset email.');
-    error.status = 400;
-    throw error;
-  }
-
-  const passwordHash = await bcrypt.hash(cleanPassword, 12);
-  const timestamp = nowIso();
-  db.prepare('UPDATE users SET password_hash = ?, updated_at = ?, last_login_at = ? WHERE id = ?')
-    .run(passwordHash, timestamp, timestamp, reset.user_id);
-  db.prepare('UPDATE password_reset_tokens SET used_at = ? WHERE id = ?')
-    .run(timestamp, reset.id);
-  db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ? AND id != ?')
-    .run(reset.user_id, reset.id);
-
-  req.session.userId = reset.user_id;
-  const user = db.prepare('SELECT * FROM users WHERE id = ?').get(reset.user_id);
-  return { account: publicUser(user) };
-}
-
 app.post('/api/auth/register', authLimiter, async (req, res, next) => {
   try {
     const name = String(req.body.name || '').trim();
@@ -1272,8 +1028,8 @@ app.post('/api/auth/register', authLimiter, async (req, res, next) => {
     const timestamp = nowIso();
 
     db.prepare(`
-      INSERT INTO users (id, name, email, password_hash, email_verified, created_at, updated_at)
-      VALUES (?, ?, ?, ?, 0, ?, ?)
+      INSERT INTO users (id, name, email, password_hash, created_at, updated_at)
+      VALUES (?, ?, ?, ?, ?, ?)
     `).run(id, name, email, passwordHash, timestamp, timestamp);
 
     req.session.userId = id;
@@ -1294,86 +1050,39 @@ app.post('/api/auth/login', authLimiter, async (req, res, next) => {
       return res.status(401).json({ error: 'Email or password did not match.' });
     }
 
-    db.prepare('UPDATE users SET last_login_at = ? WHERE id = ?').run(nowIso(), row.id);
-    const updatedRow = db.prepare('SELECT * FROM users WHERE id = ?').get(row.id);
-    req.session.userId = updatedRow.id;
-    res.json({ account: publicUser(updatedRow) });
+    req.session.userId = row.id;
+    res.json({ account: publicUser(row) });
   } catch (error) {
     next(error);
   }
 });
 
-
-app.get('/api/auth/google/start', authLimiter, (req, res) => {
-  if (!GOOGLE_CLIENT_ID || !GOOGLE_CLIENT_SECRET) {
-    return res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent('Google Client ID or Client Secret is missing in Render environment variables.')));
-  }
-
-  const state = crypto.randomBytes(24).toString('hex');
-  req.session.googleOAuthState = state;
-
-  const url = new URL('https://accounts.google.com/o/oauth2/v2/auth');
-  url.searchParams.set('client_id', GOOGLE_CLIENT_ID);
-  url.searchParams.set('redirect_uri', getGoogleRedirectUri());
-  url.searchParams.set('response_type', 'code');
-  url.searchParams.set('scope', 'openid email profile');
-  url.searchParams.set('state', state);
-  url.searchParams.set('prompt', 'select_account');
-
-  res.redirect(url.toString());
-});
-
-app.get('/api/auth/google/callback', authLimiter, async (req, res) => {
-  try {
-    const code = String(req.query.code || '').trim();
-    const state = String(req.query.state || '').trim();
-
-    if (!code || !state || state !== req.session.googleOAuthState) {
-      return res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent('Google sign-in session expired. Try again.')));
-    }
-
-    delete req.session.googleOAuthState;
-
-    const tokenResponse = await fetch('https://oauth2.googleapis.com/token', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-      body: new URLSearchParams({
-        client_id: GOOGLE_CLIENT_ID,
-        client_secret: GOOGLE_CLIENT_SECRET,
-        code,
-        grant_type: 'authorization_code',
-        redirect_uri: getGoogleRedirectUri()
-      })
-    });
-
-    const tokenPayload = await tokenResponse.json();
-    if (!tokenResponse.ok || !tokenPayload.id_token) {
-      console.error('Google token exchange failed:', tokenPayload);
-      return res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent('Google sign-in could not be completed.')));
-    }
-
-    const profile = await verifyGoogleCredential(tokenPayload.id_token);
-    await signInGoogleProfile(req, profile);
-    res.redirect(getPublicRedirectPath('/?google=success'));
-  } catch (error) {
-    console.error('Google redirect auth error:', error);
-    res.redirect(getPublicRedirectPath('/?google=error&message=' + encodeURIComponent(error.message || 'Google sign-in failed.')));
-  }
-});
 
 app.post('/api/auth/google', authLimiter, async (req, res, next) => {
   try {
     const profile = await verifyGoogleCredential(req.body.credential);
-    const account = await signInGoogleProfile(req, profile);
-    res.json({ account, user: account });
-  } catch (error) {
-    next(error);
-  }
-});
+    const timestamp = nowIso();
 
-app.post('/api/auth/password-reset-request', authLimiter, async (req, res, next) => {
-  try {
-    res.json(await createPasswordResetForEmail(req.body.email));
+    let row = db.prepare('SELECT * FROM users WHERE google_sub = ?').get(profile.googleSub);
+
+    if (!row) {
+      row = db.prepare('SELECT * FROM users WHERE email = ?').get(profile.email);
+      if (row) {
+        db.prepare('UPDATE users SET google_sub = ?, updated_at = ? WHERE id = ?')
+          .run(profile.googleSub, timestamp, row.id);
+      } else {
+        const id = crypto.randomUUID();
+        const randomPasswordHash = await bcrypt.hash(crypto.randomBytes(32).toString('hex'), 12);
+        db.prepare(`
+          INSERT INTO users (id, name, email, password_hash, google_sub, created_at, updated_at)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+        `).run(id, profile.name, profile.email, randomPasswordHash, profile.googleSub, timestamp, timestamp);
+      }
+    }
+
+    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(profile.email);
+    req.session.userId = user.id;
+    res.json({ account: publicUser(user) });
   } catch (error) {
     next(error);
   }
@@ -1381,10 +1090,30 @@ app.post('/api/auth/password-reset-request', authLimiter, async (req, res, next)
 
 app.post('/api/auth/password-reset', authLimiter, async (req, res, next) => {
   try {
-    if (req.body.token || req.body.password) {
-      return res.json(await confirmPasswordResetToken(req.body.token, req.body.password, req));
+    const email = normalizeEmail(req.body.email);
+    const genericMessage = 'If an account exists for that email, a reset link was sent.';
+
+    if (!email) {
+      return res.json({ ok: true, message: genericMessage });
     }
-    res.json(await createPasswordResetForEmail(req.body.email));
+
+    const user = db.prepare('SELECT * FROM users WHERE email = ?').get(email);
+    if (user && mailTransporter) {
+      const token = crypto.randomBytes(32).toString('hex');
+      const tokenHash = sha256(token);
+      const expiresAt = Date.now() + PASSWORD_RESET_EXPIRES_MINUTES * 60 * 1000;
+      db.prepare(`
+        INSERT INTO password_reset_tokens (id, user_id, token_hash, expires_at, created_at)
+        VALUES (?, ?, ?, ?, ?)
+      `).run(crypto.randomUUID(), user.id, tokenHash, expiresAt, nowIso());
+      await sendPasswordResetEmail(user, token);
+    }
+
+    if (user && !mailTransporter) {
+      console.log('Password reset requested, but SMTP is not configured.');
+    }
+
+    res.json({ ok: true, message: genericMessage });
   } catch (error) {
     next(error);
   }
@@ -1392,7 +1121,35 @@ app.post('/api/auth/password-reset', authLimiter, async (req, res, next) => {
 
 app.post('/api/auth/password-reset/confirm', authLimiter, async (req, res, next) => {
   try {
-    res.json(await confirmPasswordResetToken(req.body.token, req.body.password, req));
+    const token = String(req.body.token || '').trim();
+    const password = String(req.body.password || '');
+
+    if (!token || password.length < 8) {
+      return res.status(400).json({ error: 'Reset token and a password with at least 8 characters are required.' });
+    }
+
+    const tokenHash = sha256(token);
+    const reset = db.prepare(`
+      SELECT * FROM password_reset_tokens
+      WHERE token_hash = ? AND used_at IS NULL
+    `).get(tokenHash);
+
+    if (!reset || reset.expires_at <= Date.now()) {
+      return res.status(400).json({ error: 'Reset link is invalid or expired. Request a new password reset email.' });
+    }
+
+    const passwordHash = await bcrypt.hash(password, 12);
+    const timestamp = nowIso();
+    db.prepare('UPDATE users SET password_hash = ?, updated_at = ? WHERE id = ?')
+      .run(passwordHash, timestamp, reset.user_id);
+    db.prepare('UPDATE password_reset_tokens SET used_at = ? WHERE id = ?')
+      .run(timestamp, reset.id);
+    db.prepare('DELETE FROM password_reset_tokens WHERE user_id = ? AND id != ?')
+      .run(reset.user_id, reset.id);
+
+    req.session.userId = reset.user_id;
+    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(reset.user_id);
+    res.json({ account: publicUser(user) });
   } catch (error) {
     next(error);
   }
@@ -1408,8 +1165,7 @@ app.post('/api/auth/logout', (req, res) => {
 app.post('/api/cart/quote', (req, res, next) => {
   try {
     const shippingCountry = req.body.shippingCountry || (req.body.shipping && req.body.shipping.country) || 'United States';
-    const paymentMethod = normalizePaymentMethod(req.body.paymentMethod || 'stripe');
-    const totals = calculateOrderTotals(req.body.items, shippingCountry, paymentMethod, req.body.discountCode || req.body.couponCode || '');
+    const totals = calculateOrderTotals(req.body.items, shippingCountry);
     res.json({
       items: totals.items.map((item) => ({
         productName: item.productName,
@@ -1422,12 +1178,6 @@ app.post('/api/cart/quote', (req, res, next) => {
       subtotal: totals.subtotalCents / 100,
       tax: totals.taxCents / 100,
       shipping: totals.shippingCents / 100,
-      discount: totals.discountCents / 100,
-      cryptoDiscount: totals.cryptoDiscountCents / 100,
-      codeDiscount: totals.codeDiscountCents / 100,
-      discountCode: totals.discountCode,
-      discountPercent: totals.discountPercent,
-      cryptoDiscountPercent: isCryptoPaymentMethod(paymentMethod) ? CRYPTO_DISCOUNT_RATE * 100 : 0,
       total: totals.totalCents / 100,
       totalLabel: formatMoneyFromCents(totals.totalCents)
       
@@ -1471,60 +1221,6 @@ app.post('/api/orders', requireAuth, async (req, res, next) => {
   }
 });
 
-
-app.post('/api/checkout/stripe/confirm', requireAuth, async (req, res, next) => {
-  try {
-    const orderId = String(req.body.orderId || req.query.orderId || '').trim();
-    if (!orderId) {
-      return res.status(400).json({ error: 'Order number is required.' });
-    }
-
-    const row = db.prepare('SELECT * FROM orders WHERE id = ? AND user_id = ?').get(orderId, req.session.userId);
-    if (!row) {
-      return res.status(404).json({ error: 'Order not found for this account.' });
-    }
-
-    if (row.payment_method !== 'stripe') {
-      return res.json({
-        order: publicOrder(row),
-        account: publicUser(db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId))
-      });
-    }
-
-    if (!stripe) {
-      return res.status(503).json({ error: 'Stripe is not configured on the server.' });
-    }
-
-    if (!row.stripe_session_id) {
-      return res.status(400).json({ error: 'This order is missing a Stripe checkout session.' });
-    }
-
-    const session = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
-    const isPaid = session && (session.payment_status === 'paid' || session.status === 'complete');
-
-    if (isPaid && row.status !== 'Paid - Processing') {
-      db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
-        .run('Paid - Processing', nowIso(), orderId);
-      const paidOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
-      sendOrderEmailsSafely(publicOrder(paidOrder), null);
-    }
-
-    const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
-    const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
-
-    res.json({
-      order: publicOrder(updatedOrder),
-      account: publicUser(user),
-      stripeStatus: {
-        sessionStatus: session.status,
-        paymentStatus: session.payment_status
-      }
-    });
-  } catch (error) {
-    next(error);
-  }
-});
-
 app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
   try {
     if (!stripe) {
@@ -1559,32 +1255,20 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
       });
     }
 
-    const sessionOptions = {
+    const session = await stripe.checkout.sessions.create({
       mode: 'payment',
       line_items: lineItems,
       success_url: `${PUBLIC_URL}/?checkout=success&order=${encodeURIComponent(order.id)}`,
       cancel_url: `${PUBLIC_URL}/?checkout=cancel&order=${encodeURIComponent(order.id)}`,
       metadata: {
         orderId: order.id,
-        userId: req.session.userId,
-        discountCode: order.discountCode || ''
+        userId: req.session.userId
       }
-    };
-
-    if (order.discount && order.discount > 0) {
-      const coupon = await stripe.coupons.create({
-        amount_off: Math.round(order.discount * 100),
-        currency: 'usd',
-        duration: 'once',
-        name: order.discountCode ? `ResearchPeps discount ${order.discountCode}` : 'ResearchPeps discount'
-      });
-      sessionOptions.discounts = [{ coupon: coupon.id }];
-    }
-
-    const session = await stripe.checkout.sessions.create(sessionOptions);
+    });
 
     db.prepare('UPDATE orders SET stripe_session_id = ?, updated_at = ? WHERE id = ?')
       .run(session.id, nowIso(), order.id);
+    sendOrderEmailsSafely(order, null);
 
     res.status(201).json({ order, checkoutUrl: session.url });
   } catch (error) {
@@ -1592,156 +1276,19 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
   }
 });
 
-
-app.post('/api/discount-codes/validate', (req, res, next) => {
-  try {
-    const code = normalizeDiscountCode(req.body.code || req.body.discountCode || '');
-    if (!code) return res.status(400).json({ error: 'Enter a discount code.' });
-    const row = getActiveDiscountCode(code);
-    if (!row) return res.status(404).json({ error: 'Discount code is invalid or inactive.' });
-    res.json({ code: publicDiscountCode(row) });
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.get('/api/admin/discount-codes', requireAdmin, (req, res) => {
-  const rows = db.prepare('SELECT * FROM discount_codes ORDER BY is_active DESC, updated_at DESC, code ASC').all();
-  res.json({ codes: rows.map(publicDiscountCode) });
-});
-
-app.post('/api/admin/discount-codes', requireAdmin, (req, res, next) => {
-  try {
-    const code = normalizeDiscountCode(req.body.code);
-    const percentOff = validateDiscountPercent(req.body.percentOff);
-    if (!code) return res.status(400).json({ error: 'Code is required.' });
-    const timestamp = nowIso();
-    db.prepare(`
-      INSERT INTO discount_codes (code, percent_off, is_active, created_at, updated_at)
-      VALUES (?, ?, 1, ?, ?)
-      ON CONFLICT(code) DO UPDATE SET
-        percent_off = excluded.percent_off,
-        is_active = 1,
-        updated_at = excluded.updated_at
-    `).run(code, percentOff, timestamp, timestamp);
-    res.json({ code: publicDiscountCode(db.prepare('SELECT * FROM discount_codes WHERE code = ?').get(code)) });
-  } catch (error) {
-    next(error);
-  }
-});
-
-app.delete('/api/admin/discount-codes/:code', requireAdmin, (req, res) => {
-  const code = normalizeDiscountCode(req.params.code);
-  if (!code) return res.status(400).json({ error: 'Code is required.' });
-  const row = db.prepare('SELECT * FROM discount_codes WHERE code = ?').get(code);
-  if (!row) return res.status(404).json({ error: 'Discount code not found.' });
-  db.prepare('UPDATE discount_codes SET is_active = 0, updated_at = ? WHERE code = ?').run(nowIso(), code);
-  res.json({ code: publicDiscountCode(db.prepare('SELECT * FROM discount_codes WHERE code = ?').get(code)) });
-});
-
-app.post('/api/admin/test-email', requireAdmin, async (req, res, next) => {
-  try {
-    const email = normalizeEmail(req.body.email);
-    if (!email) return res.status(400).json({ error: 'Enter an email address to test.' });
-
-    if (!mailTransporter) {
-      return res.status(503).json({
-        error: 'SMTP email is not configured. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, and MAIL_FROM in Render.'
-      });
-    }
-
-    await mailTransporter.verify();
-    await mailTransporter.sendMail({
-      from: MAIL_FROM,
-      to: email,
-      subject: 'ResearchPeps email test',
-      text: 'This is a ResearchPeps SMTP test email. If you received this, password reset and order notification email sending are configured.',
-      html: '<p>This is a <strong>ResearchPeps SMTP test email</strong>.</p><p>If you received this, password reset and order notification email sending are configured.</p>'
-    });
-
-    res.json({ ok: true, message: `Test email sent to ${email}. Check inbox and spam.` });
-  } catch (error) {
-    console.error('Admin test email failed:', error);
-    error.status = 500;
-    error.message = 'Test email failed. Check SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, MAIL_FROM, and Render logs.';
-    next(error);
-  }
-});
-
-app.post('/api/admin/orders/:id/send-email', requireAdmin, async (req, res, next) => {
-  try {
-    const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
-    if (!row) return res.status(404).json({ error: 'Order not found.' });
-
-    if (!mailTransporter) {
-      return res.status(503).json({
-        error: 'SMTP email is not configured. Add SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, SMTP_SECURE, and MAIL_FROM in Render.'
-      });
-    }
-
-    const order = publicOrder(row);
-    const cryptoPayment = isCryptoPaymentMethod(order.paymentMethod) ? getCryptoPayment(order.paymentMethod, order.id) : null;
-    const emailResult = await sendOrderEmails(order, cryptoPayment, null);
-
-    const parts = [];
-    if (emailResult.customerSent) parts.push(`customer receipt to ${emailResult.customerEmail}`);
-    if (emailResult.ownerSent) parts.push(`owner notification to ${emailResult.notifyEmail}`);
-    if (emailResult.customerSameAsOwner) parts.push('customer receipt skipped because checkout email matches owner notification email');
-
-    res.json({ ok: true, message: `Order email processed for ${order.id}: ${parts.join('; ') || 'no recipients configured'}.` });
-  } catch (error) {
-    console.error('Admin order email resend failed:', error);
-    error.status = 500;
-    error.message = 'Order email failed. Check SMTP settings, ORDER_NOTIFY_EMAIL, customer email, and Render logs.';
-    next(error);
-  }
-});
-
 app.get('/api/admin/orders', requireAdmin, (req, res) => {
-  const q = String(req.query.q || '').trim().toLowerCase();
-  let rows;
-
-  if (q) {
-    const like = `%${q}%`;
-    rows = db.prepare(`
-      SELECT *
-      FROM orders
-      WHERE lower(id) LIKE ?
-        OR lower(status) LIKE ?
-        OR lower(payment_method) LIKE ?
-        OR lower(payment_method_label) LIKE ?
-        OR lower(customer_json) LIKE ?
-        OR lower(shipping_json) LIKE ?
-        OR lower(notes) LIKE ?
-        OR lower(COALESCE(discount_code, '')) LIKE ?
-        OR lower(COALESCE(tracking_number, '')) LIKE ?
-        OR lower(COALESCE(tracking_carrier, '')) LIKE ?
-      ORDER BY created_at DESC
-      LIMIT 500
-    `).all(like, like, like, like, like, like, like, like, like, like);
-  } else {
-    rows = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 500').all();
-  }
-
+  const rows = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 500').all();
   res.json({ orders: rows.map(publicOrder) });
 });
 
 app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {
   const status = String(req.body.status || '').trim();
-  const trackingNumber = String(req.body.trackingNumber || '').trim().slice(0, 120);
-  const trackingCarrier = String(req.body.trackingCarrier || '').trim().slice(0, 80);
-
   if (!status) return res.status(400).json({ error: 'Status is required.' });
 
   const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Order not found.' });
 
-  db.prepare(`
-    UPDATE orders
-    SET status = ?, tracking_number = ?, tracking_carrier = ?, updated_at = ?
-    WHERE id = ?
-  `).run(status, trackingNumber, trackingCarrier, nowIso(), req.params.id);
-
+  db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?').run(status, nowIso(), req.params.id);
   res.json({ order: publicOrder(db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id)) });
 });
 
