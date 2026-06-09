@@ -1146,12 +1146,12 @@
       {
         "code": "WA3",
         "spec": "3ml*10 vials",
-        "price": "$7.50"
+        "price": "$10.80"
       },
       {
         "code": "WA10",
         "spec": "10ml*10 vials",
-        "price": "$15.00"
+        "price": "$18.00"
       }
     ]
   },
@@ -1547,7 +1547,7 @@
       {
         "code": "P41",
         "spec": "10mg*10 vials",
-        "price": "$66.00"
+        "price": "$90.00"
       }
     ]
   },
