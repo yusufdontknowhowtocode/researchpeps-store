@@ -3150,45 +3150,40 @@ body.age-locked .vial-rotor {
 
 
 
-/* === Product photo white-bar fix ===
-   This override removes the white bars at the top and bottom of the vial/nasal
-   product photos by matching them to the light blue product-photo background. */
-.product-art,
-.product-art.nasal-art,
+/* === Product detail photo dark-bar fix ===
+   Catalog cards are left untouched.
+   Only the clicked product page covers the built-in white top/bottom bars
+   with the same dark blue used in the site background. */
 .product-detail-pic,
 .product-detail-pic .product-art {
-  --photo-bg: #dcecff;
-  background: var(--photo-bg) !important;
+  --detail-photo-bar-bg: var(--bg-2);
+  background: var(--detail-photo-bar-bg) !important;
   border-bottom: none !important;
 }
 
-.product-art::before,
-.product-art::after,
-.product-art.nasal-art::before,
-.product-art.nasal-art::after {
+.product-detail-pic .product-art::before,
+.product-detail-pic .product-art::after {
   content: "";
   position: absolute;
   left: 0;
   right: 0;
   z-index: 3;
-  background: var(--photo-bg);
+  background: var(--detail-photo-bar-bg);
   pointer-events: none;
 }
 
-.product-art::before,
-.product-art.nasal-art::before {
+.product-detail-pic .product-art::before {
   top: 0;
   height: 7.5%;
 }
 
-.product-art::after,
-.product-art.nasal-art::after {
+.product-detail-pic .product-art::after {
   bottom: 0;
   height: 7.5%;
 }
 
-.photo-vial-label,
-.nasal-photo-label {
+.product-detail-pic .photo-vial-label,
+.product-detail-pic .nasal-photo-label {
   z-index: 4;
 }
 
