@@ -3009,97 +3009,124 @@ body.age-locked .vial-rotor {
 }
 .product-art.nasal-art {
   position: relative;
-  background: linear-gradient(180deg, #edf3fb 0%, #dbe7f7 58%, #cfdaec 100%);
+  overflow: hidden;
+  background: linear-gradient(180deg, #f3f6fb 0%, #dfe8f6 62%, #d6e0ef 100%);
   display: grid;
   place-items: center;
 }
 .product-art.nasal-art::before {
   content: "";
   position: absolute;
-  left: -8%;
-  right: -8%;
-  bottom: -8%;
+  inset: auto -6% -10% -6%;
   height: 34%;
   border-radius: 50%;
-  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.82), rgba(229,237,248,.96) 55%, rgba(201,214,232,.98) 100%);
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.9), rgba(233,239,248,.98) 56%, rgba(209,220,236,1) 100%);
+}
+.product-art.nasal-art::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 50% 14%, rgba(255,255,255,.48), transparent 42%);
+  pointer-events: none;
 }
 .nasal-spray-render {
   position: relative;
   width: 44%;
-  height: 76%;
+  height: 78%;
+  z-index: 2;
   display: grid;
   place-items: center;
-  z-index: 2;
-  filter: drop-shadow(0 18px 22px rgba(15,23,42,.18));
+  filter: drop-shadow(0 16px 20px rgba(15,23,42,.14));
 }
 .nasal-spray-render::before {
   content: "";
   position: absolute;
   top: 0;
-  left: 50%;
-  width: 42%;
-  height: 13%;
+  left: 51%;
+  width: 18%;
+  height: 15%;
   transform: translateX(-50%);
-  border-radius: 12px 12px 8px 8px;
-  background: linear-gradient(180deg, #f8fbff, #b7c8e6);
-  border: 1px solid rgba(15,23,42,.10);
+  border-radius: 10px 10px 7px 7px;
+  background: linear-gradient(180deg, #fcfdff 0%, #dce5f2 100%);
+  border: 1px solid rgba(96,110,134,.14);
+  box-shadow: inset 0 2px 4px rgba(255,255,255,.72);
 }
 .nasal-spray-render::after {
   content: "";
   position: absolute;
   top: 10%;
-  left: 50%;
-  width: 56%;
-  height: 9%;
+  left: 54%;
+  width: 33%;
+  height: 8%;
   transform: translateX(-50%);
-  border-radius: 999px 999px 10px 10px;
-  background: linear-gradient(180deg, #e8eef9, #94a9cc);
-  border: 1px solid rgba(15,23,42,.10);
+  border-radius: 10px;
+  background: linear-gradient(180deg, #f8fbff 0%, #c7d4e8 100%);
+  border: 1px solid rgba(96,110,134,.14);
 }
 .nasal-bottle-body {
   position: absolute;
   left: 50%;
-  top: 18%;
-  width: 72%;
-  height: 78%;
+  top: 16%;
+  width: 54%;
+  height: 72%;
   transform: translateX(-50%);
-  border-radius: 28px 28px 34px 34px;
-  background: linear-gradient(180deg, rgba(255,255,255,.92), rgba(218,230,250,.94));
-  border: 1px solid rgba(15,23,42,.12);
-  box-shadow: inset 0 0 18px rgba(255,255,255,.52), inset 0 -16px 26px rgba(96,165,250,.12);
+  border-radius: 26px 26px 34px 34px;
+  background: linear-gradient(180deg, rgba(255,255,255,.95), rgba(236,242,250,.98) 44%, rgba(222,232,245,.98) 100%);
+  border: 1px solid rgba(96,110,134,.14);
+  box-shadow:
+    inset 10px 0 12px rgba(255,255,255,.46),
+    inset -10px 0 12px rgba(190,205,226,.22),
+    inset 0 -18px 18px rgba(151,170,198,.10);
+}
+.nasal-bottle-body::before {
+  content: "";
+  position: absolute;
+  left: 10%;
+  top: 12%;
+  width: 18%;
+  height: 56%;
+  border-radius: 18px;
+  background: linear-gradient(180deg, rgba(255,255,255,.72), rgba(255,255,255,0));
+  filter: blur(.4px);
+}
+.nasal-bottle-body::after {
+  content: "";
+  position: absolute;
+  left: 14%;
+  right: 14%;
+  bottom: 10%;
+  height: 14%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 0%, rgba(202,214,232,.65), rgba(202,214,232,0));
 }
 .nasal-bottle-label {
   position: absolute;
-  left: 9%;
-  right: 9%;
-  top: 28%;
-  min-height: 48%;
+  left: 14%;
+  right: 14%;
+  top: 30%;
+  min-height: 38%;
   border-radius: 18px;
-  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(232,241,255,.96));
+  background: linear-gradient(180deg, rgba(255,255,255,.98), rgba(243,247,252,.97));
+  border: 1px solid rgba(198,210,228,.95);
   color: #111827;
   text-align: center;
-  padding: 15% 7% 10%;
+  padding: 12% 8% 10%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 7px;
 }
 .nasal-bottle-label .brand {
-  color: #234f9f;
-  font-family: var(--font-display);
-  font-size: clamp(7px, 1vw, 12px);
-  font-weight: 800;
-  line-height: 1;
-  text-transform: lowercase;
+  display: none;
 }
 .nasal-bottle-label .name {
   color: #111827;
   font-family: var(--font-body);
   font-size: var(--label-size, clamp(8px, 1.15vw, 14px));
   font-weight: 950;
-  line-height: 1.05;
-  letter-spacing: -.045em;
+  line-height: 1.02;
+  letter-spacing: -.04em;
   text-transform: uppercase;
 }
 .nasal-bottle-label .dose {
@@ -3115,11 +3142,17 @@ body.age-locked .vial-rotor {
   line-height: 1;
 }
 .nasal-bottle-label .use {
-  color: #234f9f;
+  color: #345caa;
   font-size: clamp(4.5px, .55vw, 7px);
   font-weight: 950;
   letter-spacing: .14em;
   text-transform: uppercase;
+}
+@media (max-width: 820px) {
+  .nasal-spray-render {
+    width: 48%;
+    height: 78%;
+  }
 }
 @media (max-width: 820px) {
   .nasal-section-card { padding: 24px 18px; border-radius: 28px; }
@@ -3328,15 +3361,6 @@ body.age-locked .vial-rotor {
         <p class="kicker">Peptides catalog</p>
         <h1>Peptides</h1>
         <p class="lead"></p>
-      </div>
-      <div class="catalog-subsection nasal-catalog-block">
-        <div class="catalog-head catalog-subhead">
-          <span class="nasal-badge">Nasal formats</span>
-          <p class="kicker">Nasal research formats</p>
-          <h2>Popular nasal sprays.</h2>
-          <p class="lead">Spray-format research products shown in the same catalog layout as the rest of the peptide collection.</p>
-        </div>
-        <div id="nasalCatalogGrid" class="grid"></div>
       </div>
       <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 56% compared with buying the same vials one at a time.</div>
       <div id="peptideCatalogGrid" class="grid"></div>
@@ -5715,10 +5739,9 @@ function renderProductArt(product, elementIdPrefix) {
   if (product.deliveryFormat === 'nasal') {
     return `
       <div class="product-art nasal-art">
-        <div class="nasal-spray-render" aria-label="${product.name} research nasal spray artwork">
+        <div class="nasal-spray-render" aria-label="${product.name} nasal spray product artwork">
           <div class="nasal-bottle-body">
             <div class="nasal-bottle-label">
-              <span class="brand">researchpeps</span>
               <span class="name" style="--label-size: ${getLabelFontSize(product.name)}">${product.name}</span>
               <span id="${elementIdPrefix}Dose" class="dose">${getDoseText(selected)}</span>
               <span class="use">Research use only</span>
@@ -5805,22 +5828,9 @@ function renderProductCard(product, indexPrefix) {
 }
 
 function renderPeptideCatalog() {
-  const nasalNames = ['Semax Nasal Spray', 'Selank Nasal Spray', 'Semax + Selank Nasal Spray', 'Oxytocin Nasal Spray', 'DSIP Nasal Spray', 'NAD+ Nasal Spray', 'VIP Nasal Spray', 'CJC-1295 WO/Dac + Ipamorelin Nasal Spray'];
-
-  const nasalGrid = document.getElementById('nasalCatalogGrid');
-  if (nasalGrid) {
-    nasalGrid.innerHTML = products.filter(function(product) {
-      return nasalNames.includes(product.name);
-    }).map(function(product) {
-      return renderProductCard(product, 'nasal');
-    }).join('');
-  }
-
   const grid = document.getElementById('peptideCatalogGrid');
   if (grid) {
-    grid.innerHTML = products.filter(function(product) {
-      return !nasalNames.includes(product.name);
-    }).map(function(product) {
+    grid.innerHTML = products.map(function(product) {
       return renderProductCard(product, 'catalog');
     }).join('');
   }
