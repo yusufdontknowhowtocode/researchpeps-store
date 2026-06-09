@@ -3728,11 +3728,12 @@ body.age-locked .vial-rotor {
           <h2>Cart summary</h2>
           <div id="checkoutCartSummary" class="summary-list"></div>
           <div class="summary-line"><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
+          <div id="checkoutMinimumRow" class="summary-line" style="display:none;"><span>Minimum order</span><span id="checkoutMinimumRemaining">$0.00 more needed</span></div>
           <div class="summary-line"><span>Shipping</span><span id="checkoutShipping">$0.00</span></div>
           <div id="checkoutCryptoDiscountRow" class="summary-line discount-line" style="display:none;"><span>Crypto discount</span><span id="checkoutCryptoDiscount">-$0.00</span></div>
           <div id="checkoutCodeDiscountRow" class="summary-line discount-line" style="display:none;"><span id="checkoutCodeDiscountLabel">Code discount</span><span id="checkoutCodeDiscount">-$0.00</span></div>
           <div class="summary-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
-          <p class="auth-note">Orders are placed after the customer accepts the research-use-only confirmation. Credit card redirects to secure checkout; BTC, SOL, and USDC receive 5% off and are saved as awaiting crypto payment.</p>
+          <p class="auth-note">Orders require a $50 minimum subtotal before shipping. Orders are placed after the customer accepts the research-use-only confirmation. Credit card redirects to secure checkout; BTC, SOL, and USDC receive 5% off and are saved as awaiting crypto payment.</p>
         </div>
       </div>
     </div>
@@ -5709,6 +5710,7 @@ let cart = [];
 
 const KIT_PRICE_MULTIPLIER = 1.5225;
 const SINGLE_VIAL_PRICE_MULTIPLIER = 3.00;
+const MINIMUM_ORDER_SUBTOTAL = 50;
 
 function parsePrice(priceText) {
   return Number(String(priceText).replace(/[^0-9.]/g, ""));
@@ -6492,6 +6494,18 @@ function getCartSubtotal() {
   return cart.reduce(function(total, item) {
     return total + getCartLineTotal(item);
   }, 0);
+}
+
+function getMinimumOrderRemaining() {
+  return Math.max(0, MINIMUM_ORDER_SUBTOTAL - getCartSubtotal());
+}
+
+function cartMeetsMinimumOrder() {
+  return getCartSubtotal() >= MINIMUM_ORDER_SUBTOTAL;
+}
+
+function getMinimumOrderMessage() {
+  return 'Minimum order is ' + formatMoney(MINIMUM_ORDER_SUBTOTAL) + ' before shipping. Add ' + formatMoney(getMinimumOrderRemaining()) + ' more to checkout.';
 }
 
 function getSelectedShippingCountry() {
@@ -7488,6 +7502,8 @@ function renderCheckoutPage() {
   const codeDiscountRow = document.getElementById('checkoutCodeDiscountRow');
   const codeDiscountEl = document.getElementById('checkoutCodeDiscount');
   const codeDiscountLabel = document.getElementById('checkoutCodeDiscountLabel');
+  const minimumRow = document.getElementById('checkoutMinimumRow');
+  const minimumRemainingEl = document.getElementById('checkoutMinimumRemaining');
   const total = document.getElementById('checkoutTotal');
   if (!summary || !total) return;
 
@@ -7507,6 +7523,8 @@ function renderCheckoutPage() {
     if (cryptoDiscountEl) cryptoDiscountEl.textContent = '-$0.00';
     if (codeDiscountRow) codeDiscountRow.style.display = 'none';
     if (codeDiscountEl) codeDiscountEl.textContent = '-$0.00';
+    if (minimumRow) minimumRow.style.display = 'none';
+    if (minimumRemainingEl) minimumRemainingEl.textContent = '$0.00 more needed';
     total.textContent = '$0.00';
     return;
   }
@@ -7528,6 +7546,8 @@ function renderCheckoutPage() {
   const cryptoDiscount = getCryptoDiscountAmount();
   const codeDiscount = getCodeDiscountAmount();
   if (subtotalEl) subtotalEl.textContent = formatMoney(getCartSubtotal());
+  if (minimumRow) minimumRow.style.display = cartMeetsMinimumOrder() ? 'none' : 'flex';
+  if (minimumRemainingEl) minimumRemainingEl.textContent = formatMoney(getMinimumOrderRemaining()) + ' more needed';
   if (shippingEl) shippingEl.textContent = formatMoney(getCheckoutShipping()) + ' (' + getSelectedShippingCountry() + ')';
   if (cryptoDiscountRow) cryptoDiscountRow.style.display = cryptoDiscount > 0 ? 'flex' : 'none';
   if (cryptoDiscountEl) cryptoDiscountEl.textContent = '-' + formatMoney(cryptoDiscount);
@@ -8094,6 +8114,12 @@ async function startCheckout() {
     return;
   }
 
+  if (!cartMeetsMinimumOrder()) {
+    openCart();
+    alert(getMinimumOrderMessage());
+    return;
+  }
+
   if (!backendAccount) {
     openAccount('Create an account or sign in before checkout so the order can be saved to past orders.');
     return;
@@ -8111,6 +8137,11 @@ async function placeOrder() {
   }
   if (cart.length === 0) {
     showMessage('checkoutMessage', 'Your cart is empty.');
+    return;
+  }
+
+  if (!cartMeetsMinimumOrder()) {
+    showMessage('checkoutMessage', getMinimumOrderMessage());
     return;
   }
 

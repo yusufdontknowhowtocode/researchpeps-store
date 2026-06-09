@@ -570,6 +570,7 @@ function publicShippingRates() {
 // Checkout applies the same +45% storefront markup used by public/index.html.
 const KIT_PRICE_MULTIPLIER = 1.5225;
 const SINGLE_VIAL_PRICE_MULTIPLIER = 3.00;
+const MINIMUM_ORDER_SUBTOTAL_CENTS = 5000;
 
 function parsePrice(priceText) {
   const number = Number(String(priceText).replace(/[^0-9.]/g, ''));
@@ -950,6 +951,13 @@ function validateCartItems(items) {
 function calculateOrderTotals(items, shippingCountry, paymentMethod, discountCode) {
   const validatedItems = validateCartItems(items);
   const subtotalCents = validatedItems.reduce((sum, item) => sum + item.lineTotalCents, 0);
+
+  if (subtotalCents < MINIMUM_ORDER_SUBTOTAL_CENTS) {
+    const remainingCents = MINIMUM_ORDER_SUBTOTAL_CENTS - subtotalCents;
+    const error = new Error(`Minimum order is ${formatCents(MINIMUM_ORDER_SUBTOTAL_CENTS)} before shipping. Add ${formatCents(remainingCents)} more to checkout.`);
+    error.status = 400;
+    throw error;
+  }
 
   const taxCents = 0;
   const shippingCents = subtotalCents > 0 ? getShippingCentsForCountry(shippingCountry || 'United States') : 0;
