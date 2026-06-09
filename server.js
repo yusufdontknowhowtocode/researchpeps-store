@@ -568,7 +568,7 @@ function publicShippingRates() {
 
 // Product JSON stores the selected supplier/base catalog price.
 // Checkout applies the same +45% storefront markup used by public/index.html.
-const KIT_PRICE_MULTIPLIER = 1.45;
+const KIT_PRICE_MULTIPLIER = 1.5225;
 const SINGLE_VIAL_PRICE_MULTIPLIER = 3.00;
 
 function parsePrice(priceText) {
