@@ -3250,6 +3250,44 @@ body.age-locked .vial-rotor {
   }
 }
 
+
+
+/* Stable product-detail photo sizing
+   Keeps the vial/nasal photo from jumping when switching between single vials and 10-vial kit. */
+.product-detail-card {
+  align-items: start !important;
+}
+
+.product-detail-pic {
+  align-self: start !important;
+  height: clamp(520px, 52vw, 660px) !important;
+  min-height: clamp(520px, 52vw, 660px) !important;
+  overflow: hidden !important;
+}
+
+.product-detail-pic .product-art {
+  width: 100% !important;
+  max-width: none !important;
+  height: 100% !important;
+  min-height: 100% !important;
+  aspect-ratio: auto !important;
+}
+
+.product-detail-pic .product-vial-photo,
+.product-detail-pic .nasal-template-photo {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+  object-position: center center !important;
+}
+
+@media (max-width: 820px) {
+  .product-detail-pic {
+    height: clamp(360px, 110vw, 560px) !important;
+    min-height: clamp(360px, 110vw, 560px) !important;
+  }
+}
+
 </style>
 </head>
 <body class="age-locked">
