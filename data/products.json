@@ -1270,12 +1270,14 @@
       {
         "code": "NSX5",
         "spec": "5mg nasal spray",
-        "price": "$66.00"
+        "price": "$66.00",
+        "singlePrice": 21.99
       },
       {
         "code": "NSX10",
         "spec": "10mg nasal spray",
-        "price": "$82.50"
+        "price": "$82.50",
+        "singlePrice": 32.99
       }
     ]
   },
@@ -1294,12 +1296,14 @@
       {
         "code": "NSK5",
         "spec": "5mg nasal spray",
-        "price": "$66.00"
+        "price": "$66.00",
+        "singlePrice": 21.99
       },
       {
         "code": "NSK10",
         "spec": "10mg nasal spray",
-        "price": "$82.50"
+        "price": "$82.50",
+        "singlePrice": 32.99
       }
     ]
   },
@@ -1319,12 +1323,14 @@
       {
         "code": "NSS10",
         "spec": "10mg nasal spray",
-        "price": "$132.00"
+        "price": "$132.00",
+        "singlePrice": 43.99
       },
       {
         "code": "NSS20",
         "spec": "20mg nasal spray",
-        "price": "$165.00"
+        "price": "$165.00",
+        "singlePrice": 65.99
       }
     ]
   },
@@ -1343,7 +1349,8 @@
       {
         "code": "NOT2",
         "spec": "2mg nasal spray",
-        "price": "$41.25"
+        "price": "$41.25",
+        "singlePrice": 21.99
       }
     ]
   },
@@ -1362,12 +1369,14 @@
       {
         "code": "NDS5",
         "spec": "5mg nasal spray",
-        "price": "$66.00"
+        "price": "$66.00",
+        "singlePrice": 21.99
       },
       {
         "code": "NDS15",
         "spec": "15mg nasal spray",
-        "price": "$140.25"
+        "price": "$140.25",
+        "singlePrice": 43.99
       }
     ]
   },
@@ -1387,17 +1396,20 @@
       {
         "code": "NADNS100",
         "spec": "100mg nasal spray",
-        "price": "$66.00"
+        "price": "$66.00",
+        "singlePrice": 21.99
       },
       {
         "code": "NADNS500",
         "spec": "500mg nasal spray",
-        "price": "$132.00"
+        "price": "$132.00",
+        "singlePrice": 43.99
       },
       {
         "code": "NADNS1000",
         "spec": "1000mg nasal spray",
-        "price": "$214.50"
+        "price": "$214.50",
+        "singlePrice": 65.99
       }
     ]
   },
@@ -1417,12 +1429,14 @@
       {
         "code": "NVIP5",
         "spec": "5mg nasal spray",
-        "price": "$123.75"
+        "price": "$123.75",
+        "singlePrice": 43.99
       },
       {
         "code": "NVIP10",
         "spec": "10mg nasal spray",
-        "price": "$239.25"
+        "price": "$239.25",
+        "singlePrice": 76.99
       }
     ]
   },
@@ -1442,7 +1456,8 @@
       {
         "code": "NCIP10",
         "spec": "10mg nasal spray",
-        "price": "$156.75"
+        "price": "$156.75",
+        "singlePrice": 43.99
       }
     ]
   }
