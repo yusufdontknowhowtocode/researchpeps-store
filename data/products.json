@@ -3,7 +3,7 @@
     "name": "R3tatrutide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Triple-acting research peptide commonly studied for weight loss, appetite control, blood sugar balance, and overall metabolic health.",
     "aliases": [],
     "options": [
@@ -53,7 +53,7 @@
     "name": "Semaglutide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "GLP-1 research peptide commonly studied for weight loss, appetite control, slower stomach emptying, and blood sugar support.",
     "aliases": [],
     "options": [
@@ -88,7 +88,7 @@
     "name": "Tirzepatide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Dual-action research peptide commonly studied for weight loss, appetite control, improved glucose balance, and broader metabolic support.",
     "aliases": [],
     "options": [
@@ -138,7 +138,7 @@
     "name": "Semax",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for focus, memory, mental clarity, and broader cognitive support.",
     "aliases": [],
     "options": [
@@ -158,7 +158,7 @@
     "name": "HGH",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research hormone product commonly studied for growth, recovery, body composition, and performance-related pathways.",
     "aliases": [],
     "options": [
@@ -188,7 +188,7 @@
     "name": "IGF-1LR3",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth factor research peptide commonly studied for muscle growth, recovery, and cell-signaling activity.",
     "aliases": [],
     "options": [
@@ -208,7 +208,7 @@
     "name": "BPC-157",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for recovery, gut health, tissue repair, and joint support.",
     "aliases": [],
     "options": [
@@ -233,7 +233,7 @@
     "name": "TB-500",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for recovery, tissue repair, flexibility, and injury-support pathways.",
     "aliases": [],
     "options": [
@@ -253,7 +253,7 @@
     "name": "GHK-CU",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Copper peptide researched for skin repair, collagen support, hair-related studies, and overall tissue recovery.",
     "aliases": [],
     "options": [
@@ -273,7 +273,7 @@
     "name": "NAD+",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Cellular coenzyme commonly studied for energy production, healthy aging research, and cellular repair pathways.",
     "aliases": [],
     "options": [
@@ -298,7 +298,7 @@
     "name": "Ipamorelin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth hormone releasing peptide commonly studied for recovery, sleep support, and lean-mass related research.",
     "aliases": [],
     "options": [
@@ -318,7 +318,7 @@
     "name": "CJC-1295 WO/Dac",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and body-composition support.",
     "aliases": [
       "CJC-1295 No DAC",
@@ -351,7 +351,7 @@
     "name": "CJC-1295 DAC + Ipamorelin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Peptide blend commonly studied for recovery, sleep support, growth hormone pathways, and body-composition goals.",
     "aliases": [
       "cjc dac ipamorelin",
@@ -373,7 +373,7 @@
     "name": "CJC-1295 WO/Dac 5mg + Ipamorelin 5mg",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Peptide blend commonly studied for growth hormone support, recovery, sleep quality, and body-composition goals.",
     "aliases": [
       "cjc no dac ipamorelin",
@@ -394,7 +394,7 @@
     "name": "Sermorelin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and healthy hormone support.",
     "aliases": [
       "sermorelin",
@@ -425,7 +425,7 @@
     "name": "GHRP-2",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth hormone secretagogue commonly studied for appetite increase, hormone release, and recovery support.",
     "aliases": [
       "GHRP2",
@@ -449,7 +449,7 @@
     "name": "GHRP-6",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth hormone secretagogue commonly studied for appetite support, hormone release, and recovery-related effects.",
     "aliases": [
       "GHRP-6 Acetate",
@@ -474,7 +474,7 @@
     "name": "Cagrilintide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for weight loss, appetite control, and metabolic health support.",
     "aliases": [],
     "options": [
@@ -494,7 +494,7 @@
     "name": "Cagrilintide 5mg + Semaglutide 5mg",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Dual peptide blend commonly studied for weight loss, appetite control, and stronger metabolic support.",
     "aliases": [],
     "options": [
@@ -514,7 +514,7 @@
     "name": "AOD",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for fat loss, body-composition support, and metabolism-related effects.",
     "aliases": [],
     "options": [
@@ -529,7 +529,7 @@
     "name": "5-amino-1mq",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research compound commonly studied for fat loss, metabolism, and body-composition support.",
     "aliases": [],
     "options": [
@@ -549,7 +549,7 @@
     "name": "MOTS-C",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Mitochondrial research peptide commonly studied for metabolism, energy use, insulin sensitivity, and exercise support.",
     "aliases": [],
     "options": [
@@ -569,7 +569,7 @@
     "name": "IGF-DES",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth factor research peptide often studied for muscle cell activity, tissue repair, and localized growth signaling.",
     "aliases": [],
     "options": [
@@ -584,7 +584,7 @@
     "name": "Selank",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for stress support, anxiety-related behavior, mood balance, and mental clarity.",
     "aliases": [],
     "options": [
@@ -604,7 +604,7 @@
     "name": "Tesamorelin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth hormone releasing peptide studied for body-composition changes, fat loss research, and hormone-related pathways.",
     "aliases": [],
     "options": [
@@ -624,7 +624,7 @@
     "name": "Mazdutide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide studied for weight loss, appetite control, blood sugar balance, and metabolic health.",
     "aliases": [],
     "options": [
@@ -644,7 +644,7 @@
     "name": "Survodutide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for weight loss, appetite control, and cardiometabolic health markers.",
     "aliases": [],
     "options": [
@@ -659,7 +659,7 @@
     "name": "KPV",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for gut health, inflammation support, and skin-related pathways.",
     "aliases": [],
     "options": [
@@ -679,7 +679,7 @@
     "name": "Thymosin Alpha-1",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for immune support, inflammation balance, and overall immune function.",
     "aliases": [],
     "options": [
@@ -699,7 +699,7 @@
     "name": "KissPeptin-10",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide mainly studied for hormone signaling, reproductive function, and fertility-related pathways.",
     "aliases": [],
     "options": [
@@ -719,7 +719,7 @@
     "name": "Lemon Bottle",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research product often discussed in body-composition and fat-targeting studies, especially around localized fat reduction models.",
     "aliases": [],
     "options": [
@@ -734,7 +734,7 @@
     "name": "Vasoactive Intestinal Peptide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide studied for inflammation, immune signaling, blood vessel function, and gut-related pathways.",
     "aliases": [],
     "options": [
@@ -754,7 +754,7 @@
     "name": "Bacteriostatic Water 0.9%",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Lab supply commonly used for peptide mixing and dilution in research settings.",
     "aliases": [],
     "options": [
@@ -774,7 +774,7 @@
     "name": "BPC-157 5mg + TB-500 5mg",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Peptide blend commonly studied for recovery, tissue repair, joint support, and healing-related research.",
     "aliases": [],
     "options": [
@@ -789,7 +789,7 @@
     "name": "AICAR",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research compound commonly studied for energy use, endurance, metabolism, and exercise-related pathways.",
     "aliases": [],
     "options": [
@@ -804,7 +804,7 @@
     "name": "SS-31",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Mitochondrial research peptide studied for cellular energy, oxidative stress, and heart or muscle support pathways.",
     "aliases": [],
     "options": [
@@ -824,7 +824,7 @@
     "name": "Glutathione",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Antioxidant research compound commonly studied for detox support, oxidative stress, and cellular protection.",
     "aliases": [],
     "options": [
@@ -839,7 +839,7 @@
     "name": "HMG",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research hormone product commonly studied for fertility support and reproductive hormone function.",
     "aliases": [],
     "options": [
@@ -854,7 +854,7 @@
     "name": "Lipo-C with vitamins B12",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research blend commonly studied for metabolism, fat-burning support, energy, and vitamin B12 support.",
     "aliases": [],
     "options": [
@@ -869,7 +869,7 @@
     "name": "HCG",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research hormone product commonly studied for fertility, hormone balance, and reproductive support.",
     "aliases": [],
     "options": [
@@ -889,7 +889,7 @@
     "name": "BPC-157 10mg + TB-500 10mg",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Higher-strength peptide blend commonly studied for recovery, tissue repair, and joint or muscle support.",
     "aliases": [],
     "options": [
@@ -904,7 +904,7 @@
     "name": "FOXO4",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide studied in longevity and senescence models, especially for aging-related cell pathways.",
     "aliases": [],
     "options": [
@@ -919,7 +919,7 @@
     "name": "LL37",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Antimicrobial research peptide commonly studied for immune defense, skin repair, and inflammation-related pathways.",
     "aliases": [],
     "options": [
@@ -939,7 +939,7 @@
     "name": "Dermorphin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide mainly studied for pain-signaling pathways and receptor-binding activity.",
     "aliases": [],
     "options": [
@@ -954,7 +954,7 @@
     "name": "L-Carnitine 600mg/ml",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research compound commonly studied for fat metabolism, energy production, and exercise performance support.",
     "aliases": [],
     "options": [
@@ -984,7 +984,7 @@
     "name": "Acetic Acid Water 0.6%",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Lab supply commonly used for peptide mixing and reconstitution in research settings.",
     "aliases": [],
     "options": [
@@ -1004,7 +1004,7 @@
     "name": "CJC-1295 W/Dac",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Longer-acting growth hormone releasing peptide studied for recovery, hormone support, and body-composition research.",
     "aliases": [],
     "options": [
@@ -1019,7 +1019,7 @@
     "name": "Cerebrolysin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research compound commonly studied for brain support, nerve health, memory, and recovery-related pathways.",
     "aliases": [],
     "options": [
@@ -1034,7 +1034,7 @@
     "name": "Epithalon",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for healthy aging, sleep patterns, and cellular longevity pathways.",
     "aliases": [],
     "options": [
@@ -1054,7 +1054,7 @@
     "name": "LC120",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research wellness blend commonly studied for energy support, metabolism, and body-composition goals.",
     "aliases": [],
     "options": [
@@ -1069,7 +1069,7 @@
     "name": "Hexarelin Acetate",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Growth hormone secretagogue commonly studied for recovery, muscle support, and hormone-related effects.",
     "aliases": [],
     "options": [
@@ -1084,7 +1084,7 @@
     "name": "Pinealon",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for brain health, memory support, and healthy aging pathways.",
     "aliases": [],
     "options": [
@@ -1109,7 +1109,7 @@
     "name": "Melanotan",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for skin pigmentation and tanning-related pathways.",
     "aliases": [],
     "options": [
@@ -1124,7 +1124,7 @@
     "name": "Snap-8",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied in cosmetic and skin-care research for expression lines and wrinkle-related effects.",
     "aliases": [],
     "options": [
@@ -1139,7 +1139,7 @@
     "name": "Phosphate Buffered Saline (PBS)",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Lab buffer commonly used for dilution, washing, and general peptide research preparation.",
     "aliases": [],
     "options": [
@@ -1159,7 +1159,7 @@
     "name": "Adipotide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide mainly studied for fat loss and body-composition related pathways.",
     "aliases": [],
     "options": [
@@ -1179,7 +1179,7 @@
     "name": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research blend commonly studied for skin repair, tissue recovery, joint support, and healing-related effects.",
     "aliases": [],
     "options": [
@@ -1194,7 +1194,7 @@
     "name": "Oxytocin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for social bonding, mood, stress response, and behavioral pathways.",
     "aliases": [],
     "options": [
@@ -1209,7 +1209,7 @@
     "name": "B12 1mg/ml",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Vitamin B12 research product commonly studied for energy support, metabolism, and nutrient-related pathways.",
     "aliases": [],
     "options": [
@@ -1224,7 +1224,7 @@
     "name": "Melatonin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research hormone commonly studied for sleep support, circadian rhythm balance, and recovery.",
     "aliases": [],
     "options": [
@@ -1239,7 +1239,7 @@
     "name": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg + KPV 10mg",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Advanced peptide blend commonly studied for skin repair, gut support, inflammation balance, and full-body recovery research.",
     "aliases": [],
     "options": [
@@ -1254,7 +1254,7 @@
     "name": "SLU-PP-322",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research compound being explored for metabolism, energy use, and weight-management related pathways.",
     "aliases": [],
     "options": [
@@ -1269,7 +1269,7 @@
     "name": "MT-2 (melanotan 2 acetate)",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for skin pigmentation, tanning response, and melanin-related pathways.",
     "aliases": [],
     "options": [
@@ -1284,7 +1284,7 @@
     "name": "DSIP",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for sleep support, stress balance, and nervous-system related pathways.",
     "aliases": [],
     "options": [
@@ -1309,7 +1309,7 @@
     "name": "Semax Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Spray-format research version of Semax for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1337,7 +1337,7 @@
     "name": "Selank Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Spray-format research version of Selank for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1365,7 +1365,7 @@
     "name": "Semax + Selank Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Combined Semax and Selank spray-format research blend for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1394,7 +1394,7 @@
     "name": "Oxytocin Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Spray-format research version of Oxytocin for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1415,7 +1415,7 @@
     "name": "DSIP Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Spray-format research version of DSIP for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1450,7 +1450,7 @@
     "name": "NAD+ Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Spray-format research version of NAD+ for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1486,7 +1486,7 @@
     "name": "VIP Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Spray-format research version of Vasoactive Intestinal Peptide for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1515,7 +1515,7 @@
     "name": "CJC-1295 WO/Dac + Ipamorelin Nasal Spray",
     "category": "Nasal Research",
     "page": "peptides",
-    "icon": "💧",
+    "icon": "\ud83d\udca7",
     "deliveryFormat": "nasal",
     "description": "Spray-format CJC-1295 without DAC and Ipamorelin research blend for laboratory and analytical research only. Not for human or animal use.",
     "aliases": [
@@ -1537,7 +1537,7 @@
     "name": "PT-141",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for receptor signaling, behavioral pathways, and related laboratory research models.",
     "aliases": [
       "PT141",
@@ -1555,7 +1555,7 @@
     "name": "PNC-27",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for cell-signaling pathways and laboratory research models.",
     "aliases": [
       "PNC27"
@@ -1577,7 +1577,7 @@
     "name": "MGF",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for muscle growth signaling, tissue repair, and recovery-related pathways.",
     "aliases": [
       "Mechano Growth Factor"
@@ -1594,7 +1594,7 @@
     "name": "PEG MGF",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "PEGylated MGF research peptide commonly studied for muscle growth signaling, tissue repair, and recovery-related pathways.",
     "aliases": [
       "PEG-MGF",
@@ -1612,7 +1612,7 @@
     "name": "Thymalin",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for immune support, thymus-related pathways, and aging research models.",
     "aliases": [
       "Thymalin peptide"
@@ -1629,7 +1629,7 @@
     "name": "PE-22-28",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Research peptide commonly studied for cognitive, mood, and nervous-system related pathways.",
     "aliases": [
       "PE22-28",
@@ -1647,7 +1647,7 @@
     "name": "Retatrutide + Cagrilintide",
     "category": "Peptides",
     "page": "peptides",
-    "icon": "🧬",
+    "icon": "\ud83e\uddec",
     "description": "Dual research blend commonly studied for appetite control, weight-management pathways, and metabolic health markers.",
     "aliases": [
       "Retatrutide Cagrilintide",
