@@ -569,7 +569,7 @@ function publicShippingRates() {
 // Product JSON stores the selected supplier/base catalog price.
 // Checkout applies the same +45% storefront markup used by public/index.html.
 const KIT_PRICE_MULTIPLIER = 1.45;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 2.8;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 1.10;
 
 function parsePrice(priceText) {
   const number = Number(String(priceText).replace(/[^0-9.]/g, ''));
@@ -587,6 +587,10 @@ function getVialCount(spec) {
 }
 
 function getRaisedKitPrice(option) {
+  if (option && option.kitPrice != null) {
+    const explicitKitPrice = Number(option.kitPrice);
+    if (Number.isFinite(explicitKitPrice) && explicitKitPrice > 0) return explicitKitPrice;
+  }
   return makeNicePrice(parsePrice(option.price) * KIT_PRICE_MULTIPLIER);
 }
 
@@ -599,13 +603,12 @@ function getBasePerVialPrice(option) {
 function getSingleVialPrice(option) {
   if (option && option.singlePrice != null) {
     const explicitSinglePrice = Number(option.singlePrice);
-    if (Number.isFinite(explicitSinglePrice) && explicitSinglePrice > 0) {
-      return explicitSinglePrice;
-    }
+    if (Number.isFinite(explicitSinglePrice) && explicitSinglePrice > 0) return explicitSinglePrice;
   }
-  return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
+  const vialCount = getVialCount(option && option.spec);
+  const kitPrice = getRaisedKitPrice(option);
+  return Math.round((kitPrice / Math.max(1, vialCount)) * SINGLE_VIAL_PRICE_MULTIPLIER * 100) / 100;
 }
-
 function dollarsToCentsNumber(value) {
   const number = Number(value);
   if (!Number.isFinite(number)) return 0;
