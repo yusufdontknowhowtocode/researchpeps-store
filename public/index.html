@@ -3008,18 +3008,29 @@ body.age-locked .vial-rotor {
   margin-bottom: 14px;
 }
 .product-art.nasal-art {
-  background:
-    radial-gradient(circle at 50% 18%, rgba(191,219,254,.95), rgba(239,246,255,.88) 40%, rgba(190,210,242,.82) 66%, rgba(145,169,210,.72));
+  position: relative;
+  background: linear-gradient(180deg, #edf3fb 0%, #dbe7f7 58%, #cfdaec 100%);
   display: grid;
   place-items: center;
 }
+.product-art.nasal-art::before {
+  content: "";
+  position: absolute;
+  left: -8%;
+  right: -8%;
+  bottom: -8%;
+  height: 34%;
+  border-radius: 50%;
+  background: radial-gradient(circle at 50% 0%, rgba(255,255,255,.82), rgba(229,237,248,.96) 55%, rgba(201,214,232,.98) 100%);
+}
 .nasal-spray-render {
   position: relative;
-  width: 46%;
+  width: 44%;
   height: 76%;
   display: grid;
   place-items: center;
-  filter: drop-shadow(0 18px 22px rgba(15,23,42,.22));
+  z-index: 2;
+  filter: drop-shadow(0 18px 22px rgba(15,23,42,.18));
 }
 .nasal-spray-render::before {
   content: "";
@@ -3246,19 +3257,6 @@ body.age-locked .vial-rotor {
 
 
 
-    <div id="nasal-research-formats" class="container nasal-home-section">
-      <div class="nasal-section-card">
-        <div class="catalog-head">
-          <span class="nasal-badge">Nasal formats</span>
-          <p class="kicker">Nasal research formats</p>
-          <h2>Nasal spray research products.</h2>
-          <p class="lead">Popular spray-format research items in one quick section, with the same research-use-only checkout flow.</p>
-        </div>
-
-        <div id="nasalProductGrid" class="grid"></div>
-      </div>
-    </div>
-
     <div id="featured-peptides" class="container peptide-home-section">
       <div class="catalog-head">
         <p class="kicker">Peptide catalog</p>
@@ -3330,6 +3328,15 @@ body.age-locked .vial-rotor {
         <p class="kicker">Peptides catalog</p>
         <h1>Peptides</h1>
         <p class="lead"></p>
+      </div>
+      <div class="catalog-subsection nasal-catalog-block">
+        <div class="catalog-head catalog-subhead">
+          <span class="nasal-badge">Nasal formats</span>
+          <p class="kicker">Nasal research formats</p>
+          <h2>Popular nasal sprays.</h2>
+          <p class="lead">Spray-format research products shown in the same catalog layout as the rest of the peptide collection.</p>
+        </div>
+        <div id="nasalCatalogGrid" class="grid"></div>
       </div>
       <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 56% compared with buying the same vials one at a time.</div>
       <div id="peptideCatalogGrid" class="grid"></div>
@@ -5798,20 +5805,23 @@ function renderProductCard(product, indexPrefix) {
 }
 
 function renderPeptideCatalog() {
-  const grid = document.getElementById('peptideCatalogGrid');
-  if (grid) {
-    grid.innerHTML = products.map(function(product) {
-      return renderProductCard(product, 'catalog');
-    }).join('');
-  }
+  const nasalNames = ['Semax Nasal Spray', 'Selank Nasal Spray', 'Semax + Selank Nasal Spray', 'Oxytocin Nasal Spray', 'DSIP Nasal Spray', 'NAD+ Nasal Spray', 'VIP Nasal Spray', 'CJC-1295 WO/Dac + Ipamorelin Nasal Spray'];
 
-  const nasalGrid = document.getElementById('nasalProductGrid');
+  const nasalGrid = document.getElementById('nasalCatalogGrid');
   if (nasalGrid) {
-    const nasalNames = ['Semax Nasal Spray', 'Selank Nasal Spray', 'Semax + Selank Nasal Spray', 'Oxytocin Nasal Spray', 'DSIP Nasal Spray', 'NAD+ Nasal Spray', 'VIP Nasal Spray', 'CJC-1295 WO/Dac + Ipamorelin Nasal Spray'];
     nasalGrid.innerHTML = products.filter(function(product) {
       return nasalNames.includes(product.name);
     }).map(function(product) {
       return renderProductCard(product, 'nasal');
+    }).join('');
+  }
+
+  const grid = document.getElementById('peptideCatalogGrid');
+  if (grid) {
+    grid.innerHTML = products.filter(function(product) {
+      return !nasalNames.includes(product.name);
+    }).map(function(product) {
+      return renderProductCard(product, 'catalog');
     }).join('');
   }
 
