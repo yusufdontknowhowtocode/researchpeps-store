@@ -3288,6 +3288,42 @@ body.age-locked .vial-rotor {
   }
 }
 
+
+/* Mobile nasal spray photo tuning
+   Makes nasal spray photos look less oversized on iPhone/mobile in catalog cards
+   and on the opened product page. */
+.product-card .product-art.nasal-art {
+  background: #eef5ff;
+}
+
+@media (max-width: 820px) {
+  .product-card .product-art.nasal-art {
+    aspect-ratio: 4 / 4.65;
+  }
+
+  .product-card .nasal-template-photo {
+    object-position: center 54%;
+  }
+
+  .product-card .nasal-photo-label {
+    top: 58.9%;
+    width: 24.6%;
+  }
+
+  .product-detail-pic.nasal-detail-pic {
+    height: clamp(300px, 88vw, 470px) !important;
+    min-height: clamp(300px, 88vw, 470px) !important;
+  }
+
+  .product-detail-pic.nasal-detail-pic .nasal-template-photo {
+    object-position: center 54% !important;
+  }
+
+  .product-detail-pic.nasal-detail-pic .nasal-photo-label {
+    top: 54.8% !important;
+  }
+}
+
 </style>
 </head>
 <body class="age-locked">
@@ -5999,7 +6035,10 @@ function openProduct(productName) {
   document.getElementById('productDetailTitle').textContent = product.name;
   document.getElementById('productDetailLead').textContent = product.options.length + ' size option' + (product.options.length === 1 ? '' : 's') + ' available for ' + product.name + '.';
   const detailPic = document.getElementById('productDetailPic');
-  if (detailPic) detailPic.innerHTML = renderProductArt(product, 'detailArtwork');
+  if (detailPic) {
+    detailPic.innerHTML = renderProductArt(product, 'detailArtwork');
+    detailPic.classList.toggle('nasal-detail-pic', product.deliveryFormat === 'nasal');
+  }
   document.getElementById('productDetailCategoryKicker').textContent = product.category + ' product';
   document.getElementById('productDetailName').textContent = product.name;
   document.getElementById('productDetailDescription').textContent = product.description;
