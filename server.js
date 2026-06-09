@@ -566,7 +566,9 @@ function publicShippingRates() {
   };
 }
 
-const KIT_PRICE_MULTIPLIER = 1.5;
+// Product JSON stores the selected supplier/base catalog price.
+// Checkout applies the same +45% storefront markup used by public/index.html.
+const KIT_PRICE_MULTIPLIER = 1.45;
 const SINGLE_VIAL_PRICE_MULTIPLIER = 2.8;
 
 function parsePrice(priceText) {
@@ -595,6 +597,12 @@ function getBasePerVialPrice(option) {
 }
 
 function getSingleVialPrice(option) {
+  if (option && option.singlePrice != null) {
+    const explicitSinglePrice = Number(option.singlePrice);
+    if (Number.isFinite(explicitSinglePrice) && explicitSinglePrice > 0) {
+      return explicitSinglePrice;
+    }
+  }
   return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
 }
 

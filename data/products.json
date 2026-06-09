@@ -10,12 +10,12 @@
       {
         "code": "RT5",
         "spec": "5mg*10 vials",
-        "price": "$82.50"
+        "price": "$84.00"
       },
       {
         "code": "RT10",
         "spec": "10mg*10 vials",
-        "price": "$120.00"
+        "price": "$130.00"
       },
       {
         "code": "RT15",
@@ -25,17 +25,17 @@
       {
         "code": "RT20",
         "spec": "20mg*10 vials",
-        "price": "$195.00"
+        "price": "$216.00"
       },
       {
         "code": "RT30",
         "spec": "30mg*10 vials",
-        "price": "$255.00"
+        "price": "$270.00"
       },
       {
         "code": "RT40",
         "spec": "40mg*10 vials",
-        "price": "$315.00"
+        "price": "$342.00"
       },
       {
         "code": "RT50",
@@ -65,7 +65,7 @@
       {
         "code": "SM10",
         "spec": "10mg*10 vials",
-        "price": "$67.50"
+        "price": "$84.00"
       },
       {
         "code": "SM15",
@@ -75,12 +75,12 @@
       {
         "code": "SM20",
         "spec": "20mg*10 vials",
-        "price": "$105.00"
+        "price": "$132.00"
       },
       {
         "code": "SM30",
         "spec": "30mg*10 vials",
-        "price": "$135.00"
+        "price": "$168.00"
       }
     ]
   },
@@ -100,17 +100,17 @@
       {
         "code": "TR10",
         "spec": "10mg*10 vials",
-        "price": "$75.00"
+        "price": "$84.00"
       },
       {
         "code": "TR15",
         "spec": "15mg*10 vials",
-        "price": "$97.50"
+        "price": "$102.00"
       },
       {
         "code": "TR20",
         "spec": "20mg*10 vials",
-        "price": "$112.50"
+        "price": "$114.00"
       },
       {
         "code": "TR30",
@@ -120,7 +120,7 @@
       {
         "code": "TR40",
         "spec": "40mg*10 vials",
-        "price": "$172.50"
+        "price": "$174.00"
       },
       {
         "code": "TR50",
@@ -150,7 +150,7 @@
       {
         "code": "XA11",
         "spec": "10mg*10 vials",
-        "price": "$75.00"
+        "price": "$84.00"
       }
     ]
   },
@@ -221,6 +221,11 @@
         "code": "BC10",
         "spec": "10mg*10 vials",
         "price": "$105.00"
+      },
+      {
+        "code": "BC20",
+        "spec": "20mg*10 vials",
+        "price": "$120.00"
       }
     ]
   },
@@ -236,6 +241,11 @@
         "code": "BT5",
         "spec": "5mg*10 vials",
         "price": "$112.50"
+      },
+      {
+        "code": "BT10",
+        "spec": "10mg*10 vials",
+        "price": "$144.00"
       }
     ]
   },
@@ -489,6 +499,11 @@
     "aliases": [],
     "options": [
       {
+        "code": "CS5",
+        "spec": "5mg*10 vials",
+        "price": "$120.00"
+      },
+      {
         "code": "CS10",
         "spec": "10mg*10 vials",
         "price": "$285.00"
@@ -521,7 +536,12 @@
       {
         "code": "5AM",
         "spec": "5mg*10 vials",
-        "price": "$67.50"
+        "price": "$78.00"
+      },
+      {
+        "code": "50AM",
+        "spec": "50mg*10 vials",
+        "price": "$108.00"
       }
     ]
   },
@@ -576,7 +596,7 @@
       {
         "code": "SK11",
         "spec": "10mg*10 vials",
-        "price": "$75.00"
+        "price": "$96.00"
       }
     ]
   },
@@ -608,6 +628,11 @@
     "description": "Research peptide studied for weight loss, appetite control, blood sugar balance, and metabolic health.",
     "aliases": [],
     "options": [
+      {
+        "code": "MDT5",
+        "spec": "5mg*10 vials",
+        "price": "$144.00"
+      },
       {
         "code": "MDT10",
         "spec": "10mg*10 vials",
@@ -736,12 +761,12 @@
       {
         "code": "BA3",
         "spec": "3ml*10 vials",
-        "price": "$7.50"
+        "price": "$15.00"
       },
       {
         "code": "BA10",
         "spec": "10ml*10 vials",
-        "price": "$15.00"
+        "price": "$20.00"
       }
     ]
   },
@@ -899,9 +924,14 @@
     "aliases": [],
     "options": [
       {
+        "code": "LL375",
+        "spec": "5mg*10 vials",
+        "price": "$114.00"
+      },
+      {
         "code": "3710",
         "spec": "10mg*10 vials",
-        "price": "$142.50"
+        "price": "$204.00"
       }
     ]
   },
@@ -932,6 +962,21 @@
         "code": "LC600",
         "spec": "10ml*10 vials",
         "price": "$120.00"
+      },
+      {
+        "code": "LC500",
+        "spec": "500mg*10 vials",
+        "price": "$84.00"
+      },
+      {
+        "code": "LC1000",
+        "spec": "1000mg*10 vials",
+        "price": "$162.00"
+      },
+      {
+        "code": "LC5000",
+        "spec": "5000mg*10 vials",
+        "price": "$240.00"
       }
     ]
   },
@@ -946,7 +991,7 @@
       {
         "code": "AA3",
         "spec": "3ml*10 vials",
-        "price": "$7.50"
+        "price": "$18.00"
       },
       {
         "code": "AA10",
@@ -981,7 +1026,7 @@
       {
         "code": "CBL60",
         "spec": "60mg*10 vials",
-        "price": "$43.50"
+        "price": "$78.00"
       }
     ]
   },
@@ -1051,12 +1096,12 @@
       {
         "code": "PI10",
         "spec": "10mg*10 vials",
-        "price": "$105.00"
+        "price": "$108.00"
       },
       {
         "code": "PI20",
         "spec": "20mg*10 vials",
-        "price": "$150.00"
+        "price": "$168.00"
       }
     ]
   },
@@ -1249,9 +1294,14 @@
         "price": "$60.00"
       },
       {
+        "code": "DS10",
+        "spec": "10mg*10 vials",
+        "price": "$96.00"
+      },
+      {
         "code": "DS15",
         "spec": "15mg*10 vials",
-        "price": "$127.50"
+        "price": "$144.00"
       }
     ]
   },
@@ -1271,12 +1321,12 @@
         "code": "NSX5",
         "spec": "5mg nasal spray",
         "price": "$66.00",
-        "singlePrice": 21.99
+        "singlePrice": 19.99
       },
       {
         "code": "NSX10",
         "spec": "10mg nasal spray",
-        "price": "$82.50",
+        "price": "$92.40",
         "singlePrice": 32.99
       }
     ]
@@ -1297,12 +1347,12 @@
         "code": "NSK5",
         "spec": "5mg nasal spray",
         "price": "$66.00",
-        "singlePrice": 21.99
+        "singlePrice": 19.99
       },
       {
         "code": "NSK10",
         "spec": "10mg nasal spray",
-        "price": "$82.50",
+        "price": "$105.60",
         "singlePrice": 32.99
       }
     ]
@@ -1324,13 +1374,13 @@
         "code": "NSS10",
         "spec": "10mg nasal spray",
         "price": "$132.00",
-        "singlePrice": 43.99
+        "singlePrice": 39.99
       },
       {
         "code": "NSS20",
         "spec": "20mg nasal spray",
-        "price": "$165.00",
-        "singlePrice": 65.99
+        "price": "$198.00",
+        "singlePrice": 69.99
       }
     ]
   },
@@ -1350,7 +1400,7 @@
         "code": "NOT2",
         "spec": "2mg nasal spray",
         "price": "$41.25",
-        "singlePrice": 21.99
+        "singlePrice": 9.99
       }
     ]
   },
@@ -1370,13 +1420,19 @@
         "code": "NDS5",
         "spec": "5mg nasal spray",
         "price": "$66.00",
-        "singlePrice": 21.99
+        "singlePrice": 19.99
+      },
+      {
+        "code": "NDS10",
+        "spec": "10mg nasal spray",
+        "price": "$105.60",
+        "singlePrice": 32.99
       },
       {
         "code": "NDS15",
         "spec": "15mg nasal spray",
-        "price": "$140.25",
-        "singlePrice": 43.99
+        "price": "$158.40",
+        "singlePrice": 49.99
       }
     ]
   },
@@ -1397,19 +1453,19 @@
         "code": "NADNS100",
         "spec": "100mg nasal spray",
         "price": "$66.00",
-        "singlePrice": 21.99
+        "singlePrice": 19.99
       },
       {
         "code": "NADNS500",
         "spec": "500mg nasal spray",
         "price": "$132.00",
-        "singlePrice": 43.99
+        "singlePrice": 39.99
       },
       {
         "code": "NADNS1000",
         "spec": "1000mg nasal spray",
         "price": "$214.50",
-        "singlePrice": 65.99
+        "singlePrice": 69.99
       }
     ]
   },
@@ -1430,13 +1486,13 @@
         "code": "NVIP5",
         "spec": "5mg nasal spray",
         "price": "$123.75",
-        "singlePrice": 43.99
+        "singlePrice": 39.99
       },
       {
         "code": "NVIP10",
         "spec": "10mg nasal spray",
         "price": "$239.25",
-        "singlePrice": 76.99
+        "singlePrice": 79.99
       }
     ]
   },
@@ -1457,7 +1513,135 @@
         "code": "NCIP10",
         "spec": "10mg nasal spray",
         "price": "$156.75",
-        "singlePrice": 43.99
+        "singlePrice": 49.99
+      }
+    ]
+  },
+  {
+    "name": "PT-141",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for receptor signaling, behavioral pathways, and related laboratory research models.",
+    "aliases": [
+      "PT141",
+      "PT 141"
+    ],
+    "options": [
+      {
+        "code": "P41",
+        "spec": "10mg*10 vials",
+        "price": "$66.00"
+      }
+    ]
+  },
+  {
+    "name": "PNC-27",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for cell-signaling pathways and laboratory research models.",
+    "aliases": [
+      "PNC27"
+    ],
+    "options": [
+      {
+        "code": "PC5",
+        "spec": "5mg*10 vials",
+        "price": "$108.00"
+      },
+      {
+        "code": "PC10",
+        "spec": "10mg*10 vials",
+        "price": "$192.00"
+      }
+    ]
+  },
+  {
+    "name": "MGF",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for muscle growth signaling, tissue repair, and recovery-related pathways.",
+    "aliases": [
+      "Mechano Growth Factor"
+    ],
+    "options": [
+      {
+        "code": "FM2",
+        "spec": "2mg*10 vials",
+        "price": "$60.00"
+      }
+    ]
+  },
+  {
+    "name": "PEG MGF",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "PEGylated MGF research peptide commonly studied for muscle growth signaling, tissue repair, and recovery-related pathways.",
+    "aliases": [
+      "PEG-MGF",
+      "PEGylated MGF"
+    ],
+    "options": [
+      {
+        "code": "FMP2",
+        "spec": "2mg*10 vials",
+        "price": "$96.00"
+      }
+    ]
+  },
+  {
+    "name": "Thymalin",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for immune support, thymus-related pathways, and aging research models.",
+    "aliases": [
+      "Thymalin peptide"
+    ],
+    "options": [
+      {
+        "code": "TY10",
+        "spec": "10mg*10 vials",
+        "price": "$66.00"
+      }
+    ]
+  },
+  {
+    "name": "PE-22-28",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Research peptide commonly studied for cognitive, mood, and nervous-system related pathways.",
+    "aliases": [
+      "PE22-28",
+      "PE 22 28"
+    ],
+    "options": [
+      {
+        "code": "PE10",
+        "spec": "10mg*10 vials",
+        "price": "$72.00"
+      }
+    ]
+  },
+  {
+    "name": "Retatrutide + Cagrilintide",
+    "category": "Peptides",
+    "page": "peptides",
+    "icon": "🧬",
+    "description": "Dual research blend commonly studied for appetite control, weight-management pathways, and metabolic health markers.",
+    "aliases": [
+      "Retatrutide Cagrilintide",
+      "Reta Cagri"
+    ],
+    "options": [
+      {
+        "code": "RC10",
+        "spec": "10mg*10 vials",
+        "price": "$240.00"
       }
     ]
   }
