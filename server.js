@@ -569,7 +569,7 @@ function publicShippingRates() {
 // Product JSON stores the selected supplier/base catalog price.
 // Checkout applies the same +45% storefront markup used by public/index.html.
 const KIT_PRICE_MULTIPLIER = 1.45;
-const SINGLE_VIAL_PRICE_MULTIPLIER = 1.10;
+const SINGLE_VIAL_PRICE_MULTIPLIER = 3.00;
 
 function parsePrice(priceText) {
   const number = Number(String(priceText).replace(/[^0-9.]/g, ''));
@@ -605,9 +605,7 @@ function getSingleVialPrice(option) {
     const explicitSinglePrice = Number(option.singlePrice);
     if (Number.isFinite(explicitSinglePrice) && explicitSinglePrice > 0) return explicitSinglePrice;
   }
-  const vialCount = getVialCount(option && option.spec);
-  const kitPrice = getRaisedKitPrice(option);
-  return Math.round((kitPrice / Math.max(1, vialCount)) * SINGLE_VIAL_PRICE_MULTIPLIER * 100) / 100;
+  return makeNicePrice(getBasePerVialPrice(option) * SINGLE_VIAL_PRICE_MULTIPLIER);
 }
 function dollarsToCentsNumber(value) {
   const number = Number(value);
