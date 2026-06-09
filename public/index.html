@@ -1498,6 +1498,18 @@ body.age-locked .vial-rotor {
   font-size: 13px;
   line-height: 1.55;
 }
+.cart-minimum-message {
+  display: none;
+  border: 1px solid rgba(245, 158, 11, .42);
+  background: rgba(245, 158, 11, .10);
+  color: #fde68a;
+  border-radius: 16px;
+  padding: 10px 12px;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.45;
+}
+.cart-minimum-message.show { display: block; }
 .cart-line-actions {
   display: flex;
   align-items: center;
@@ -3324,6 +3336,53 @@ body.age-locked .vial-rotor {
   }
 }
 
+
+/* Catalog nasal spray label fix
+   Bigger text on peptide catalog cards only. Product page label stays unchanged. */
+.product-card .nasal-photo-label {
+  top: 59.2% !important;
+  width: 26.8% !important;
+  min-height: 21.2% !important;
+  padding: 4.6% 2.15% 3.7% !important;
+}
+.product-card .nasal-photo-label .brand {
+  margin-bottom: 9.5% !important;
+  font-size: clamp(6.2px, .92vw, 11.5px) !important;
+}
+.product-card .nasal-photo-label .name {
+  margin-bottom: 9.5% !important;
+  font-size: calc(var(--label-size, clamp(7.6px, 1.12vw, 13.5px)) * 1.08) !important;
+  line-height: 1.02 !important;
+}
+.product-card .nasal-photo-label .dose {
+  font-size: clamp(6.3px, .92vw, 11.2px) !important;
+  padding: 5.1% 8.2% !important;
+}
+.product-card .nasal-photo-label .use {
+  font-size: clamp(4px, .52vw, 6.2px) !important;
+  letter-spacing: .13em !important;
+}
+@media (max-width: 820px) {
+  .product-card .nasal-photo-label {
+    top: 58.4% !important;
+    width: 30.6% !important;
+    min-height: 24.4% !important;
+    padding: 5.5% 2.6% 4.5% !important;
+  }
+  .product-card .nasal-photo-label .brand {
+    font-size: clamp(7px, 1.75vw, 10.5px) !important;
+  }
+  .product-card .nasal-photo-label .name {
+    font-size: calc(var(--label-size, clamp(8.6px, 2.1vw, 13px)) * 1.12) !important;
+  }
+  .product-card .nasal-photo-label .dose {
+    font-size: clamp(7px, 1.72vw, 10.5px) !important;
+  }
+  .product-card .nasal-photo-label .use {
+    font-size: clamp(4.4px, 1.05vw, 6px) !important;
+  }
+}
+
 </style>
 </head>
 <body class="age-locked">
@@ -3402,6 +3461,7 @@ body.age-locked .vial-rotor {
   <div id="cartItems" class="cart-items"></div>
   <div class="cart-footer">
     <div class="cart-total-row"><span>Total</span><span id="cartDrawerTotal">$0.00</span></div>
+    <div id="cartMinimumMessage" class="cart-minimum-message"></div>
     <button class="btn primary" onclick="startCheckout()">Checkout</button>
     <p class="cart-help-text">Checkout places an order and saves it to your backend account history. <button type="button" style="border:0;background:transparent;color:#93c5fd;font-weight:800;cursor:pointer;" onclick="showPage('shipping-payment'); closeOverlays();">Shipping &amp; Payment</button></p>
   </div>
@@ -7439,6 +7499,7 @@ function renderCart() {
   const cartItems = document.getElementById('cartItems');
   const cartCount = document.getElementById('cartCount');
   const cartDrawerTotal = document.getElementById('cartDrawerTotal');
+  const cartMinimumMessage = document.getElementById('cartMinimumMessage');
 
   if (!cartItems || !cartCount) return;
 
@@ -7446,6 +7507,11 @@ function renderCart() {
   cartCount.textContent = count;
   cartCount.classList.toggle('show', count > 0);
   if (cartDrawerTotal) cartDrawerTotal.textContent = formatMoney(getCartTotal());
+  if (cartMinimumMessage) {
+    const shouldShowMinimum = cart.length > 0 && !cartMeetsMinimumOrder();
+    cartMinimumMessage.textContent = shouldShowMinimum ? getMinimumOrderMessage() : '';
+    cartMinimumMessage.classList.toggle('show', shouldShowMinimum);
+  }
 
   if (cart.length === 0) {
     cartItems.innerHTML = '<div class="empty-search">Your cart is empty. Open a peptide product page and add an item here.</div>';
@@ -8116,7 +8182,7 @@ async function startCheckout() {
 
   if (!cartMeetsMinimumOrder()) {
     openCart();
-    alert(getMinimumOrderMessage());
+    renderCart();
     return;
   }
 
