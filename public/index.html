@@ -3188,6 +3188,53 @@ body.age-locked .vial-rotor {
   z-index: 4;
 }
 
+
+
+/* Final nasal product-page label fix
+   This only affects the opened product detail page. Catalog cards keep their normal photo layout.
+   The overlay now covers the full white label area on the nasal bottle so the old template label does not show underneath. */
+.product-detail-pic .nasal-photo-label {
+  top: 53.8% !important;
+  width: 22.6% !important;
+  height: 28.4% !important;
+  min-height: 0 !important;
+  padding: 3.2% 1.8% 2.7% !important;
+}
+
+.product-detail-pic .nasal-photo-label::after {
+  height: 33% !important;
+}
+
+.product-detail-pic .nasal-photo-label .brand {
+  margin-bottom: 7% !important;
+  font-size: clamp(4.7px, .66vw, 8px) !important;
+}
+
+.product-detail-pic .nasal-photo-label .name {
+  margin-bottom: 7% !important;
+  font-size: calc(var(--label-size, 5.7px) * .86) !important;
+  line-height: 1.02 !important;
+}
+
+.product-detail-pic .nasal-photo-label .dose {
+  font-size: clamp(4.8px, .66vw, 7.8px) !important;
+  padding: 4% 7% !important;
+}
+
+.product-detail-pic .nasal-photo-label .use {
+  margin-bottom: 3.8% !important;
+  font-size: clamp(2.9px, .31vw, 3.9px) !important;
+  letter-spacing: .105em !important;
+}
+
+@media (max-width: 820px) {
+  .product-detail-pic .nasal-photo-label {
+    top: 53.8% !important;
+    width: 23.2% !important;
+    height: 28.4% !important;
+  }
+}
+
 </style>
 </head>
 <body class="age-locked">
