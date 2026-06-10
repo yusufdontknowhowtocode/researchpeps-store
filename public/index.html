@@ -3471,10 +3471,10 @@ body.age-locked .vial-rotor {
   </div>
   <div id="cartItems" class="cart-items"></div>
   <div class="cart-footer">
-    <div class="cart-total-row"><span>Total</span><span id="cartDrawerTotal">$0.00</span></div>
+    <div class="cart-total-row"><span>Cart total</span><span id="cartDrawerTotal">$0.00</span></div>
     <div id="cartMinimumMessage" class="cart-minimum-message"></div>
     <button class="btn primary" onclick="startCheckout()">Checkout</button>
-    <p class="cart-help-text">Checkout places an order and saves it to your backend account history. <button type="button" style="border:0;background:transparent;color:#93c5fd;font-weight:800;cursor:pointer;" onclick="showPage('shipping-payment'); closeOverlays();">Shipping &amp; Payment</button></p>
+    <p class="cart-help-text">Cart total shows products only. Shipping is calculated at checkout and saved with your order. <button type="button" style="border:0;background:transparent;color:#93c5fd;font-weight:800;cursor:pointer;" onclick="showPage('shipping-payment'); closeOverlays();">Shipping &amp; Payment</button></p>
   </div>
 </aside>
 
@@ -7527,7 +7527,7 @@ function renderCart() {
   const count = getCartCount();
   cartCount.textContent = count;
   cartCount.classList.toggle('show', count > 0);
-  if (cartDrawerTotal) cartDrawerTotal.textContent = formatMoney(getCartTotal());
+  if (cartDrawerTotal) cartDrawerTotal.textContent = formatMoney(getCartSubtotal());
   if (cartMinimumMessage) {
     const shouldShowMinimum = cart.length > 0 && !cartMeetsMinimumOrder();
     cartMinimumMessage.textContent = shouldShowMinimum ? getMinimumOrderMessage() : '';
