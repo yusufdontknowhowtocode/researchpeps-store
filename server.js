@@ -275,6 +275,13 @@ CREATE TABLE IF NOT EXISTS discount_codes (
   created_at TEXT NOT NULL,
   updated_at TEXT NOT NULL
 );
+
+CREATE TABLE IF NOT EXISTS product_stock (
+  option_code TEXT PRIMARY KEY,
+  product_name TEXT NOT NULL,
+  out_of_stock INTEGER NOT NULL DEFAULT 0,
+  updated_at TEXT NOT NULL
+);
 `);
 
 function ensureOrderColumn(name, definition) {
@@ -564,6 +571,36 @@ function publicShippingRates() {
       note: entry.note || ''
     }))
   };
+}
+
+
+function getProductStockMap() {
+  const rows = db.prepare('SELECT option_code, out_of_stock FROM product_stock').all();
+  return new Map(rows.map((row) => [String(row.option_code), !!row.out_of_stock]));
+}
+
+function isOptionOutOfStock(productName, optionCode) {
+  const row = db.prepare('SELECT out_of_stock FROM product_stock WHERE option_code = ?').get(String(optionCode || ''));
+  return !!(row && row.out_of_stock);
+}
+
+function publicProducts() {
+  const stockMap = getProductStockMap();
+  return products.map((product) => ({
+    ...product,
+    options: (product.options || []).map((option) => ({
+      ...option,
+      outOfStock: !!stockMap.get(String(option.code))
+    }))
+  }));
+}
+
+function findProductAndOption(productName, optionCode) {
+  const product = products.find((item) => item.name === productName);
+  if (!product) return null;
+  const option = (product.options || []).find((opt) => opt.code === optionCode);
+  if (!option) return null;
+  return { product, option };
 }
 
 // Product JSON stores the selected supplier/base catalog price.
@@ -929,6 +966,12 @@ function validateCartItems(items) {
       throw error;
     }
 
+    if (isOptionOutOfStock(product.name, option.code)) {
+      const error = new Error(`${product.name} ${option.spec} is currently out of stock.`);
+      error.status = 400;
+      throw error;
+    }
+
     const purchaseType = line.purchaseType === 'single' ? 'single' : 'kit';
     const vialQuantity = Math.max(1, Math.min(99, Number.parseInt(line.vialQuantity || 1, 10)));
     const quantity = Math.max(1, Math.min(99, Number.parseInt(line.quantity || 1, 10)));
@@ -1153,7 +1196,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/products', (req, res) => {
-  res.json({ products });
+  res.json({ products: publicProducts() });
 });
 
 app.get('/api/auth/config', (req, res) => {
@@ -1659,6 +1702,36 @@ app.delete('/api/admin/discount-codes/:code', requireAdmin, (req, res) => {
   if (!row) return res.status(404).json({ error: 'Discount code not found.' });
   db.prepare('UPDATE discount_codes SET is_active = 0, updated_at = ? WHERE code = ?').run(nowIso(), code);
   res.json({ code: publicDiscountCode(db.prepare('SELECT * FROM discount_codes WHERE code = ?').get(code)) });
+});
+
+app.get('/api/admin/stock', requireAdmin, (req, res) => {
+  res.json({ products: publicProducts() });
+});
+
+app.patch('/api/admin/stock', requireAdmin, (req, res) => {
+  const productName = String(req.body.productName || '').trim();
+  const optionCode = String(req.body.optionCode || '').trim();
+  const outOfStock = !!req.body.outOfStock;
+
+  if (!productName || !optionCode) {
+    return res.status(400).json({ error: 'Product and option are required.' });
+  }
+
+  const found = findProductAndOption(productName, optionCode);
+  if (!found) {
+    return res.status(404).json({ error: 'Product option not found.' });
+  }
+
+  db.prepare(`
+    INSERT INTO product_stock (option_code, product_name, out_of_stock, updated_at)
+    VALUES (?, ?, ?, ?)
+    ON CONFLICT(option_code) DO UPDATE SET
+      product_name = excluded.product_name,
+      out_of_stock = excluded.out_of_stock,
+      updated_at = excluded.updated_at
+  `).run(optionCode, productName, outOfStock ? 1 : 0, nowIso());
+
+  res.json({ product: publicProducts().find((product) => product.name === productName) });
 });
 
 app.post('/api/admin/test-email', requireAdmin, async (req, res, next) => {

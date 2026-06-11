@@ -1510,6 +1510,67 @@ body.age-locked .vial-rotor {
   line-height: 1.45;
 }
 .cart-minimum-message.show { display: block; }
+.btn:disabled,
+.btn.disabled {
+  opacity: .48;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: none !important;
+}
+.stock-badge {
+  display: inline-flex;
+  width: fit-content;
+  border: 1px solid rgba(248,113,113,.42);
+  border-radius: 999px;
+  background: rgba(248,113,113,.12);
+  color: #fecaca;
+  padding: 7px 10px;
+  font-size: 11px;
+  font-weight: 950;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+.admin-stock-manager {
+  margin-top: 30px;
+  padding-top: 26px;
+  border-top: 1px solid rgba(148,163,184,.16);
+}
+.admin-stock-manager h3 {
+  color: #fff;
+  font-family: var(--font-body);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  margin: 0 0 8px;
+}
+.admin-stock-toolbar {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 12px;
+  align-items: center;
+  margin-top: 16px;
+}
+.admin-stock-results {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+.admin-stock-card {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid rgba(148,163,184,.16);
+  border-radius: 18px;
+  background: rgba(255,255,255,.04);
+  padding: 14px;
+}
+.admin-stock-card strong { color: #fff; }
+.admin-stock-card small { display: block; color: var(--muted); line-height: 1.5; margin-top: 4px; }
+@media (max-width: 820px) {
+  .admin-stock-toolbar,
+  .admin-stock-card { grid-template-columns: 1fr; }
+}
 .cart-line-actions {
   display: flex;
   align-items: center;
@@ -3628,7 +3689,7 @@ body.age-locked .vial-rotor {
 
 
           <div class="actions">
-            <button class="btn primary" onclick="addCurrentProductToCart()">Save to Cart</button>
+            <button id="productDetailAddButton" class="btn primary" onclick="addCurrentProductToCart()">Save to Cart</button>
             <button class="btn" onclick="showPage('peptides')">View Catalog</button>
           </div>
         </div>
@@ -5832,10 +5893,11 @@ function formatOption(option) {
 
 function formatSizeOption(option, purchaseType) {
   const dose = String(option.spec).split('*')[0].trim();
+  const stockText = option && option.outOfStock ? ' — Out of stock' : '';
   if (purchaseType === 'single') {
-    return dose + ' single vial — ' + formatMoney(getSingleVialPrice(option)) + ' each';
+    return dose + ' single vial — ' + formatMoney(getSingleVialPrice(option)) + ' each' + stockText;
   }
-  return option.spec + ' — ' + formatMoney(getRaisedKitPrice(option));
+  return option.spec + ' — ' + formatMoney(getRaisedKitPrice(option)) + stockText;
 }
 
 function getOneVialPriceText(option) {
@@ -5844,6 +5906,52 @@ function getOneVialPriceText(option) {
 
 function getProductByName(productName) {
   return products.find(function(item) { return item.name === productName; });
+}
+
+function isOptionOutOfStock(product, option) {
+  return !!(option && option.outOfStock);
+}
+
+function productHasAvailableOptions(product) {
+  return Boolean(product && (product.options || []).some(function(option) { return !isOptionOutOfStock(product, option); }));
+}
+
+function getCartOutOfStockItem() {
+  return cart.find(function(item) {
+    const product = getCartProduct(item);
+    const option = getCartOption(item);
+    return product && option && isOptionOutOfStock(product, option);
+  });
+}
+
+function mergeLiveProductStock(liveProducts) {
+  if (!Array.isArray(liveProducts)) return;
+  liveProducts.forEach(function(liveProduct) {
+    const localProduct = getProductByName(liveProduct.name);
+    if (!localProduct || !Array.isArray(localProduct.options)) return;
+    (liveProduct.options || []).forEach(function(liveOption) {
+      const localOption = localProduct.options.find(function(option) { return option.code === liveOption.code; });
+      if (localOption) localOption.outOfStock = !!liveOption.outOfStock;
+    });
+  });
+}
+
+async function loadProductStockStatus() {
+  try {
+    const data = await apiRequest('/api/products', { method: 'GET' });
+    mergeLiveProductStock(data.products || []);
+  } catch (error) {
+    // Keep the embedded catalog if the backend is not reachable.
+  }
+}
+
+function showCartNotice(message) {
+  openCart();
+  const notice = document.getElementById('cartMinimumMessage');
+  if (notice) {
+    notice.textContent = message;
+    notice.classList.add('show');
+  }
 }
 
 function getSelectedOption(product) {
@@ -5881,7 +5989,9 @@ function getPurchaseLabel(product) {
 
 function getStartingPrice(product) {
   if (!product.options || product.options.length === 0) return "";
-  return formatMoney(getSingleVialPrice(product.options[0])) + " per single vial";
+  const available = product.options.find(function(option) { return !isOptionOutOfStock(product, option); });
+  if (!available) return "Out of stock";
+  return formatMoney(getSingleVialPrice(available)) + " per single vial";
 }
 
 function getSingleVialSavingsPercent() {
@@ -5889,6 +5999,7 @@ function getSingleVialSavingsPercent() {
 }
 
 function getSingleVialDisplay(option) {
+  if (option && option.outOfStock) return 'Out of stock';
   return formatMoney(getSingleVialPrice(option)) + " per vial";
 }
 
@@ -5998,7 +6109,7 @@ function renderOptionSelect(product, elementIdPrefix) {
       <label class="mini-label" for="${elementIdPrefix}SizeSelect">Vial strength</label>
       <select id="${elementIdPrefix}SizeSelect" class="variant-select" onclick="event.stopPropagation()" onchange="selectProductOption('${escapeForAttribute(product.name)}', this.value, '${elementIdPrefix}')">
         ${product.options.map(function(option) {
-          return `<option value="${option.code}" ${option.code === selected.code ? 'selected' : ''}>${formatSizeOption(option, purchaseType)}</option>`;
+          return `<option value="${option.code}" ${option.code === selected.code ? 'selected' : ''} ${isOptionOutOfStock(product, option) ? 'disabled' : ''}>${formatSizeOption(option, purchaseType)}</option>`;
         }).join('')}
       </select>
     </div>
@@ -6017,8 +6128,8 @@ function renderOptionSelect(product, elementIdPrefix) {
       >
     </div>
 
-    <div id="${elementIdPrefix}Price" class="product-price">${formatMoney(totalPrice)}</div>
-    <div id="${elementIdPrefix}Code" class="product-code">${getPurchaseLabel(product)} • ${purchaseType === 'single' ? formatMoney(getSingleVialPrice(selected)) + ' each' : formatMoney(kitPerVial) + ' per vial in kit'}</div>
+    <div id="${elementIdPrefix}Price" class="product-price">${isOptionOutOfStock(product, selected) ? 'Out of stock' : formatMoney(totalPrice)}</div>
+    <div id="${elementIdPrefix}Code" class="product-code">${isOptionOutOfStock(product, selected) ? 'This strength is currently unavailable.' : getPurchaseLabel(product) + ' • ' + (purchaseType === 'single' ? formatMoney(getSingleVialPrice(selected)) + ' each' : formatMoney(kitPerVial) + ' per vial in kit')}</div>
   `;
 }
 
@@ -6063,14 +6174,22 @@ function updateProductPriceDisplay(product, elementIdPrefix) {
   const doseEl = document.getElementById(elementIdPrefix + 'Dose');
   const qtyWrap = document.getElementById(elementIdPrefix + 'VialQtyWrap');
 
-  if (priceEl) priceEl.textContent = formatMoney(getDisplayPriceForProduct(product));
+  const outOfStock = isOptionOutOfStock(product, option);
+  const detailAddButton = document.getElementById('productDetailAddButton');
+
+  if (priceEl) priceEl.textContent = outOfStock ? 'Out of stock' : formatMoney(getDisplayPriceForProduct(product));
   if (codeEl) {
-    codeEl.textContent =
-      getPurchaseLabel(product) +
-      ' • ' +
-      (purchaseType === 'single'
-        ? formatMoney(getSingleVialPrice(option)) + ' each'
-        : formatMoney(kitPerVial) + ' per vial in kit');
+    codeEl.textContent = outOfStock
+      ? 'This strength is currently unavailable.'
+      : getPurchaseLabel(product) +
+        ' • ' +
+        (purchaseType === 'single'
+          ? formatMoney(getSingleVialPrice(option)) + ' each'
+          : formatMoney(kitPerVial) + ' per vial in kit');
+  }
+  if (detailAddButton && currentProduct && currentProduct.name === product.name) {
+    detailAddButton.disabled = outOfStock;
+    detailAddButton.textContent = outOfStock ? 'Out of Stock' : 'Save to Cart';
   }
   if (doseEl) doseEl.textContent = getDoseText(option);
   if (currentProduct && currentProduct.name === product.name) {
@@ -6085,8 +6204,8 @@ function updateProductPriceDisplay(product, elementIdPrefix) {
     if (pills) {
       pills.innerHTML = `
         <span class="variant-pill">${getPurchaseLabel(product)}</span>
-        <span class="variant-pill">${formatMoney(getDisplayPriceForProduct(product))}</span>
-        <span class="variant-pill">${purchaseType === 'single' ? formatMoney(getSingleVialPrice(option)) + ' each' : '10-vial kit'}</span>
+        <span class="variant-pill">${outOfStock ? 'Out of stock' : formatMoney(getDisplayPriceForProduct(product))}</span>
+        <span class="variant-pill">${outOfStock ? 'Unavailable' : (purchaseType === 'single' ? formatMoney(getSingleVialPrice(option)) + ' each' : '10-vial kit')}</span>
       `;
     }
   }
@@ -6097,7 +6216,8 @@ function openProduct(productName) {
   if (!product) return;
 
   currentProduct = product;
-  selectedOptions[product.name] = product.options && product.options[0] ? product.options[0].code : selectedOptions[product.name];
+  const firstAvailableOption = (product.options || []).find(function(option) { return !isOptionOutOfStock(product, option); }) || (product.options || [])[0];
+  selectedOptions[product.name] = firstAvailableOption ? firstAvailableOption.code : selectedOptions[product.name];
   selectedPurchaseTypes[product.name] = 'kit';
   selectedVialQuantities[product.name] = 1;
   currentOption = getSelectedOption(product);
@@ -6120,11 +6240,13 @@ function openProduct(productName) {
     ${renderOptionSelect(product, 'detailOption')}
     <div id="variantDetailPills" class="variant-detail-row">
       <span class="variant-pill">${getPurchaseLabel(product)}</span>
-      <span class="variant-pill">${formatMoney(getDisplayPriceForProduct(product))}</span>
-      <span class="variant-pill">${getSelectedPurchaseType(product) === 'single' ? formatMoney(getSingleVialPrice(currentOption)) + ' each' : '10-vial kit'}</span>
+      <span class="variant-pill">${isOptionOutOfStock(product, currentOption) ? 'Out of stock' : formatMoney(getDisplayPriceForProduct(product))}</span>
+      <span class="variant-pill">${isOptionOutOfStock(product, currentOption) ? 'Unavailable' : (getSelectedPurchaseType(product) === 'single' ? formatMoney(getSingleVialPrice(currentOption)) + ' each' : '10-vial kit')}</span>
     </div>
     <div class="bundle-savings-note">Best value: choose the 10-vial kit to save about ${getSingleVialSavingsPercent()}% compared with single-vial pricing.</div>
   `;
+
+  updateProductPriceDisplay(product, 'detailOption');
 
   closeOverlays();
   showPage('product-detail');
@@ -6285,14 +6407,15 @@ function renderCartThumbnail(product, option) {
 
 function renderCatalogSinglePricing(product, elementIdPrefix) {
   const selected = getSelectedOption(product);
+  const selectedOut = isOptionOutOfStock(product, selected);
   return `
     <select class="variant-select" onclick="event.stopPropagation()" onchange="selectCatalogSingleOption('${escapeForAttribute(product.name)}', this.value, '${elementIdPrefix}')">
       ${product.options.map(function(option) {
-        return `<option value="${option.code}" ${option.code === selected.code ? 'selected' : ''}>${String(option.spec).split('*')[0].trim()} single vial</option>`;
+        return `<option value="${option.code}" ${option.code === selected.code ? 'selected' : ''} ${isOptionOutOfStock(product, option) ? 'disabled' : ''}>${String(option.spec).split('*')[0].trim()} single vial${isOptionOutOfStock(product, option) ? ' — Out of stock' : ''}</option>`;
       }).join('')}
     </select>
     <div id="${elementIdPrefix}Price" class="product-price">${getSingleVialDisplay(selected)}</div>
-    <div id="${elementIdPrefix}Code" class="product-code">Single-vial price • 10-vial kit available on product page</div>
+    <div id="${elementIdPrefix}Code" class="product-code">${selectedOut ? 'Currently unavailable' : 'Single-vial price • 10-vial kit available on product page'}</div>
   `;
 }
 
@@ -6304,14 +6427,25 @@ function selectCatalogSingleOption(productName, optionCode, elementIdPrefix) {
   const priceEl = document.getElementById(elementIdPrefix + 'Price');
   const codeEl = document.getElementById(elementIdPrefix + 'Code');
   const doseEl = document.getElementById(elementIdPrefix + 'Dose');
+  const outOfStock = isOptionOutOfStock(product, option);
+  const addBtn = document.getElementById(elementIdPrefix + 'AddBtn');
   if (priceEl) priceEl.textContent = getSingleVialDisplay(option);
-  if (codeEl) codeEl.textContent = 'Single-vial price • 10-vial kit available on product page';
+  if (codeEl) codeEl.textContent = outOfStock ? 'Currently unavailable' : 'Single-vial price • 10-vial kit available on product page';
   if (doseEl) doseEl.textContent = getDoseText(option);
+  if (addBtn) {
+    addBtn.disabled = outOfStock;
+    addBtn.textContent = outOfStock ? 'Out of Stock' : 'Add 1 Vial';
+  }
 }
 
 function addSingleVialToCart(productName) {
   const product = getProductByName(productName);
   if (!product) return;
+  const option = getSelectedOption(product);
+  if (isOptionOutOfStock(product, option)) {
+    showCartNotice(product.name + ' ' + getDoseText(option) + ' is currently out of stock.');
+    return;
+  }
   selectedPurchaseTypes[product.name] = 'single';
   selectedVialQuantities[product.name] = 1;
   addProductToCart(product.name);
@@ -6327,7 +6461,7 @@ function renderProductCard(product, indexPrefix) {
         <p>${product.description}</p>
         ${renderCatalogSinglePricing(product, idPrefix)}
         <div class="product-card-actions">
-          <button class="btn primary catalog-cart-btn" onclick="event.stopPropagation(); addSingleVialToCart('${escapeForAttribute(product.name)}')">Add 1 Vial</button>
+          <button id="${idPrefix}AddBtn" class="btn primary catalog-cart-btn" onclick="event.stopPropagation(); addSingleVialToCart('${escapeForAttribute(product.name)}')" ${isOptionOutOfStock(product, getSelectedOption(product)) ? 'disabled' : ''}>${isOptionOutOfStock(product, getSelectedOption(product)) ? 'Out of Stock' : 'Add 1 Vial'}</button>
         </div>
       </div>
     </article>
@@ -7014,6 +7148,7 @@ function renderAccountPage() {
     setTimeout(function() {
       loadAdminOrders();
       loadAdminDiscountCodes();
+      loadAdminStock();
     }, 0);
   }
 }
@@ -7204,6 +7339,19 @@ function renderAdminDashboardShell() {
         </div>
       </div>
 
+      <div class="admin-stock-manager">
+        <h3>Product stock</h3>
+        <p class="lead">Mark a product strength out of stock. Customers will still see the product, but the out-of-stock option cannot be added to cart or checked out.</p>
+        <div class="admin-stock-toolbar">
+          <input id="adminStockSearch" class="admin-search-input" placeholder="Search product, code, or size" oninput="renderAdminStockResults()">
+          <button class="btn primary" onclick="loadAdminStock()">Refresh Stock</button>
+        </div>
+        <div id="adminStockMessage" class="auth-note"></div>
+        <div id="adminStockResults" class="admin-stock-results">
+          <div class="admin-empty">Loading stock controls...</div>
+        </div>
+      </div>
+
       <div id="adminDashboardMessage" class="auth-note"></div>
       <div id="adminOrdersResults" class="admin-results">
         <div class="admin-empty">Loading admin orders...</div>
@@ -7289,6 +7437,88 @@ async function deactivateAdminDiscountCode(code) {
     await loadAdminDiscountCodes();
   } catch (error) {
     if (message) message.textContent = error.message || 'Could not deactivate discount code.';
+  }
+}
+
+let adminStockProducts = [];
+
+function getAdminStockRows() {
+  return adminStockProducts.flatMap(function(product) {
+    return (product.options || []).map(function(option) {
+      return { product: product, option: option };
+    });
+  });
+}
+
+function renderAdminStockResults() {
+  const results = document.getElementById('adminStockResults');
+  if (!results) return;
+  const query = String(document.getElementById('adminStockSearch')?.value || '').trim().toLowerCase();
+  const rows = getAdminStockRows().filter(function(row) {
+    const searchText = [row.product.name, row.option.code, row.option.spec].join(' ').toLowerCase();
+    return !query || searchText.includes(query);
+  }).slice(0, 200);
+
+  if (!rows.length) {
+    results.innerHTML = '<div class="admin-empty">No products found.</div>';
+    return;
+  }
+
+  results.innerHTML = rows.map(function(row) {
+    const out = isOptionOutOfStock(row.product, row.option);
+    return `
+      <div class="admin-stock-card">
+        <div>
+          <strong>${escapeHtml(row.product.name)}</strong> ${out ? '<span class="stock-badge">Out of stock</span>' : ''}
+          <small>${escapeHtml(row.option.code)} • ${escapeHtml(row.option.spec)} • ${out ? 'Customers cannot add this option to cart.' : 'Available for customers.'}</small>
+        </div>
+        <button class="btn ${out ? '' : 'primary'}" onclick="updateAdminStock('${escapeForAttribute(row.product.name)}', '${escapeForAttribute(row.option.code)}', ${out ? 'false' : 'true'})">${out ? 'Mark In Stock' : 'Mark Out of Stock'}</button>
+      </div>
+    `;
+  }).join('');
+}
+
+async function loadAdminStock() {
+  const results = document.getElementById('adminStockResults');
+  const message = document.getElementById('adminStockMessage');
+  if (results) results.innerHTML = '<div class="admin-empty">Loading stock controls...</div>';
+  if (message) message.textContent = '';
+  try {
+    const data = await apiRequest('/api/admin/stock', { method: 'GET' });
+    adminStockProducts = data.products || [];
+    mergeLiveProductStock(adminStockProducts);
+    renderAdminStockResults();
+    renderPeptideCatalog();
+    renderCart();
+    if (currentProduct) updateProductPriceDisplay(currentProduct, 'detailOption');
+  } catch (error) {
+    adminStockProducts = [];
+    if (results) results.innerHTML = '<div class="admin-empty">Stock controls could not be loaded.</div>';
+    if (message) message.textContent = error.message || 'Stock controls could not be loaded.';
+  }
+}
+
+async function updateAdminStock(productName, optionCode, outOfStock) {
+  const message = document.getElementById('adminStockMessage');
+  if (message) message.textContent = 'Updating stock...';
+  try {
+    const data = await apiRequest('/api/admin/stock', {
+      method: 'PATCH',
+      body: JSON.stringify({ productName, optionCode, outOfStock })
+    });
+    if (data.product) {
+      adminStockProducts = adminStockProducts.map(function(product) {
+        return product.name === data.product.name ? data.product : product;
+      });
+      mergeLiveProductStock(adminStockProducts);
+    }
+    renderAdminStockResults();
+    renderPeptideCatalog();
+    renderCart();
+    if (currentProduct && currentProduct.name === productName) updateProductPriceDisplay(currentProduct, 'detailOption');
+    if (message) message.textContent = productName + ' ' + optionCode + (outOfStock ? ' marked out of stock.' : ' marked in stock.');
+  } catch (error) {
+    if (message) message.textContent = error.message || 'Could not update stock.';
   }
 }
 
@@ -7471,6 +7701,10 @@ function addProductToCart(productName) {
   if (!product) return;
 
   const option = getSelectedOption(product);
+  if (isOptionOutOfStock(product, option)) {
+    showCartNotice(product.name + ' ' + getDoseText(option) + ' is currently out of stock.');
+    return;
+  }
   const purchaseType = getSelectedPurchaseType(product);
   const vialQty = purchaseType === 'single' ? getSelectedVialQuantity(product) : 1;
   const cartKey = product.name + '|' + option.code + '|' + purchaseType + '|' + vialQty;
@@ -8201,6 +8435,14 @@ async function startCheckout() {
     return;
   }
 
+  const outOfStockCartItem = getCartOutOfStockItem();
+  if (outOfStockCartItem) {
+    const product = getCartProduct(outOfStockCartItem);
+    const option = getCartOption(outOfStockCartItem);
+    showCartNotice((product ? product.name : 'This product') + ' ' + (option ? getDoseText(option) : '') + ' is out of stock. Remove it from your cart before checkout.');
+    return;
+  }
+
   if (!cartMeetsMinimumOrder()) {
     openCart();
     renderCart();
@@ -8224,6 +8466,14 @@ async function placeOrder() {
   }
   if (cart.length === 0) {
     showMessage('checkoutMessage', 'Your cart is empty.');
+    return;
+  }
+
+  const outOfStockCartItem = getCartOutOfStockItem();
+  if (outOfStockCartItem) {
+    const product = getCartProduct(outOfStockCartItem);
+    const option = getCartOption(outOfStockCartItem);
+    showMessage('checkoutMessage', (product ? product.name : 'This product') + ' ' + (option ? getDoseText(option) : '') + ' is out of stock. Remove it from your cart before placing the order.');
     return;
   }
 
@@ -8296,6 +8546,7 @@ async function initializeLiveStorefront() {
   await loadAuthConfig();
   await loadPaymentOptions();
   await loadShippingRates();
+  await loadProductStockStatus();
   renderPeptideCatalog();
   renderCart();
   renderSearchResults();
