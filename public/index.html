@@ -3944,13 +3944,26 @@ body.age-locked .vial-rotor {
               <label for="checkoutPaymentMethod">Choose payment</label>
               <select id="checkoutPaymentMethod" onchange="renderCheckoutPage()">
                 <option value="stripe">Credit card (Visa / Mastercard)</option>
+                <option value="paypal">PayPal</option>
+                <option value="zelle">Zelle</option>
                 <option value="btc">Bitcoin (BTC) — save 5%</option>
                 <option value="sol">Solana (SOL) — save 5%</option>
                 <option value="usdc">USDC — save 5%</option>
               </select>
               <div class="payment-help-card">
                 <strong>Secure payment note</strong>
-                <p>Credit card orders redirect to a secure processor. Card numbers are never stored on this website. BTC, SOL, and USDC orders are manually verified after payment.</p>
+                <p>Credit card orders redirect to a secure processor. PayPal, Zelle, BTC, SOL, and USDC orders are manually verified after payment. Payment instructions are shown after checkout and emailed to the customer.</p>
+              </div>
+              <div id="manualPaymentBox" class="crypto-wallet-box" style="display:none;">
+                <strong id="manualPaymentTitle">Payment instructions</strong>
+                <p id="manualPaymentDetails"></p>
+                <code id="manualPaymentAccount"></code>
+                <button type="button" class="btn" onclick="copyManualPaymentAccount()">Copy payment info</button>
+                <div class="crypto-amount-box">
+                  <strong>Amount to send</strong>
+                  <code id="manualPaymentAmountDue">$0.00</code>
+                  <p id="manualPaymentNote">Place the order number in the note/memo when possible. Instructions will also be emailed after checkout.</p>
+                </div>
               </div>
               <div id="cryptoWalletBox" class="crypto-wallet-box" style="display:none;">
                 <strong id="cryptoWalletTitle">Crypto payment</strong>
@@ -4077,7 +4090,7 @@ body.age-locked .vial-rotor {
         </div>
 
         <div id="thankYouCryptoBox" class="crypto-confirm-box" style="display:none;"></div>
-        <p class="email-note">Order confirmation details have been saved to your account. You will receive updates by email when notifications are enabled.</p>
+        <p class="email-note">Order confirmation and any payment instructions have been saved to your account and emailed when email is configured.</p>
 
         <div class="actions">
           <button class="btn primary" onclick="viewLastOrder()">View Order</button>
@@ -8255,12 +8268,15 @@ function renderCheckoutPage() {
   if (codeDiscountLabel) codeDiscountLabel.textContent = appliedDiscountCode ? appliedDiscountCode + ' discount' : 'Code discount';
   total.textContent = formatMoney(getCartTotal());
   updateCryptoWalletBox();
+  updateManualPaymentBox();
 }
 
 function getPaymentMethodLabel(value) {
   if (value === 'btc') return 'Bitcoin (BTC)';
   if (value === 'sol') return 'Solana (SOL)';
   if (value === 'usdc') return 'USDC';
+  if (value === 'paypal') return 'PayPal';
+  if (value === 'zelle') return 'Zelle';
   if (value === 'stripe') return 'Credit card (Visa / Mastercard)';
   return 'Credit card';
 }
@@ -8356,6 +8372,7 @@ function placeOrder() {
    Keep cart UI local for speed, but prices/orders are recalculated on the server. */
 let backendAccount = null;
 let cryptoWallets = {};
+let manualPaymentMethods = {};
 let cryptoDiscountPercent = 5;
 let shippingRates = { defaultRate: 80, rates: [{ country: 'United States', code: 'US', rate: 15 }] };
 let appliedDiscountCode = '';
@@ -8363,6 +8380,7 @@ let appliedDiscountCodeData = null;
 let adminDiscountCodes = [];
 let lastCompletedOrder = null;
 let lastCryptoPayment = null;
+let lastManualPayment = null;
 let lastCryptoQuote = null;
 let currentCryptoQuote = null;
 let googleClientId = '';
@@ -8372,13 +8390,19 @@ function isCryptoMethod(value) {
   return ['btc', 'sol', 'usdc'].includes(String(value || '').toLowerCase());
 }
 
+function isManualPaymentMethod(value) {
+  return ['paypal', 'zelle'].includes(String(value || '').toLowerCase());
+}
+
 async function loadPaymentOptions() {
   try {
     const data = await apiRequest('/api/payment-options', { method: 'GET' });
     cryptoWallets = data.cryptoWallets || {};
+    manualPaymentMethods = data.manualPaymentMethods || {};
     cryptoDiscountPercent = Number(data.cryptoDiscountPercent || 5);
   } catch (error) {
     cryptoWallets = {};
+    manualPaymentMethods = {};
   }
 }
 
@@ -8473,9 +8497,46 @@ async function copyCryptoWalletAddress() {
   }
 }
 
-function renderThankYouPage(order, cryptoPayment, cryptoQuote) {
+function updateManualPaymentBox() {
+  const method = document.getElementById('checkoutPaymentMethod')?.value || 'stripe';
+  const box = document.getElementById('manualPaymentBox');
+  const title = document.getElementById('manualPaymentTitle');
+  const details = document.getElementById('manualPaymentDetails');
+  const account = document.getElementById('manualPaymentAccount');
+  const amount = document.getElementById('manualPaymentAmountDue');
+  const note = document.getElementById('manualPaymentNote');
+
+  if (!box || !title || !details || !account || !amount || !note) return;
+
+  if (!isManualPaymentMethod(method)) {
+    box.style.display = 'none';
+    return;
+  }
+
+  const payment = manualPaymentMethods[method] || {};
+  box.style.display = 'grid';
+  title.textContent = (payment.label || getPaymentMethodLabel(method)) + ' payment';
+  details.textContent = payment.instructions || 'Payment information will be emailed after checkout.';
+  account.textContent = payment.account || payment.phone || 'Payment information not set yet.';
+  amount.textContent = formatMoney(getCartTotal());
+  note.textContent = 'After placing the order, the payment instructions will be sent to your email. Include your order number in the note/memo when possible.';
+}
+
+async function copyManualPaymentAccount() {
+  const account = document.getElementById('manualPaymentAccount')?.textContent || '';
+  if (!account || account.includes('not set')) return;
+  try {
+    await navigator.clipboard.writeText(account);
+    showMessage('checkoutMessage', 'Payment information copied.');
+  } catch (error) {
+    showMessage('checkoutMessage', 'Copy failed. Highlight the payment information and copy it manually.');
+  }
+}
+
+function renderThankYouPage(order, cryptoPayment, cryptoQuote, manualPayment) {
   lastCompletedOrder = order || null;
   lastCryptoPayment = cryptoPayment || null;
+  lastManualPayment = manualPayment || null;
   lastCryptoQuote = cryptoQuote || null;
 
   const orderId = document.getElementById('thankYouOrderId');
@@ -8509,6 +8570,15 @@ function renderThankYouPage(order, cryptoPayment, cryptoQuote) {
         ${cryptoQuote ? `Quote expires: ${escapeHtml(new Date(cryptoQuote.expiresAt).toLocaleString())}. Network fees are separate.<br>` : ''}
         Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send us the transaction hash with your order number.
         <code>${escapeHtml(cryptoPayment.address)}</code>
+      `;
+    } else if (manualPayment) {
+      cryptoBox.style.display = 'block';
+      cryptoBox.innerHTML = `
+        <strong>${escapeHtml(manualPayment.label || getPaymentMethodLabel(order?.paymentMethod))} payment instructions</strong><br>
+        <strong>Amount to send:</strong> ${escapeHtml(formatMoney(order?.total || 0))}<br>
+        ${escapeHtml(manualPayment.instructions || 'Payment information was emailed to you.')}<br>
+        Include order number <strong>${escapeHtml(order.id)}</strong> in the note/memo when possible.
+        <code>${escapeHtml(manualPayment.account || manualPayment.phone || '')}</code>
       `;
     } else {
       cryptoBox.style.display = 'none';
@@ -8551,7 +8621,7 @@ async function handleCheckoutReturn(urlParams) {
   if (checkoutStatus === 'cancel') {
     window.history.replaceState({}, document.title, window.location.pathname);
     showPage('checkout');
-    showMessage('checkoutMessage', 'Card checkout was canceled. You can try again or choose crypto payment.');
+    showMessage('checkoutMessage', 'Card checkout was canceled. You can try again or choose another payment method.');
     return true;
   }
 
@@ -8906,7 +8976,7 @@ async function placeOrder() {
     renderCheckoutPage();
     renderAccountPage();
     updateAccountNav();
-    renderThankYouPage(data.order, data.cryptoPayment || null, data.cryptoQuote || null);
+    renderThankYouPage(data.order, data.cryptoPayment || null, data.cryptoQuote || null, data.manualPayment || null);
     showPage('thank-you');
   } catch (error) {
     showMessage('checkoutMessage', error.message);

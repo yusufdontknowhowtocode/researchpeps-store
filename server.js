@@ -34,6 +34,10 @@ const DEFAULT_BTC_PAYMENT_ADDRESS = '3QaBoxDHEWnuGy5emvYawoFCM5E5yMEvap';
 const DEFAULT_SOL_PAYMENT_ADDRESS = '7NVysM4pSWVq4ZYKnnCwz3fnaA1BgkCex6tARvv7vqBT';
 const DEFAULT_USDC_PAYMENT_ADDRESS = '3q2QjuTXc5S8MYo5YdD5ELuBz1ASv5YDcEvmQgw4V6n9';
 const DEFAULT_USDC_PAYMENT_NETWORK = 'Solana';
+const PAYPAL_PAYMENT_EMAIL = process.env.PAYPAL_PAYMENT_EMAIL || ORDER_NOTIFY_EMAIL || SMTP_USER || '';
+const PAYPAL_PAYMENT_NAME = process.env.PAYPAL_PAYMENT_NAME || 'ResearchPeps';
+const ZELLE_PAYMENT_PHONE = process.env.ZELLE_PAYMENT_PHONE || '';
+const ZELLE_PAYMENT_NAME = process.env.ZELLE_PAYMENT_NAME || 'ResearchPeps';
 const CRYPTO_QUOTE_CACHE_MS = 60 * 1000;
 const CRYPTO_QUOTE_EXPIRES_MINUTES = Number(process.env.CRYPTO_QUOTE_EXPIRES_MINUTES || 15);
 const CRYPTO_QUOTE_BUFFER = Number(process.env.CRYPTO_QUOTE_BUFFER || 0);
@@ -54,6 +58,27 @@ const CRYPTO_WALLETS = {
     label: `USDC (${process.env.USDC_PAYMENT_NETWORK || DEFAULT_USDC_PAYMENT_NETWORK})`,
     network: process.env.USDC_PAYMENT_NETWORK || DEFAULT_USDC_PAYMENT_NETWORK,
     address: process.env.USDC_PAYMENT_ADDRESS || DEFAULT_USDC_PAYMENT_ADDRESS
+  }
+};
+
+const MANUAL_PAYMENT_METHODS = {
+  paypal: {
+    method: 'paypal',
+    label: 'PayPal',
+    email: PAYPAL_PAYMENT_EMAIL,
+    account: PAYPAL_PAYMENT_EMAIL || 'ADD_PAYPAL_PAYMENT_EMAIL_IN_RENDER',
+    instructions:
+      `Send PayPal payment to ${PAYPAL_PAYMENT_EMAIL || 'the PayPal email configured by ResearchPeps'}. ` +
+      `Use Friends & Family only if appropriate for your account, and include your order number in the note/memo when possible.`
+  },
+  zelle: {
+    method: 'zelle',
+    label: 'Zelle',
+    phone: ZELLE_PAYMENT_PHONE,
+    account: ZELLE_PAYMENT_PHONE || 'ADD_ZELLE_PAYMENT_PHONE_IN_RENDER',
+    instructions:
+      `Send Zelle payment to ${ZELLE_PAYMENT_PHONE || 'the Zelle phone number configured by ResearchPeps'}. ` +
+      `Use recipient name ${ZELLE_PAYMENT_NAME}. Include your order number in the memo when possible.`
   }
 };
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
@@ -101,7 +126,7 @@ function emailsMatch(a, b) {
   return normalizeEmail(a) && normalizeEmail(a) === normalizeEmail(b);
 }
 
-async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
+async function sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment) {
   if (!mailTransporter) {
     console.log('Email not configured. Skipping order emails.');
     return { customerSent: false, ownerSent: false, skipped: 'smtp_not_configured' };
@@ -115,7 +140,9 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
   const discountHtml = discountAmount > 0 ? `<br><strong>Discount:</strong> -$${discountAmount.toFixed(2)}` : '';
   const paymentLines = cryptoPayment
     ? `\n\nCrypto payment:\n${cryptoPayment.label}\nNetwork: ${cryptoPayment.network}\nAddress: ${cryptoPayment.address}\nPut order number ${order.id} in the payment note/reference if possible. If not, send the transaction hash with the order number.`
-    : '';
+    : manualPayment
+      ? `\n\n${manualPayment.label} payment:\nSend payment to: ${manualPayment.account || manualPayment.phone}\n${manualPayment.instructions}\nAmount to send: $${Number(order.total || 0).toFixed(2)}`
+      : '';
 
   const customerText = `Thank you for your order.\n\nOrder number: ${order.id}\nStatus: ${order.status}\nPayment: ${order.paymentMethodLabel}\nSubtotal: $${Number(order.subtotal || 0).toFixed(2)}\nShipping: $${Number(order.shippingCharge || 0).toFixed(2)}${discountText}\nTotal: $${Number(order.total || 0).toFixed(2)}\n\nItems:\n${orderItemsText(order)}${paymentLines}\n\nResearch-use confirmation was accepted at checkout.`;
 
@@ -127,7 +154,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
     <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}${discountHtml}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
     <h3>Items</h3>
     <ul>${orderItemsHtml(order)}</ul>
-    ${cryptoPayment ? `<h3>Crypto payment</h3><p>Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.</p>${cryptoQuote ? `<p><strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p><p><strong>Quote expires:</strong> ${escapeHtml(cryptoQuote.expiresAt)}</p>` : ''}<p><strong>Address:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p><p>Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send the transaction hash with your order number.</p>` : ''}
+    ${cryptoPayment ? `<h3>Crypto payment</h3><p>Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.</p>${cryptoQuote ? `<p><strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p><p><strong>Quote expires:</strong> ${escapeHtml(cryptoQuote.expiresAt)}</p>` : ''}<p><strong>Address:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p><p>Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send the transaction hash with your order number.</p>` : manualPayment ? `<h3>${escapeHtml(manualPayment.label)} payment</h3><p><strong>Amount to send:</strong> $${Number(order.total || 0).toFixed(2)}</p><p><strong>Send payment to:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(manualPayment.account || manualPayment.phone)}</code></p><p>${escapeHtml(manualPayment.instructions)}</p><p>Include order number <strong>${escapeHtml(order.id)}</strong> in the note/memo when possible.</p>` : ''}
     <p>Research-use confirmation was accepted at checkout.</p>
   `;
 
@@ -145,7 +172,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
     <p>${escapeHtml(order.shipping.address)}<br>${escapeHtml(order.shipping.city)}, ${escapeHtml(order.shipping.state)} ${escapeHtml(order.shipping.zip)}<br>${escapeHtml(order.shipping.country)}</p>
     <h3>Items</h3>
     <ul>${orderItemsHtml(order)}</ul>
-    ${cryptoPayment ? `<h3>Crypto payment</h3><p>${escapeHtml(cryptoPayment.label)} on ${escapeHtml(cryptoPayment.network)}</p>${cryptoQuote ? `<p><strong>Amount due:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p>` : ''}<p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p>` : ''}
+    ${cryptoPayment ? `<h3>Crypto payment</h3><p>${escapeHtml(cryptoPayment.label)} on ${escapeHtml(cryptoPayment.network)}</p>${cryptoQuote ? `<p><strong>Amount due:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p>` : ''}<p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p>` : manualPayment ? `<h3>${escapeHtml(manualPayment.label)} payment</h3><p><strong>Amount due:</strong> $${Number(order.total || 0).toFixed(2)}</p><p style="word-break:break-all;"><code>${escapeHtml(manualPayment.account || manualPayment.phone)}</code></p>` : ''}
     <h3>Notes</h3>
     <p>${escapeHtml(order.notes || 'None')}</p>
   `;
@@ -190,8 +217,8 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote) {
   };
 }
 
-function sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote) {
-  sendOrderEmails(order, cryptoPayment, cryptoQuote).catch((error) => {
+function sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote, manualPayment) {
+  sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment).catch((error) => {
     console.error('Order email failed:', error.message);
   });
 }
@@ -664,10 +691,15 @@ function isCryptoPaymentMethod(method) {
   return ['btc', 'sol', 'usdc'].includes(String(method || '').toLowerCase());
 }
 
+function isManualPaymentMethod(method) {
+  return ['paypal', 'zelle'].includes(String(method || '').toLowerCase());
+}
+
 function normalizePaymentMethod(method) {
   const value = String(method || 'stripe').toLowerCase();
   if (value === 'stripe') return 'stripe';
   if (isCryptoPaymentMethod(value)) return value;
+  if (isManualPaymentMethod(value)) return value;
   return 'stripe';
 }
 
@@ -745,10 +777,28 @@ function getCryptoPayment(method, orderId) {
     label: wallet.label,
     network: wallet.network,
     address: wallet.address || 'ADD_THIS_WALLET_ADDRESS_IN_.ENV',
+    account: wallet.address || 'ADD_THIS_WALLET_ADDRESS_IN_.ENV',
     instructions:
       `Send ${wallet.label} payment on the ${wallet.network} network to the address shown. ` +
       `IMPORTANT: type order number ${orderId} in the payment note, memo, or reference field if your wallet/exchange allows it. ` +
       `If your wallet does not allow payment notes, send support the transaction hash with order number ${orderId}.`
+  };
+}
+
+function getManualPayment(method, orderId) {
+  const value = String(method || '').toLowerCase();
+  const payment = MANUAL_PAYMENT_METHODS[value];
+  if (!payment) return null;
+
+  return {
+    method: value,
+    label: payment.label,
+    email: payment.email || '',
+    phone: payment.phone || '',
+    account: payment.account || '',
+    instructions:
+      payment.instructions +
+      ` IMPORTANT: include order number ${orderId} in the payment note/memo when possible.`
   };
 }
 
@@ -921,6 +971,8 @@ function requireAdmin(req, res, next) {
 function getPaymentMethodLabel(method) {
   const value = String(method || '').toLowerCase();
   if (value === 'stripe') return 'Credit card';
+  if (value === 'paypal') return 'PayPal';
+  if (value === 'zelle') return 'Zelle';
   if (value === 'btc') return 'Bitcoin (BTC)';
   if (value === 'sol') return 'Solana (SOL)';
   if (value === 'usdc') return `USDC (${process.env.USDC_PAYMENT_NETWORK || 'Solana'})`;
@@ -1069,7 +1121,7 @@ function createOrderForUser(userId, body, statusOverride) {
   const timestamp = nowIso();
   const paymentMethod = normalizePaymentMethod(validated.paymentMethod);
   const totals = calculateOrderTotals(body.items, validated.shipping.country, paymentMethod, validated.discountCode);
-  const status = statusOverride || (isCryptoPaymentMethod(paymentMethod) ? `Awaiting ${getPaymentMethodLabel(paymentMethod)} Payment` : 'Order Submitted');
+  const status = statusOverride || ((isCryptoPaymentMethod(paymentMethod) || isManualPaymentMethod(paymentMethod)) ? `Awaiting ${getPaymentMethodLabel(paymentMethod)} Payment` : 'Order Submitted');
 
   const insertOrder = db.transaction(() => {
     db.prepare(`
@@ -1234,6 +1286,10 @@ app.get('/api/payment-options', (req, res) => {
       btc: getCryptoPayment('btc', 'YOUR_ORDER_NUMBER'),
       sol: getCryptoPayment('sol', 'YOUR_ORDER_NUMBER'),
       usdc: getCryptoPayment('usdc', 'YOUR_ORDER_NUMBER')
+    },
+    manualPaymentMethods: {
+      paypal: getManualPayment('paypal', 'YOUR_ORDER_NUMBER'),
+      zelle: getManualPayment('zelle', 'YOUR_ORDER_NUMBER')
     }
   });
 });
@@ -1514,22 +1570,25 @@ app.post('/api/orders', requireAuth, async (req, res, next) => {
 
     if (req.body.paymentMethod === 'stripe') {
       return res.status(400).json({
-        error: 'Use credit card checkout for card payments, or choose BTC, SOL, or USDC for crypto.'
+        error: 'Use credit card checkout for card payments, or choose PayPal, Zelle, BTC, SOL, or USDC for manual payment.'
       });
     }
 
     const order = createOrderForUser(req.session.userId, req.body);
     const cryptoPayment = getCryptoPayment(order.paymentMethod, order.id);
+    const manualPayment = getManualPayment(order.paymentMethod, order.id);
     const cryptoQuote = await attachCryptoQuoteToOrder(order, cryptoPayment);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
-    sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote);
+    sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote, manualPayment);
 
     res.status(201).json({
       order,
       account: publicUser(user),
       cryptoPayment,
+      manualPayment,
       cryptoQuote,
-      cryptoInstructions: cryptoPayment ? cryptoPayment.instructions : null
+      cryptoInstructions: cryptoPayment ? cryptoPayment.instructions : null,
+      manualInstructions: manualPayment ? manualPayment.instructions : null
     });
   } catch (error) {
     next(error);
