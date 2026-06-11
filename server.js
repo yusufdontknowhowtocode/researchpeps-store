@@ -1908,9 +1908,26 @@ app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {
 
   res.json({ order: publicOrder(db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id)) });
 });
-app.get('/research-supplies', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'research-supplies.html'));
+
+const catalogRoutes = [
+  '/catalog',
+  '/peptides',
+  '/shipping-payment',
+  '/account',
+  '/checkout',
+  '/thank-you',
+  '/admin',
+  '/research-supplies'
+];
+
+app.get(catalogRoutes, (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'catalog.html'));
 });
+
+app.get('/product/:slug', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'catalog.html'));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('*', (req, res) => {
