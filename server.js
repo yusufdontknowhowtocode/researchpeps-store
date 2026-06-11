@@ -41,7 +41,8 @@ const ZELLE_PAYMENT_NAME = process.env.ZELLE_PAYMENT_NAME || 'ResearchPeps';
 const CRYPTO_QUOTE_CACHE_MS = 60 * 1000;
 const CRYPTO_QUOTE_EXPIRES_MINUTES = Number(process.env.CRYPTO_QUOTE_EXPIRES_MINUTES || 15);
 const CRYPTO_QUOTE_BUFFER = Number(process.env.CRYPTO_QUOTE_BUFFER || 0);
-const CRYPTO_DISCOUNT_RATE = Number(process.env.CRYPTO_DISCOUNT_RATE || 0.05);
+const CRYPTO_DISCOUNT_RATE = Number(process.env.CRYPTO_DISCOUNT_RATE || 0.10);
+const MANUAL_PAYMENT_DISCOUNT_RATE = Number(process.env.MANUAL_PAYMENT_DISCOUNT_RATE || 0.05);
 let cryptoRateCache = { fetchedAt: 0, rates: null };
 const CRYPTO_WALLETS = {
   btc: {
@@ -69,7 +70,7 @@ const MANUAL_PAYMENT_METHODS = {
     account: PAYPAL_PAYMENT_EMAIL || 'ADD_PAYPAL_PAYMENT_EMAIL_IN_RENDER',
     instructions:
       `Send PayPal payment to ${PAYPAL_PAYMENT_EMAIL || 'the PayPal email configured by ResearchPeps'}. ` +
-      `Use Friends & Family only if appropriate for your account, and include your order number in the note/memo when possible.`
+      `Use only your order number in the PayPal note/memo. Do not include product names.`
   },
   zelle: {
     method: 'zelle',
@@ -78,7 +79,7 @@ const MANUAL_PAYMENT_METHODS = {
     account: ZELLE_PAYMENT_PHONE || 'ADD_ZELLE_PAYMENT_PHONE_IN_RENDER',
     instructions:
       `Send Zelle payment to ${ZELLE_PAYMENT_PHONE || 'the Zelle phone number configured by ResearchPeps'}. ` +
-      `Use recipient name ${ZELLE_PAYMENT_NAME}. Include your order number in the memo when possible.`
+      `Use recipient name ${ZELLE_PAYMENT_NAME}. Use only your order number in the Zelle memo. Do not include product names.`
   }
 };
 const ADMIN_EMAILS = (process.env.ADMIN_EMAILS || '')
@@ -139,7 +140,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment)
   const discountText = discountAmount > 0 ? `\nDiscount: -$${discountAmount.toFixed(2)}` : '';
   const discountHtml = discountAmount > 0 ? `<br><strong>Discount:</strong> -$${discountAmount.toFixed(2)}` : '';
   const paymentLines = cryptoPayment
-    ? `\n\nCrypto payment:\n${cryptoPayment.label}\nNetwork: ${cryptoPayment.network}\nAddress: ${cryptoPayment.address}\nPut order number ${order.id} in the payment note/reference if possible. If not, send the transaction hash with the order number.`
+    ? `\n\nCrypto payment:\n${cryptoPayment.label}\nNetwork: ${cryptoPayment.network}\nAddress: ${cryptoPayment.address}\nUse only order number ${order.id} in the payment note/reference if possible. Do not include product names. If not, send the transaction hash with the order number.`
     : manualPayment
       ? `\n\n${manualPayment.label} payment:\nSend payment to: ${manualPayment.account || manualPayment.phone}\n${manualPayment.instructions}\nAmount to send: $${Number(order.total || 0).toFixed(2)}`
       : '';
@@ -154,7 +155,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment)
     <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}${discountHtml}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
     <h3>Items</h3>
     <ul>${orderItemsHtml(order)}</ul>
-    ${cryptoPayment ? `<h3>Crypto payment</h3><p>Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.</p>${cryptoQuote ? `<p><strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p><p><strong>Quote expires:</strong> ${escapeHtml(cryptoQuote.expiresAt)}</p>` : ''}<p><strong>Address:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p><p>Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send the transaction hash with your order number.</p>` : manualPayment ? `<h3>${escapeHtml(manualPayment.label)} payment</h3><p><strong>Amount to send:</strong> $${Number(order.total || 0).toFixed(2)}</p><p><strong>Send payment to:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(manualPayment.account || manualPayment.phone)}</code></p><p>${escapeHtml(manualPayment.instructions)}</p><p>Include order number <strong>${escapeHtml(order.id)}</strong> in the note/memo when possible.</p>` : ''}
+    ${cryptoPayment ? `<h3>Crypto payment</h3><p>Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.</p>${cryptoQuote ? `<p><strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p><p><strong>Quote expires:</strong> ${escapeHtml(cryptoQuote.expiresAt)}</p>` : ''}<p><strong>Address:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p><p>Use only order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. Do not include product names. If not, send the transaction hash with your order number.</p>` : manualPayment ? `<h3>${escapeHtml(manualPayment.label)} payment</h3><p><strong>Amount to send:</strong> $${Number(order.total || 0).toFixed(2)}</p><p><strong>Send payment to:</strong></p><p style="word-break:break-all;"><code>${escapeHtml(manualPayment.account || manualPayment.phone)}</code></p><p>${escapeHtml(manualPayment.instructions)}</p><p>Use only order number <strong>${escapeHtml(order.id)}</strong> in the note/memo. Do not include product names.</p>` : ''}
     <p>Research-use confirmation was accepted at checkout.</p>
   `;
 
@@ -710,6 +711,13 @@ function getCryptoDiscountCents(subtotalCents, paymentMethod) {
   return Math.round(subtotal * CRYPTO_DISCOUNT_RATE);
 }
 
+function getManualPaymentDiscountCents(subtotalCents, paymentMethod) {
+  if (!isManualPaymentMethod(paymentMethod)) return 0;
+  const subtotal = Number(subtotalCents || 0);
+  if (!Number.isFinite(subtotal) || subtotal <= 0) return 0;
+  return Math.round(subtotal * MANUAL_PAYMENT_DISCOUNT_RATE);
+}
+
 function getCryptoDiscountPercentLabel() {
   return `${Math.round(CRYPTO_DISCOUNT_RATE * 100)}%`;
 }
@@ -780,7 +788,7 @@ function getCryptoPayment(method, orderId) {
     account: wallet.address || 'ADD_THIS_WALLET_ADDRESS_IN_.ENV',
     instructions:
       `Send ${wallet.label} payment on the ${wallet.network} network to the address shown. ` +
-      `IMPORTANT: type order number ${orderId} in the payment note, memo, or reference field if your wallet/exchange allows it. ` +
+      `IMPORTANT: use only order number ${orderId} in the payment note, memo, or reference field if your wallet/exchange allows it. Do not include product names. ` +
       `If your wallet does not allow payment notes, send support the transaction hash with order number ${orderId}.`
   };
 }
@@ -798,7 +806,7 @@ function getManualPayment(method, orderId) {
     account: payment.account || '',
     instructions:
       payment.instructions +
-      ` IMPORTANT: include order number ${orderId} in the payment note/memo when possible.`
+      ` IMPORTANT: use only order number ${orderId} in the payment note/memo. Do not include product names.`
   };
 }
 
@@ -876,7 +884,7 @@ async function attachCryptoQuoteToOrder(order, cryptoPayment) {
   if (!cryptoPayment || !isCryptoPaymentMethod(order.paymentMethod)) return null;
   const cryptoQuote = await getCryptoQuote(order.paymentMethod, order.total);
   const quoteNote =
-    `Crypto amount due: ${cryptoQuote.amount} ${cryptoQuote.symbol}. ` +
+    `Crypto amount due after ${getCryptoDiscountPercentLabel()} discount: ${cryptoQuote.amount} ${cryptoQuote.symbol}. ` +
     `USD total: $${Number(order.total || 0).toFixed(2)}. ` +
     `Quote expires: ${cryptoQuote.expiresAt}.`;
   const updatedNotes = [order.notes || '', quoteNote].filter(Boolean).join('\n');
@@ -1059,11 +1067,12 @@ function calculateOrderTotals(items, shippingCountry, paymentMethod, discountCod
   const normalizedPaymentMethod = normalizePaymentMethod(paymentMethod);
   const discountCodeRow = getDiscountCodeForCheckout(discountCode);
   const cryptoDiscountCents = getCryptoDiscountCents(subtotalCents, normalizedPaymentMethod);
+  const manualPaymentDiscountCents = getManualPaymentDiscountCents(subtotalCents, normalizedPaymentMethod);
   const codeDiscountCents = getDiscountCodeDiscountCents(subtotalCents, discountCodeRow);
-  const discountCents = Math.min(subtotalCents, cryptoDiscountCents + codeDiscountCents);
+  const discountCents = Math.min(subtotalCents, cryptoDiscountCents + manualPaymentDiscountCents + codeDiscountCents);
   const totalCents = Math.max(0, subtotalCents + taxCents + shippingCents - discountCents);
 
-  return { items: validatedItems, subtotalCents, taxCents, shippingCents, discountCents, cryptoDiscountCents, codeDiscountCents, discountCode: discountCodeRow ? discountCodeRow.code : '', discountPercent: discountCodeRow ? Number(discountCodeRow.percent_off || 0) : 0, totalCents };
+  return { items: validatedItems, subtotalCents, taxCents, shippingCents, discountCents, cryptoDiscountCents, manualPaymentDiscountCents, codeDiscountCents, discountCode: discountCodeRow ? discountCodeRow.code : '', discountPercent: discountCodeRow ? Number(discountCodeRow.percent_off || 0) : 0, totalCents };
 }
 
 function validateCheckoutPayload(body) {
@@ -1282,6 +1291,7 @@ app.get('/api/session', (req, res) => {
 app.get('/api/payment-options', (req, res) => {
   res.json({
     cryptoDiscountPercent: CRYPTO_DISCOUNT_RATE * 100,
+    manualPaymentDiscountPercent: MANUAL_PAYMENT_DISCOUNT_RATE * 100,
     cryptoWallets: {
       btc: getCryptoPayment('btc', 'YOUR_ORDER_NUMBER'),
       sol: getCryptoPayment('sol', 'YOUR_ORDER_NUMBER'),

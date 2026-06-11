@@ -1946,6 +1946,69 @@ body.age-locked .vial-rotor {
   line-height: 1.65;
   font-size: 13.5px;
 }
+
+.payment-method-grid {
+  display: grid;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.payment-method-row {
+  width: 100%;
+  border: 1px solid rgba(148,163,184,.24);
+  background: rgba(15,23,42,.58);
+  color: #f8fafc;
+  border-radius: 18px;
+  padding: 16px 18px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: .18s ease;
+}
+
+.payment-method-row:hover {
+  border-color: rgba(96,165,250,.55);
+  background: rgba(30,64,175,.20);
+}
+
+.payment-method-row.active {
+  border-color: rgba(96,165,250,.95);
+  background: rgba(37,99,235,.22);
+  box-shadow: 0 0 0 4px rgba(37,99,235,.14);
+}
+
+.payment-method-main {
+  display: grid;
+  gap: 4px;
+}
+
+.payment-method-name {
+  font-size: 16px;
+  font-weight: 950;
+  letter-spacing: -.02em;
+}
+
+.payment-method-sub {
+  color: rgba(203,213,225,.78);
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.45;
+}
+
+.payment-method-badge {
+  flex: 0 0 auto;
+  border: 1px solid rgba(214,182,106,.35);
+  background: rgba(214,182,106,.10);
+  color: #f5d988;
+  border-radius: 999px;
+  padding: 7px 10px;
+  font-size: 12px;
+  font-weight: 950;
+  white-space: nowrap;
+}
 .checkout-confirm-section {
   border-color: rgba(214,182,106,.28);
   background: rgba(214,182,106,.08);
@@ -3937,22 +4000,64 @@ body.age-locked .vial-rotor {
               <span>02</span>
               <div>
                 <strong>Payment method</strong>
-                <small>Crypto receives an automatic 5% discount.</small>
+                <small>Crypto saves 10%. PayPal and Zelle save 5%.</small>
               </div>
             </div>
             <div class="form-field full">
-              <label for="checkoutPaymentMethod">Choose payment</label>
-              <select id="checkoutPaymentMethod" onchange="renderCheckoutPage()">
-                <option value="stripe">Credit card (Visa / Mastercard)</option>
-                <option value="paypal">PayPal</option>
-                <option value="zelle">Zelle</option>
-                <option value="btc">Bitcoin (BTC) — save 5%</option>
-                <option value="sol">Solana (SOL) — save 5%</option>
-                <option value="usdc">USDC — save 5%</option>
-              </select>
+              <label>Choose payment</label>
+              <input id="checkoutPaymentMethod" type="hidden" value="stripe">
+              <div class="payment-method-grid" role="radiogroup" aria-label="Choose payment method">
+                <button type="button" class="payment-method-row active" data-payment-method="stripe" onclick="selectPaymentMethod('stripe')" role="radio" aria-checked="true">
+                  <span class="payment-method-main">
+                    <span class="payment-method-name">Credit card</span>
+                    <span class="payment-method-sub">Visa / Mastercard through secure checkout</span>
+                  </span>
+                  <span class="payment-method-badge">No discount</span>
+                </button>
+
+                <button type="button" class="payment-method-row" data-payment-method="paypal" onclick="selectPaymentMethod('paypal')" role="radio" aria-checked="false">
+                  <span class="payment-method-main">
+                    <span class="payment-method-name">PayPal</span>
+                    <span class="payment-method-sub">Manual payment after order confirmation</span>
+                  </span>
+                  <span class="payment-method-badge">Save 5%</span>
+                </button>
+
+                <button type="button" class="payment-method-row" data-payment-method="zelle" onclick="selectPaymentMethod('zelle')" role="radio" aria-checked="false">
+                  <span class="payment-method-main">
+                    <span class="payment-method-name">Zelle</span>
+                    <span class="payment-method-sub">Phone-number payment after order confirmation</span>
+                  </span>
+                  <span class="payment-method-badge">Save 5%</span>
+                </button>
+
+                <button type="button" class="payment-method-row" data-payment-method="btc" onclick="selectPaymentMethod('btc')" role="radio" aria-checked="false">
+                  <span class="payment-method-main">
+                    <span class="payment-method-name">Bitcoin</span>
+                    <span class="payment-method-sub">BTC manual crypto payment</span>
+                  </span>
+                  <span class="payment-method-badge">Save 10%</span>
+                </button>
+
+                <button type="button" class="payment-method-row" data-payment-method="sol" onclick="selectPaymentMethod('sol')" role="radio" aria-checked="false">
+                  <span class="payment-method-main">
+                    <span class="payment-method-name">Solana</span>
+                    <span class="payment-method-sub">SOL manual crypto payment</span>
+                  </span>
+                  <span class="payment-method-badge">Save 10%</span>
+                </button>
+
+                <button type="button" class="payment-method-row" data-payment-method="usdc" onclick="selectPaymentMethod('usdc')" role="radio" aria-checked="false">
+                  <span class="payment-method-main">
+                    <span class="payment-method-name">USDC</span>
+                    <span class="payment-method-sub">USDC manual crypto payment</span>
+                  </span>
+                  <span class="payment-method-badge">Save 10%</span>
+                </button>
+              </div>
               <div class="payment-help-card">
                 <strong>Secure payment note</strong>
-                <p>Credit card orders redirect to a secure processor. PayPal, Zelle, BTC, SOL, and USDC orders are manually verified after payment. Payment instructions are shown after checkout and emailed to the customer.</p>
+                <p>Credit card orders redirect to a secure processor. PayPal, Zelle, BTC, SOL, and USDC orders are manually verified after payment. Crypto receives 10% off; PayPal and Zelle receive 5% off. Payment instructions are shown after checkout and emailed to the customer.</p>
               </div>
               <div id="manualPaymentBox" class="crypto-wallet-box" style="display:none;">
                 <strong id="manualPaymentTitle">Payment instructions</strong>
@@ -3962,7 +4067,7 @@ body.age-locked .vial-rotor {
                 <div class="crypto-amount-box">
                   <strong>Amount to send</strong>
                   <code id="manualPaymentAmountDue">$0.00</code>
-                  <p id="manualPaymentNote">Place the order number in the note/memo when possible. Instructions will also be emailed after checkout.</p>
+                  <p id="manualPaymentNote">Use only your order number in the note/memo. Do not include product names. Instructions will also be emailed after checkout.</p>
                 </div>
               </div>
               <div id="cryptoWalletBox" class="crypto-wallet-box" style="display:none;">
@@ -3973,7 +4078,7 @@ body.age-locked .vial-rotor {
                 <div class="crypto-amount-box">
                   <strong>Amount to send</strong>
                   <code id="cryptoAmountDue">Select crypto to calculate amount.</code>
-                  <p id="cryptoQuoteNote">Crypto quote includes the 5% discount and updates from the current market rate.</p>
+                  <p id="cryptoQuoteNote">Crypto quote includes the 10% discount and updates from the current market rate.</p>
                 </div>
               </div>
               <div class="discount-code-card">
@@ -4059,7 +4164,7 @@ body.age-locked .vial-rotor {
           <div class="summary-line"><span>Subtotal</span><span id="checkoutSubtotal">$0.00</span></div>
           <div id="checkoutMinimumRow" class="summary-line" style="display:none;"><span>Minimum order</span><span id="checkoutMinimumRemaining">$0.00 more needed</span></div>
           <div class="summary-line"><span>Shipping</span><span id="checkoutShipping">$0.00</span></div>
-          <div id="checkoutCryptoDiscountRow" class="summary-line discount-line" style="display:none;"><span>Crypto discount</span><span id="checkoutCryptoDiscount">-$0.00</span></div>
+          <div id="checkoutCryptoDiscountRow" class="summary-line discount-line" style="display:none;"><span>Payment discount</span><span id="checkoutCryptoDiscount">-$0.00</span></div>
           <div id="checkoutCodeDiscountRow" class="summary-line discount-line" style="display:none;"><span id="checkoutCodeDiscountLabel">Code discount</span><span id="checkoutCodeDiscount">-$0.00</span></div>
           <div class="summary-total"><span>Total</span><span id="checkoutTotal">$0.00</span></div>
           <p class="auth-note">Orders require a $50 minimum subtotal before shipping. Orders are placed after the customer accepts the research-use-only confirmation. Credit card redirects to secure checkout; BTC, SOL, and USDC receive 5% off and are saved as awaiting crypto payment.</p>
@@ -7137,6 +7242,22 @@ function getCurrentPaymentMethod() {
   return String(document.getElementById('checkoutPaymentMethod')?.value || 'stripe').toLowerCase();
 }
 
+function syncPaymentMethodRows() {
+  const selected = getCurrentPaymentMethod();
+  document.querySelectorAll('.payment-method-row').forEach(function(row) {
+    const isActive = row.dataset.paymentMethod === selected;
+    row.classList.toggle('active', isActive);
+    row.setAttribute('aria-checked', isActive ? 'true' : 'false');
+  });
+}
+
+function selectPaymentMethod(method) {
+  const input = document.getElementById('checkoutPaymentMethod');
+  if (input) input.value = String(method || 'stripe').toLowerCase();
+  syncPaymentMethodRows();
+  renderCheckoutPage();
+}
+
 function normalizeDiscountInput(value) {
   return String(value || '').trim().toUpperCase();
 }
@@ -7146,7 +7267,10 @@ function getAppliedDiscountPercent() {
 }
 
 function getCryptoDiscountAmount() {
-  return isCryptoMethod(getCurrentPaymentMethod()) ? getCartSubtotal() * 0.05 : 0;
+  const method = getCurrentPaymentMethod();
+  if (isCryptoMethod(method)) return getCartSubtotal() * 0.10;
+  if (isManualPaymentMethod(method)) return getCartSubtotal() * 0.05;
+  return 0;
 }
 
 function getCodeDiscountAmount() {
@@ -8267,6 +8391,7 @@ function renderCheckoutPage() {
   if (codeDiscountEl) codeDiscountEl.textContent = '-' + formatMoney(codeDiscount);
   if (codeDiscountLabel) codeDiscountLabel.textContent = appliedDiscountCode ? appliedDiscountCode + ' discount' : 'Code discount';
   total.textContent = formatMoney(getCartTotal());
+  syncPaymentMethodRows();
   updateCryptoWalletBox();
   updateManualPaymentBox();
 }
@@ -8454,7 +8579,7 @@ async function loadCryptoQuote(method) {
 
     if (currentCryptoQuote && note) {
       const expires = new Date(currentCryptoQuote.expiresAt).toLocaleTimeString();
-      note.textContent = '5% crypto discount applied. Send this amount before ' + expires + '. Network fees are paid separately by the customer.';
+      note.textContent = '10% crypto discount applied. Send this amount before ' + expires + '. Network fees are paid separately by the customer.';
     }
   } catch (error) {
     currentCryptoQuote = null;
@@ -8519,7 +8644,7 @@ function updateManualPaymentBox() {
   details.textContent = payment.instructions || 'Payment information will be emailed after checkout.';
   account.textContent = payment.account || payment.phone || 'Payment information not set yet.';
   amount.textContent = formatMoney(getCartTotal());
-  note.textContent = 'After placing the order, the payment instructions will be sent to your email. Include your order number in the note/memo when possible.';
+  note.textContent = 'After placing the order, the payment instructions will be sent to your email. Use only your order number in the note/memo. Do not include product names.';
 }
 
 async function copyManualPaymentAccount() {
@@ -8568,7 +8693,7 @@ function renderThankYouPage(order, cryptoPayment, cryptoQuote, manualPayment) {
         ${cryptoQuote ? `<strong>Amount to send:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}<br>` : ''}
         Send ${escapeHtml(cryptoPayment.label)} on the ${escapeHtml(cryptoPayment.network)} network.<br>
         ${cryptoQuote ? `Quote expires: ${escapeHtml(new Date(cryptoQuote.expiresAt).toLocaleString())}. Network fees are separate.<br>` : ''}
-        Type order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. If not, send us the transaction hash with your order number.
+        Use only order number <strong>${escapeHtml(order.id)}</strong> in the payment note/reference if your wallet allows it. Do not include product names. If not, send us the transaction hash with your order number.
         <code>${escapeHtml(cryptoPayment.address)}</code>
       `;
     } else if (manualPayment) {
@@ -8577,7 +8702,7 @@ function renderThankYouPage(order, cryptoPayment, cryptoQuote, manualPayment) {
         <strong>${escapeHtml(manualPayment.label || getPaymentMethodLabel(order?.paymentMethod))} payment instructions</strong><br>
         <strong>Amount to send:</strong> ${escapeHtml(formatMoney(order?.total || 0))}<br>
         ${escapeHtml(manualPayment.instructions || 'Payment information was emailed to you.')}<br>
-        Include order number <strong>${escapeHtml(order.id)}</strong> in the note/memo when possible.
+        Use only order number <strong>${escapeHtml(order.id)}</strong> in the note/memo. Do not include product names.
         <code>${escapeHtml(manualPayment.account || manualPayment.phone || '')}</code>
       `;
     } else {
