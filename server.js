@@ -1908,7 +1908,9 @@ app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {
 
   res.json({ order: publicOrder(db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id)) });
 });
-
+app.get('/research-supplies', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'research-supplies.html'));
+});
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.get('*', (req, res) => {
