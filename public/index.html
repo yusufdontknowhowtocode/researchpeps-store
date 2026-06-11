@@ -10,15 +10,6 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-<!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=AW-18227583658"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'AW-18227583658');
-</script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -754,6 +745,11 @@ h1 {
 }
 .product-card,
 .catalog-card { cursor: pointer; }
+
+.category-card { cursor: pointer; }
+.category-pic span { font-size: 54px; }
+.category-card .card-text p { min-height: 80px; }
+
 .pic {
   min-height: 190px;
   display: grid;
@@ -3526,7 +3522,7 @@ body.age-locked .vial-rotor {
         <circle cx="11" cy="11" r="7"></circle>
         <path d="M20 20l-3.5-3.5"></path>
       </svg>
-      <input id="productSearch" type="search" placeholder="Search peptides, e.g. semaglutide, tirzepatide, BPC..." oninput="renderSearchResults()">
+      <input id="productSearch" type="search" placeholder="Search catalog items..." oninput="renderSearchResults()">
     </div>
     <div id="searchResults" class="search-results"></div>
   </div>
@@ -3553,14 +3549,14 @@ body.age-locked .vial-rotor {
     <div class="container hero">
       <div class="hero-grid">
         <div>
-          <p class="kicker">Premium peptide catalog</p>
-          <h1>Research grade peptides.</h1>
+          <p class="kicker">Research materials</p>
+          <h1>Lab-focused categories.</h1>
           <h1>Clear value.</h1>
           <h1>Trusted standards.</h1>
-          <p class="lead">Shop the highest quality research compounds with below market rates.</p>
+          <p class="lead">Browse research-focused categories for analytical, laboratory, and quality-control use.</p>
           <div class="actions">
-            <button class="btn primary" onclick="showPage('peptides')">View Peptides</button>
-            <button class="btn" onclick="showHomeSection('featured-peptides')">Featured Peptides</button>
+            <button class="btn primary" onclick="showHomeSection('featured-peptides')">View Categories</button>
+            <button class="btn" onclick="showHomeSection('faq')">Learn More</button>
           </div>
         </div>
         <div class="hero-art" id="heroVialScene">
@@ -3599,9 +3595,9 @@ body.age-locked .vial-rotor {
 
     <div id="featured-peptides" class="container peptide-home-section">
       <div class="catalog-head">
-        <p class="kicker">Peptide catalog</p>
-        <h2>Our Most Popular Compounds.</h2>
-        <p class="lead"></p>
+        <p class="kicker">Research categories</p>
+        <h2>Explore research categories.</h2>
+        <p class="lead">General category browsing for laboratory and analytical research buyers.</p>
       </div>
 
       <div id="featuredPeptideGrid" class="grid"></div>
@@ -3622,7 +3618,7 @@ body.age-locked .vial-rotor {
               <span class="faq-plus">+</span>
             </button>
             <div class="faq-answer">
-              <p>ResearchPeps offers high-quality peptides, research chemicals, and analytical compounds with a focus on purity, reliability, and highly competitive pricing designed to stay below typical market rates.</p>
+              <p>ResearchPeps offers lab-focused research materials and analytical supplies with a focus on clear sourcing, reliability, and competitive pricing for qualified research buyers.</p>
             </div>
           </article>
 
@@ -3648,12 +3644,11 @@ body.age-locked .vial-rotor {
 
           <article class="faq-item">
             <button class="faq-question" onclick="toggleFaq(this)">
-              <span>Can I get non-listen products?</span>
+              <span>Can I request items not listed?</span>
               <span class="faq-plus">+</span>
             </button>
             <div class="faq-answer">
-              <p>Yes, depending on the product. If you are looking for a compound that is not currently listed in our catalog, please contact us by email with the product name and details. Our team will review availability and let you know if it can be sourced.
-</p>
+              <p>Yes, depending on availability. If you need something not currently listed, contact us by email with the item name and details. Our team will review availability and let you know if it can be sourced.</p>
             </div>
           </article>
         </div>
@@ -4148,7 +4143,7 @@ After review, eligible damaged-shipment claims may be approved for replacement o
       <button onclick="showPage('home')">Home</button>
       <button onclick="showPage('peptides')">Peptides</button>
       <button onclick="showHomeSection('faq')">FAQ</button>
-      <button onclick="showHomeSection('featured-peptides')">Featured Peptides</button>
+      <button onclick="showHomeSection('featured-peptides')">Research Categories</button>
       <button onclick="showPage('shipping-payment')">Shipping &amp; Payment</button>
       <button onclick="toggleSearch()">Search</button>
     </div>
@@ -6520,11 +6515,54 @@ function renderPeptideCatalog() {
 
   const featured = document.getElementById('featuredPeptideGrid');
   if (featured) {
-    const featuredNames = ['R3tatrutide', 'HGH', 'GHK-CU', 'BPC-157', 'NAD+', 'CJC-1295 DAC + Ipamorelin', 'Semax', 'IGF-1LR3'];
-    featured.innerHTML = products.filter(function(product) {
-      return featuredNames.includes(product.name);
-    }).map(function(product) {
-      return renderProductCard(product, 'featured');
+    const categories = [
+      {
+        title: 'Nootropics Research',
+        description: 'Materials commonly organized for cognitive, focus, and analytical research categories.',
+        icon: '🧠'
+      },
+      {
+        title: 'Metabolic Research',
+        description: 'Catalog grouping for metabolism, body-composition, and energy-pathway research interests.',
+        icon: '⚖️'
+      },
+      {
+        title: 'Recovery Research',
+        description: 'Research category for recovery, repair, and performance-related laboratory study areas.',
+        icon: '🛡️'
+      },
+      {
+        title: 'Longevity Research',
+        description: 'Analytical category focused on healthy-aging, cellular, and wellness-oriented research topics.',
+        icon: '⏳'
+      },
+      {
+        title: 'Lab Supplies',
+        description: 'Supporting materials for preparation, handling, and laboratory workflow organization.',
+        icon: '🧪'
+      },
+      {
+        title: 'Specialty Formats',
+        description: 'Alternative research formats organized separately for easier category browsing.',
+        icon: '🔬'
+      }
+    ];
+    featured.innerHTML = categories.map(function(category) {
+      return `
+        <article class="card category-card" onclick="showPage('peptides')">
+          <div class="pic category-pic">
+            <span>${category.icon}</span>
+            <small>Research category</small>
+          </div>
+          <div class="card-text">
+            <h3>${category.title}</h3>
+            <p>${category.description}</p>
+            <div class="product-card-actions">
+              <button class="btn catalog-cart-btn" onclick="event.stopPropagation(); showPage('peptides');">View Catalog</button>
+            </div>
+          </div>
+        </article>
+      `;
     }).join('');
   }
 }
