@@ -6975,6 +6975,24 @@ function renderCategoryCards(targetGrid, showUncategorized) {
     }
   }
 
+  if (!showUncategorized) {
+    cards.push(`
+      <article class="card category-card" onclick="showPage('shipping-payment')">
+        <div class="pic category-pic">
+          <span>📦</span>
+          <small>ORDER INFO</small>
+        </div>
+        <div class="card-text">
+          <h3>Ordering & Payment</h3>
+          <p>Review shipping timing, payment options, order minimums, account tracking, and checkout details before browsing.</p>
+          <div class="product-card-actions">
+            <button class="btn catalog-cart-btn" onclick="event.stopPropagation(); showPage('shipping-payment');">View Details</button>
+          </div>
+        </div>
+      </article>
+    `);
+  }
+
   targetGrid.innerHTML = cards.join('');
 }
 
