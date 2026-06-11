@@ -3487,7 +3487,7 @@ body.age-locked .vial-rotor {
 
     <div class="nav-links">
       <button class="nav-link active-link" data-nav="home" onclick="showPage('home')">Home</button>
-      <button class="nav-link" data-nav="peptides" onclick="showPage('peptides')">Peptides</button>
+      <button class="nav-link" data-nav="peptides" onclick="showCategoryLanding()">Peptides</button>
       <button class="nav-link" data-nav="faq" onclick="showHomeSection('faq')">FAQ</button>
       <button class="nav-link" data-nav="shipping-payment" onclick="showPage('shipping-payment')">Shipping</button>
     </div>
@@ -3659,12 +3659,12 @@ body.age-locked .vial-rotor {
   <section id="peptides" class="page">
     <div class="container section">
       <div class="page-head">
-        <button class="btn back" onclick="showPage('home')">← Home</button>
-        <p class="kicker">Peptides catalog</p>
-        <h1>Peptides</h1>
-        <p class="lead"></p>
+        <button id="categoryBackButton" class="btn back" onclick="showCategoryLanding()">← Categories</button>
+        <p id="catalogKicker" class="kicker">Research categories</p>
+        <h1 id="catalogTitle">Choose a category</h1>
+        <p id="catalogLead" class="lead">Select a research category to browse the matching products. This keeps each product group separated instead of showing the full catalog on one page.</p>
       </div>
-      <div class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 56% compared with buying the same vials one at a time.</div>
+      <div id="catalogNotice" class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 56% compared with buying the same vials one at a time.</div>
       <div id="peptideCatalogGrid" class="grid"></div>
     </div>
   </section>
@@ -3694,7 +3694,7 @@ body.age-locked .vial-rotor {
 
           <div class="actions">
             <button id="productDetailAddButton" class="btn primary" onclick="addCurrentProductToCart()">Save to Cart</button>
-            <button class="btn" onclick="showPage('peptides')">View Catalog</button>
+            <button class="btn" onclick="showCategoryLanding()">View Categories</button>
           </div>
         </div>
       </div>
@@ -4141,7 +4141,7 @@ After review, eligible damaged-shipment claims may be approved for replacement o
     <div class="footer-col">
       <h4>Site Map</h4>
       <button onclick="showPage('home')">Home</button>
-      <button onclick="showPage('peptides')">Peptides</button>
+      <button onclick="showCategoryLanding()">Peptides</button>
       <button onclick="showHomeSection('faq')">FAQ</button>
       <button onclick="showHomeSection('featured-peptides')">Research Categories</button>
       <button onclick="showPage('shipping-payment')">Shipping &amp; Payment</button>
@@ -6017,6 +6017,12 @@ function showPage(id) {
 
   setActiveNav(id);
   closeSearchOnly();
+
+  if (id === 'peptides' && !openingCatalogCategory) {
+    currentCatalogCategoryKey = '';
+    renderPeptideCatalog();
+  }
+
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
@@ -6226,8 +6232,17 @@ function openProduct(productName) {
   selectedVialQuantities[product.name] = 1;
   currentOption = getSelectedOption(product);
 
-  document.getElementById('productBackButton').onclick = function() { showPage('peptides'); };
-  document.getElementById('productBackButton').textContent = '← Back to Peptides';
+  const productBackButton = document.getElementById('productBackButton');
+  if (productBackButton) {
+    productBackButton.textContent = currentCatalogCategoryKey ? '← Back to Category' : '← Back to Categories';
+    productBackButton.onclick = function() {
+      if (currentCatalogCategoryKey) {
+        openCatalogCategory(currentCatalogCategoryKey);
+      } else {
+        showCategoryLanding();
+      }
+    };
+  }
   document.getElementById('productDetailKicker').textContent = product.category + ' catalog';
   document.getElementById('productDetailTitle').textContent = product.name;
   document.getElementById('productDetailLead').textContent = product.options.length + ' size option' + (product.options.length === 1 ? '' : 's') + ' available for ' + product.name + '.';
@@ -6472,99 +6487,234 @@ function renderProductCard(product, indexPrefix) {
   `;
 }
 
-function renderPeptideCatalog() {
-  const adjacentMap = {
-    'Semax': ['Semax Nasal Spray'],
-    'NAD+': ['NAD+ Nasal Spray'],
-    'CJC-1295 WO/Dac 5mg + Ipamorelin 5mg': ['CJC-1295 WO/Dac + Ipamorelin Nasal Spray'],
-    'Selank': ['Selank Nasal Spray', 'Semax + Selank Nasal Spray'],
-    'Oxytocin': ['Oxytocin Nasal Spray'],
-    'DSIP': ['DSIP Nasal Spray'],
-    'Vasoactive Intestinal Peptide': ['VIP Nasal Spray']
-  };
-  const insertNames = Object.values(adjacentMap).flat();
-  const productsByName = Object.fromEntries(products.map(function(product) {
+
+const researchCategories = [
+  {
+    key: 'nootropics',
+    title: 'Nootropics Research',
+    kicker: 'Cognitive research',
+    icon: '🧠',
+    description: 'Materials organized around focus, cognition, sleep, mood, and nervous-system research categories.',
+    names: [
+      'Semax', 'Selank', 'Pinealon', 'Cerebrolysin', 'DSIP', 'Oxytocin',
+      'Vasoactive Intestinal Peptide', 'Snap-8', 'PE-22-28'
+    ]
+  },
+  {
+    key: 'metabolic',
+    title: 'Metabolic Research',
+    kicker: 'Metabolic research',
+    icon: '⚖️',
+    description: 'Products grouped for metabolism, body-composition, energy-use, and related analytical research interests.',
+    names: [
+      'R3tatrutide', 'Semaglutide', 'Tirzepatide', 'Cagrilintide',
+      'Cagrilintide 5mg + Semaglutide 5mg', 'Retatrutide + Cagrilintide',
+      'AOD', '5-amino-1mq', 'MOTS-C', 'Tesamorelin', 'Mazdutide',
+      'Survodutide', 'Lemon Bottle', 'L-Carnitine 600mg/ml', 'Adipotide',
+      'SLU-PP-322', 'Lipo-C with vitamins B12', 'LC120', 'AICAR'
+    ]
+  },
+  {
+    key: 'recovery',
+    title: 'Recovery Research',
+    kicker: 'Recovery research',
+    icon: '🛡️',
+    description: 'Catalog group for recovery, repair, performance, tissue, and inflammation-related research areas.',
+    names: [
+      'BPC-157', 'TB-500', 'GHK-CU', 'KPV', 'Thymosin Alpha-1',
+      'BPC-157 5mg + TB-500 5mg', 'BPC-157 10mg + TB-500 10mg',
+      'GHK-CU 50mg + BPC-157 10mg + TB-500 10mg',
+      'GHK-CU 50mg + BPC-157 10mg + TB-500 10mg + KPV 10mg',
+      'LL37', 'SS-31', 'Glutathione', 'MGF', 'PEG MGF', 'PNC-27', 'Dermorphin'
+    ]
+  },
+  {
+    key: 'hormone-growth',
+    title: 'Hormone & Growth Research',
+    kicker: 'Hormone research',
+    icon: '📈',
+    description: 'Products grouped for growth-factor, hormone-signaling, and related laboratory research categories.',
+    names: [
+      'HGH', 'IGF-1LR3', 'IGF-DES', 'Ipamorelin', 'CJC-1295 WO/Dac',
+      'CJC-1295 DAC + Ipamorelin', 'CJC-1295 WO/Dac 5mg + Ipamorelin 5mg',
+      'Sermorelin', 'GHRP-2', 'GHRP-6', 'CJC-1295 W/Dac', 'Hexarelin Acetate',
+      'HCG', 'HMG', 'KissPeptin-10', 'PT-141'
+    ]
+  },
+  {
+    key: 'longevity',
+    title: 'Longevity & Cellular Research',
+    kicker: 'Cellular research',
+    icon: '⏳',
+    description: 'Products grouped for healthy-aging, cellular support, antioxidant, and wellness-oriented research topics.',
+    names: [
+      'NAD+', 'FOXO4', 'Epithalon', 'B12 1mg/ml', 'Melatonin',
+      'Thymalin', 'MT-2 (melanotan 2 acetate)', 'Melanotan'
+    ]
+  },
+  {
+    key: 'specialty-formats',
+    title: 'Specialty Formats',
+    kicker: 'Specialty formats',
+    icon: '🔬',
+    description: 'Alternative research formats organized separately for easier category browsing.',
+    names: [
+      'Semax Nasal Spray', 'Selank Nasal Spray', 'Semax + Selank Nasal Spray',
+      'Oxytocin Nasal Spray', 'DSIP Nasal Spray', 'NAD+ Nasal Spray',
+      'VIP Nasal Spray', 'CJC-1295 WO/Dac + Ipamorelin Nasal Spray'
+    ]
+  },
+  {
+    key: 'lab-supplies',
+    title: 'Lab Supplies',
+    kicker: 'Lab supplies',
+    icon: '🧪',
+    description: 'Supporting materials for preparation, handling, dilution, and laboratory workflow organization.',
+    names: [
+      'Bacteriostatic Water 0.9%', 'Acetic Acid Water 0.6%', 'Phosphate Buffered Saline (PBS)'
+    ]
+  }
+];
+
+let currentCatalogCategoryKey = '';
+let openingCatalogCategory = false;
+
+function getResearchCategoryByKey(key) {
+  return researchCategories.find(function(category) {
+    return category.key === key;
+  }) || null;
+}
+
+function getProductByNameMap() {
+  return Object.fromEntries(products.map(function(product) {
     return [product.name, product];
   }));
-  const orderedProducts = [];
-  const seen = new Set();
-  products.forEach(function(product) {
-    if (insertNames.includes(product.name)) return;
-    orderedProducts.push(product);
-    seen.add(product.name);
-    (adjacentMap[product.name] || []).forEach(function(name) {
-      const match = productsByName[name];
-      if (match && !seen.has(name)) {
-        orderedProducts.push(match);
-        seen.add(name);
-      }
-    });
-  });
-  products.forEach(function(product) {
-    if (!seen.has(product.name)) {
-      orderedProducts.push(product);
-      seen.add(product.name);
-    }
-  });
-  const grid = document.getElementById('peptideCatalogGrid');
-  if (grid) {
-    grid.innerHTML = orderedProducts.map(function(product) {
-      return renderProductCard(product, 'catalog');
-    }).join('');
-  }
+}
 
-  const featured = document.getElementById('featuredPeptideGrid');
-  if (featured) {
-    const categories = [
-      {
-        title: 'Nootropics Research',
-        description: 'Materials commonly organized for cognitive, focus, and analytical research categories.',
-        icon: '🧠'
-      },
-      {
-        title: 'Metabolic Research',
-        description: 'Catalog grouping for metabolism, body-composition, and energy-pathway research interests.',
-        icon: '⚖️'
-      },
-      {
-        title: 'Recovery Research',
-        description: 'Research category for recovery, repair, and performance-related laboratory study areas.',
-        icon: '🛡️'
-      },
-      {
-        title: 'Longevity Research',
-        description: 'Analytical category focused on healthy-aging, cellular, and wellness-oriented research topics.',
-        icon: '⏳'
-      },
-      {
-        title: 'Lab Supplies',
-        description: 'Supporting materials for preparation, handling, and laboratory workflow organization.',
-        icon: '🧪'
-      },
-      {
-        title: 'Specialty Formats',
-        description: 'Alternative research formats organized separately for easier category browsing.',
-        icon: '🔬'
-      }
-    ];
-    featured.innerHTML = categories.map(function(category) {
-      return `
-        <article class="card category-card" onclick="showPage('peptides')">
+function getProductsForResearchCategory(category) {
+  const productsByName = getProductByNameMap();
+  const listed = (category.names || [])
+    .map(function(name) { return productsByName[name]; })
+    .filter(Boolean);
+  return listed;
+}
+
+function getUncategorizedProducts() {
+  const assigned = new Set();
+  researchCategories.forEach(function(category) {
+    (category.names || []).forEach(function(name) { assigned.add(name); });
+  });
+  return products.filter(function(product) { return !assigned.has(product.name); });
+}
+
+function openCatalogCategory(categoryKey) {
+  currentCatalogCategoryKey = categoryKey || '';
+  openingCatalogCategory = true;
+  showPage('peptides');
+  openingCatalogCategory = false;
+  renderPeptideCatalog();
+}
+
+function showCategoryLanding() {
+  currentCatalogCategoryKey = '';
+  openingCatalogCategory = true;
+  showPage('peptides');
+  openingCatalogCategory = false;
+  renderPeptideCatalog();
+}
+
+function renderCategoryCards(targetGrid, showUncategorized) {
+  const productsByName = getProductByNameMap();
+  const cards = researchCategories.map(function(category) {
+    const count = (category.names || []).filter(function(name) { return !!productsByName[name]; }).length;
+    return `
+      <article class="card category-card" onclick="openCatalogCategory('${category.key}')">
+        <div class="pic category-pic">
+          <span>${category.icon}</span>
+          <small>${count} products</small>
+        </div>
+        <div class="card-text">
+          <h3>${category.title}</h3>
+          <p>${category.description}</p>
+          <div class="product-card-actions">
+            <button class="btn catalog-cart-btn" onclick="event.stopPropagation(); openCatalogCategory('${category.key}');">View Products</button>
+          </div>
+        </div>
+      </article>
+    `;
+  });
+
+  if (showUncategorized) {
+    const uncategorized = getUncategorizedProducts();
+    if (uncategorized.length) {
+      cards.push(`
+        <article class="card category-card" onclick="openCatalogCategory('other')">
           <div class="pic category-pic">
-            <span>${category.icon}</span>
-            <small>Research category</small>
+            <span>📦</span>
+            <small>${uncategorized.length} products</small>
           </div>
           <div class="card-text">
-            <h3>${category.title}</h3>
-            <p>${category.description}</p>
+            <h3>Other Research Items</h3>
+            <p>Additional listed materials that do not fit one of the main category groups.</p>
             <div class="product-card-actions">
-              <button class="btn catalog-cart-btn" onclick="event.stopPropagation(); showPage('peptides');">View Catalog</button>
+              <button class="btn catalog-cart-btn" onclick="event.stopPropagation(); openCatalogCategory('other');">View Products</button>
             </div>
           </div>
         </article>
-      `;
-    }).join('');
+      `);
+    }
   }
+
+  targetGrid.innerHTML = cards.join('');
+}
+
+function renderPeptideCatalog() {
+  const grid = document.getElementById('peptideCatalogGrid');
+  const featured = document.getElementById('featuredPeptideGrid');
+
+  if (featured) {
+    renderCategoryCards(featured, false);
+  }
+
+  if (!grid) return;
+
+  const title = document.getElementById('catalogTitle');
+  const kicker = document.getElementById('catalogKicker');
+  const lead = document.getElementById('catalogLead');
+  const notice = document.getElementById('catalogNotice');
+  const backButton = document.getElementById('categoryBackButton');
+
+  if (!currentCatalogCategoryKey) {
+    if (title) title.textContent = 'Choose a category';
+    if (kicker) kicker.textContent = 'Research categories';
+    if (lead) lead.textContent = 'Select a research category to browse matching products. Each product group is separated so the full catalog is not shown on one page.';
+    if (notice) notice.style.display = 'none';
+    if (backButton) {
+      backButton.textContent = '← Home';
+      backButton.onclick = function() { showPage('home'); };
+    }
+    renderCategoryCards(grid, true);
+    return;
+  }
+
+  const category = getResearchCategoryByKey(currentCatalogCategoryKey);
+  const categoryProducts = category ? getProductsForResearchCategory(category) : getUncategorizedProducts();
+  const categoryTitle = category ? category.title : 'Other Research Items';
+  const categoryKicker = category ? category.kicker : 'Additional items';
+  const categoryDescription = category ? category.description : 'Additional listed materials that do not fit one of the main category groups.';
+
+  if (title) title.textContent = categoryTitle;
+  if (kicker) kicker.textContent = categoryKicker;
+  if (lead) lead.textContent = categoryDescription;
+  if (notice) notice.style.display = '';
+  if (backButton) {
+    backButton.textContent = '← Categories';
+    backButton.onclick = showCategoryLanding;
+  }
+
+  grid.innerHTML = categoryProducts.map(function(product) {
+    return renderProductCard(product, 'catalog');
+  }).join('') || '<div class="empty-search">No products are currently listed in this category.</div>';
 }
 
 function initHeroVial() {
@@ -8594,6 +8744,7 @@ async function initializeLiveStorefront() {
   await loadPaymentOptions();
   await loadShippingRates();
   await loadProductStockStatus();
+  currentCatalogCategoryKey = '';
   renderPeptideCatalog();
   renderCart();
   renderSearchResults();
