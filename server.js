@@ -12,6 +12,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const Stripe = require('stripe');
 const nodemailer = require('nodemailer');
+const { DEFAULT_OWNER_EMAIL, createOrderNotifier } = require('./lib/order-notifications');
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -27,6 +28,8 @@ const SMTP_PASS = process.env.SMTP_PASS || '';
 const SMTP_SECURE = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true';
 const MAIL_FROM = process.env.MAIL_FROM || SMTP_USER || '';
 const ORDER_NOTIFY_EMAIL = process.env.ORDER_NOTIFY_EMAIL || process.env.OWNER_EMAIL || '';
+// Notification recipient is separate from legacy PayPal destination fallbacks.
+const ADMIN_ORDER_NOTIFY_EMAIL = process.env.ADMIN_ORDER_NOTIFY_EMAIL || DEFAULT_OWNER_EMAIL;
 const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const PASSWORD_RESET_EXPIRES_MINUTES = Number(process.env.PASSWORD_RESET_EXPIRES_MINUTES || 60);
@@ -98,6 +101,7 @@ const mailTransporter = SMTP_HOST && MAIL_FROM
       host: SMTP_HOST,
       port: SMTP_PORT,
       secure: SMTP_SECURE || SMTP_PORT === 465,
+      connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 20000,
       auth: SMTP_USER && SMTP_PASS ? { user: SMTP_USER, pass: SMTP_PASS } : undefined
     })
   : null;
@@ -134,7 +138,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment)
   }
 
   const customerEmail = normalizeEmail(order.customer && order.customer.email);
-  const notifyEmail = normalizeEmail(ORDER_NOTIFY_EMAIL || ADMIN_EMAILS[0] || '');
+  const notifyEmail = normalizeEmail(ADMIN_ORDER_NOTIFY_EMAIL);
   const customerSameAsOwner = customerEmail && notifyEmail && emailsMatch(customerEmail, notifyEmail);
   const discountAmount = Number(order.discount || 0);
   const discountText = discountAmount > 0 ? `\nDiscount: -$${discountAmount.toFixed(2)}` : '';
@@ -159,30 +163,11 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment)
     <p>Research-use confirmation was accepted at checkout.</p>
   `;
 
-  const ownerText = `New order received.\n\nOrder number: ${order.id}\nStatus: ${order.status}\nPayment: ${order.paymentMethodLabel}\nTotal: $${Number(order.total || 0).toFixed(2)}\n\nCustomer:\n${order.customer.name}\n${order.customer.email}\n${order.customer.phone}\n\nShip to:\n${order.shipping.address}\n${order.shipping.city}, ${order.shipping.state} ${order.shipping.zip}\n${order.shipping.country}\n\nItems:\n${orderItemsText(order)}${paymentLines}\n\nNotes: ${order.notes || 'None'}`;
-
-  const ownerHtml = `
-    <h2>New order received</h2>
-    <p><strong>Order number:</strong> ${escapeHtml(order.id)}</p>
-    <p><strong>Status:</strong> ${escapeHtml(order.status)}</p>
-    <p><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel)}</p>
-    <p><strong>Subtotal:</strong> $${Number(order.subtotal || 0).toFixed(2)}<br><strong>Shipping:</strong> $${Number(order.shippingCharge || 0).toFixed(2)}${discountHtml}<br><strong>Total:</strong> $${Number(order.total || 0).toFixed(2)}</p>
-    <h3>Customer</h3>
-    <p>${escapeHtml(order.customer.name)}<br>${escapeHtml(order.customer.email)}<br>${escapeHtml(order.customer.phone)}</p>
-    <h3>Shipping</h3>
-    <p>${escapeHtml(order.shipping.address)}<br>${escapeHtml(order.shipping.city)}, ${escapeHtml(order.shipping.state)} ${escapeHtml(order.shipping.zip)}<br>${escapeHtml(order.shipping.country)}</p>
-    <h3>Items</h3>
-    <ul>${orderItemsHtml(order)}</ul>
-    ${cryptoPayment ? `<h3>Crypto payment</h3><p>${escapeHtml(cryptoPayment.label)} on ${escapeHtml(cryptoPayment.network)}</p>${cryptoQuote ? `<p><strong>Amount due:</strong> ${escapeHtml(cryptoQuote.amount)} ${escapeHtml(cryptoQuote.symbol)}</p>` : ''}<p style="word-break:break-all;"><code>${escapeHtml(cryptoPayment.address)}</code></p>` : manualPayment ? `<h3>${escapeHtml(manualPayment.label)} payment</h3><p><strong>Amount due:</strong> $${Number(order.total || 0).toFixed(2)}</p><p style="word-break:break-all;"><code>${escapeHtml(manualPayment.account || manualPayment.phone)}</code></p>` : ''}
-    <h3>Notes</h3>
-    <p>${escapeHtml(order.notes || 'None')}</p>
-  `;
-
   const messages = [];
   const sentTo = { customer: '', owner: '' };
 
   // Customer receipt must only go to the email typed at checkout.
-  // If the site owner tests using the same email as ORDER_NOTIFY_EMAIL, skip the duplicate
+  // If the site owner tests using the same email as ADMIN_ORDER_NOTIFY_EMAIL, skip the duplicate
   // customer receipt so the owner inbox only receives the owner/admin notification.
   if (customerEmail && !customerSameAsOwner) {
     messages.push(mailTransporter.sendMail({
@@ -193,18 +178,6 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment)
       html: customerHtml
     }));
     sentTo.customer = customerEmail;
-  }
-
-  if (notifyEmail) {
-    messages.push(mailTransporter.sendMail({
-      from: MAIL_FROM,
-      to: notifyEmail,
-      replyTo: customerEmail || undefined,
-      subject: `New ResearchPeps order ${order.id}`,
-      text: ownerText,
-      html: ownerHtml
-    }));
-    sentTo.owner = notifyEmail;
   }
 
   await Promise.all(messages);
@@ -219,6 +192,7 @@ async function sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment)
 }
 
 function sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote, manualPayment) {
+  flushOwnerNotifications();
   sendOrderEmails(order, cryptoPayment, cryptoQuote, manualPayment).catch((error) => {
     console.error('Order email failed:', error.message);
   });
@@ -624,7 +598,7 @@ function publicProducts() {
 }
 
 function findProductAndOption(productName, optionCode) {
-  const product = products.find((item) => item.name === productName);
+  const product = products.find((item) => (item.name === productName || (item.aliases || []).includes(productName)));
   if (!product) return null;
   const option = (product.options || []).find((opt) => opt.code === optionCode);
   if (!option) return null;
@@ -960,6 +934,34 @@ function publicOrder(row) {
   };
 }
 
+const orderNotifier = createOrderNotifier({
+  db, transporter: mailTransporter, from: MAIL_FROM, to: normalizeEmail(ADMIN_ORDER_NOTIFY_EMAIL), publicUrl: PUBLIC_URL,
+  getOrder: (id) => { const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(id); return row ? publicOrder(row) : null; }
+});
+function flushOwnerNotifications() {
+  orderNotifier.flush().catch((error) => console.error('Owner notification worker failed:', error.message));
+}
+
+// Both the verified webhook and customer return can arrive more than once.
+function confirmStripePayment(session) {
+  if (!session || !['paid', 'no_payment_required'].includes(session.payment_status)) return false;
+  const orderId = session.metadata && session.metadata.orderId;
+  if (!orderId) return false;
+  return db.transaction(() => {
+    const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
+    if (!row || row.payment_method !== 'stripe' || (row.stripe_session_id && row.stripe_session_id !== session.id)) return false;
+    if (session.currency !== row.currency || session.amount_total !== row.total_cents) return false;
+    const wasPaid = db.prepare("SELECT id FROM owner_order_emails WHERE order_id = ? AND event = 'paid'").get(orderId);
+    // Never move shipped, packed, cancelled, or refunded orders back to processing.
+    if (['Pending Payment', 'Order Submitted'].includes(row.status)) {
+      db.prepare('UPDATE orders SET status = ?, stripe_session_id = ?, updated_at = ? WHERE id = ?')
+        .run('Paid - Processing', session.id, nowIso(), orderId);
+    }
+    orderNotifier.enqueue(orderId, 'paid');
+    return !wasPaid;
+  })();
+}
+
 function requireAuth(req, res, next) {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'Please sign in first.' });
@@ -1012,7 +1014,7 @@ function validateCartItems(items) {
   }
 
   return items.map((line) => {
-    const product = products.find((p) => p.name === line.productName);
+    const product = products.find((p) => (p.name === line.productName || (p.aliases || []).includes(line.productName)));
     if (!product) {
       const error = new Error(`Product not found: ${line.productName || 'unknown'}`);
       error.status = 400;
@@ -1162,6 +1164,8 @@ function createOrderForUser(userId, body, statusOverride) {
       timestamp
     );
 
+    orderNotifier.enqueue(orderId, 'created');
+
     for (const item of totals.items) {
       db.prepare(`
         INSERT INTO order_items (
@@ -1206,22 +1210,13 @@ app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), (req
     return res.status(400).send(`Webhook Error: ${error.message}`);
   }
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object;
-    const orderId = session.metadata && session.metadata.orderId;
-    if (orderId) {
-      const existingOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
-      db.prepare(`
-        UPDATE orders
-        SET status = ?, stripe_session_id = ?, updated_at = ?
-        WHERE id = ?
-      `).run('Paid - Processing', session.id, nowIso(), orderId);
-
-      if (existingOrder && existingOrder.status !== 'Paid - Processing') {
-        const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
-        sendOrderEmailsSafely(publicOrder(updatedOrder), null);
-      }
+  if (['checkout.session.completed', 'checkout.session.async_payment_succeeded'].includes(event.type)) {
+    const paymentSession = event.data.object;
+    if (confirmStripePayment(paymentSession)) {
+      const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(paymentSession.metadata.orderId);
+      sendOrderEmailsSafely(publicOrder(row), null);
     }
+    flushOwnerNotifications();
   }
 
   res.json({ received: true });
@@ -1587,7 +1582,9 @@ app.post('/api/orders', requireAuth, async (req, res, next) => {
     const order = createOrderForUser(req.session.userId, req.body);
     const cryptoPayment = getCryptoPayment(order.paymentMethod, order.id);
     const manualPayment = getManualPayment(order.paymentMethod, order.id);
-    const cryptoQuote = await attachCryptoQuoteToOrder(order, cryptoPayment);
+    let cryptoQuote = null;
+    try { cryptoQuote = await attachCryptoQuoteToOrder(order, cryptoPayment); }
+    catch (error) { console.error('Crypto quote unavailable for saved order:', order.id, error.message); }
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
     sendOrderEmailsSafely(order, cryptoPayment, cryptoQuote, manualPayment);
 
@@ -1634,14 +1631,11 @@ app.post('/api/checkout/stripe/confirm', requireAuth, async (req, res, next) => 
     }
 
     const session = await stripe.checkout.sessions.retrieve(row.stripe_session_id);
-    const isPaid = session && (session.payment_status === 'paid' || session.status === 'complete');
-
-    if (isPaid && row.status !== 'Paid - Processing') {
-      db.prepare('UPDATE orders SET status = ?, updated_at = ? WHERE id = ?')
-        .run('Paid - Processing', nowIso(), orderId);
+    if (confirmStripePayment(session)) {
       const paidOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
       sendOrderEmailsSafely(publicOrder(paidOrder), null);
     }
+    flushOwnerNotifications();
 
     const updatedOrder = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
     const user = db.prepare('SELECT * FROM users WHERE id = ?').get(req.session.userId);
@@ -1667,6 +1661,7 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
 
     req.body.paymentMethod = 'stripe';
     const order = createOrderForUser(req.session.userId, req.body, 'Pending Payment');
+    flushOwnerNotifications();
     const lineItems = order.items.map((item) => ({
       quantity: item.quantity,
       price_data: {
@@ -1845,11 +1840,16 @@ app.post('/api/admin/orders/:id/send-email', requireAdmin, async (req, res, next
 
     const order = publicOrder(row);
     const cryptoPayment = isCryptoPaymentMethod(order.paymentMethod) ? getCryptoPayment(order.paymentMethod, order.id) : null;
-    const emailResult = await sendOrderEmails(order, cryptoPayment, null);
+    const manualPayment = getManualPayment(order.paymentMethod, order.id);
+    const emailResult = await sendOrderEmails(order, cryptoPayment, null, manualPayment);
+    orderNotifier.enqueue(order.id, 'resend-' + crypto.randomUUID());
+    await orderNotifier.flush();
+    emailResult.ownerSent = orderNotifier.latest(order.id)?.status === 'sent';
 
     const parts = [];
     if (emailResult.customerSent) parts.push(`customer receipt to ${emailResult.customerEmail}`);
     if (emailResult.ownerSent) parts.push(`owner notification to ${emailResult.notifyEmail}`);
+    if (!emailResult.ownerSent) parts.push('owner notification queued for retry');
     if (emailResult.customerSameAsOwner) parts.push('customer receipt skipped because checkout email matches owner notification email');
 
     res.json({ ok: true, message: `Order email processed for ${order.id}: ${parts.join('; ') || 'no recipients configured'}.` });
@@ -1859,6 +1859,20 @@ app.post('/api/admin/orders/:id/send-email', requireAdmin, async (req, res, next
     error.message = 'Order email failed. Check SMTP settings, ORDER_NOTIFY_EMAIL, customer email, and Render logs.';
     next(error);
   }
+});
+
+app.post('/api/admin/orders/:id/notify-owner', requireAdmin, async (req, res, next) => {
+  try {
+    const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
+    if (!row) return res.status(404).json({ error: 'Order not found.' });
+    if (!mailTransporter) return res.status(503).json({ error: 'Email is not configured. Add the SMTP settings in Render first.' });
+    // Retry an unsent job instead of creating duplicate notifications.
+    const pending = db.prepare("SELECT id FROM owner_order_emails WHERE order_id = ? AND status != 'sent' ORDER BY id DESC LIMIT 1").get(row.id);
+    if (pending) db.prepare('UPDATE owner_order_emails SET next_attempt_at = 0 WHERE id = ?').run(pending.id);
+    else orderNotifier.enqueue(row.id, 'resend-' + crypto.randomUUID());
+    await orderNotifier.flush();
+    res.json({ notification: orderNotifier.latest(row.id), message: orderNotifier.latest(row.id)?.status === 'sent' ? 'Order details emailed to ' + ADMIN_ORDER_NOTIFY_EMAIL : 'Notification queued. Failed delivery will retry automatically.' });
+  } catch (error) { next(error); }
 });
 
 app.get('/api/admin/orders', requireAdmin, (req, res) => {
@@ -1880,14 +1894,15 @@ app.get('/api/admin/orders', requireAdmin, (req, res) => {
         OR lower(COALESCE(discount_code, '')) LIKE ?
         OR lower(COALESCE(tracking_number, '')) LIKE ?
         OR lower(COALESCE(tracking_carrier, '')) LIKE ?
+        OR EXISTS (SELECT 1 FROM order_items oi WHERE oi.order_id = orders.id AND (lower(oi.product_name) LIKE ? OR lower(oi.spec) LIKE ? OR lower(oi.option_code) LIKE ?))
       ORDER BY created_at DESC
       LIMIT 500
-    `).all(like, like, like, like, like, like, like, like, like, like);
+    `).all(like, like, like, like, like, like, like, like, like, like, like, like, like);
   } else {
     rows = db.prepare('SELECT * FROM orders ORDER BY created_at DESC LIMIT 500').all();
   }
 
-  res.json({ orders: rows.map(publicOrder) });
+  res.json({ orders: rows.map((row) => ({ ...publicOrder(row), ownerNotification: orderNotifier.latest(row.id) })), notifications: orderNotifier.configuration(), limit: 500 });
 });
 
 app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {
@@ -1905,6 +1920,11 @@ app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {
     SET status = ?, tracking_number = ?, tracking_carrier = ?, updated_at = ?
     WHERE id = ?
   `).run(status, trackingNumber, trackingCarrier, nowIso(), req.params.id);
+
+  if (['Paid - Processing', 'Payment Received - Processing'].includes(status)) {
+    orderNotifier.enqueue(row.id, 'paid');
+    flushOwnerNotifications();
+  }
 
   res.json({ order: publicOrder(db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id)) });
 });
@@ -1940,6 +1960,12 @@ app.use((error, req, res, next) => {
   res.status(status).json({ error: status >= 500 ? 'Server error. Please try again.' : error.message });
 });
 
-app.listen(PORT, () => {
-  console.log(`ResearchPeps backend running at http://localhost:${PORT}`);
-});
+if (require.main === module) {
+  setInterval(flushOwnerNotifications, 30000).unref();
+  flushOwnerNotifications();
+  app.listen(PORT, () => {
+    console.log(`ResearchPeps backend running at http://localhost:${PORT}`);
+  });
+}
+
+module.exports = { app, db };

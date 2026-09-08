@@ -1,11 +1,11 @@
 [
   {
-    "name": "R3tatrutide",
+    "name": "Retatrutide",
     "category": "Peptides",
     "page": "peptides",
     "icon": "\ud83e\uddec",
     "description": "Triple-acting research peptide commonly studied for weight loss, appetite control, blood sugar balance, and overall metabolic health.",
-    "aliases": [],
+    "aliases": ["R3tatrutide"],
     "options": [
       {
         "code": "RT5",

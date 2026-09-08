@@ -5,6 +5,7 @@
   "description": "Backend-ready ResearchPeps storefront with accounts, hashed passwords, sessions, server-side orders, and optional Stripe payment-link scaffolding.",
   "scripts": {
     "dev": "nodemon server.js",
+    "test": "node --test test/*.test.js",
     "start": "node server.js",
     "seed": "node scripts/seed-admin.js",
     "mark-crypto-paid": "node scripts/mark-crypto-paid.js"

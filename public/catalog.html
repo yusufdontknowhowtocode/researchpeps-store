@@ -3645,6 +3645,8 @@ body.age-locked .vial-rotor {
 }
 
 </style>
+<link rel="stylesheet" href="/admin-orders.css">
+<style>.buying-terms { margin:18px 0 12px; color:#c4d2e8; font-size:14px; line-height:1.7; } .report-request { color:#9bcaff; text-decoration:underline; font-size:14px; }</style>
 </head>
 <body class="age-locked">
 
@@ -3947,9 +3949,11 @@ body.age-locked .vial-rotor {
 
 
           <div class="actions">
-            <button id="productDetailAddButton" class="btn primary" onclick="addCurrentProductToCart()">Save to Cart</button>
+            <button id="productDetailAddButton" class="btn primary" onclick="addCurrentProductToCart()">Add to Cart</button>
             <button class="btn" onclick="showCategoryLanding()">View Categories</button>
           </div>
+          <p class="buying-terms">$50 minimum before shipping · US shipping $15 · Ships from Pennsylvania after payment verification.</p>
+          <a id="productReportRequest" class="report-request" href="mailto:orders@researchpeps.us">Ask for available lab reports for this product →</a>
         </div>
       </div>
     </div>
@@ -4241,7 +4245,7 @@ body.age-locked .vial-rotor {
 
         <h2>Payment options</h2>
         <p>Credit card checkout supports Visa and Mastercard through the secure payment processor when card payments are configured. Card numbers are not stored on this website.</p>
-        <p>Crypto payments receive an automatic <strong>5% discount</strong> at checkout. For BTC, SOL, or USDC, send payment to the wallet shown at checkout. Type your order number in the payment note, memo, or reference field if your wallet allows it. If not, send the transaction hash with your order number to <strong>orders@researchpeps.us</strong>.</p>
+        <p>Crypto payments receive an automatic <strong>10% discount</strong> at checkout. For BTC, SOL, or USDC, send payment to the wallet shown at checkout. Type your order number in the payment note, memo, or reference field if your wallet allows it. If not, send the transaction hash with your order number to <strong>orders@researchpeps.us</strong>.</p>
 
         <h2>Crypto verification</h2>
         <p>Crypto orders are saved as awaiting payment until the payment is manually verified. After verification, the admin dashboard updates the order status shown to the customer.</p>
@@ -4483,12 +4487,12 @@ const NASAL_TEMPLATE_IMAGE = "/images/nasal-spray.png";
 
 const products = [
   {
-    "name": "R3tatrutide",
+    "name": "Retatrutide",
     "category": "Peptides",
     "page": "peptides",
     "icon": "\ud83e\uddec",
     "description": "Triple-acting research peptide commonly studied for weight loss, appetite control, blood sugar balance, and overall metabolic health.",
-    "aliases": [],
+    "aliases": ["R3tatrutide"],
     "options": [
       {
         "code": "RT5",
@@ -6218,7 +6222,7 @@ function getOneVialPriceText(option) {
 }
 
 function getProductByName(productName) {
-  return products.find(function(item) { return item.name === productName; });
+  return products.find(function(item) { return item.name === productName || (item.aliases || []).includes(productName); });
 }
 
 function isOptionOutOfStock(product, option) {
@@ -6244,7 +6248,13 @@ function mergeLiveProductStock(liveProducts) {
     if (!localProduct || !Array.isArray(localProduct.options)) return;
     (liveProduct.options || []).forEach(function(liveOption) {
       const localOption = localProduct.options.find(function(option) { return option.code === liveOption.code; });
-      if (localOption) localOption.outOfStock = !!liveOption.outOfStock;
+      if (localOption) {
+        localOption.outOfStock = !!liveOption.outOfStock;
+        // Use the same current catalog prices as server-side checkout.
+        localOption.price = liveOption.price;
+        localOption.kitPrice = liveOption.kitPrice;
+        localOption.singlePrice = liveOption.singlePrice;
+      }
     });
   });
 }
@@ -6307,8 +6317,10 @@ function getStartingPrice(product) {
   return formatMoney(getSingleVialPrice(available)) + " per single vial";
 }
 
-function getSingleVialSavingsPercent() {
-  return 56;
+function getSingleVialSavingsPercent(option) {
+  if (!option) return 0;
+  const singlesTotal = getSingleVialPrice(option) * getVialCount(option.spec);
+  return singlesTotal > 0 ? Math.max(0, Math.floor((1 - getRaisedKitPrice(option) / singlesTotal) * 100)) : 0;
 }
 
 function getSingleVialDisplay(option) {
@@ -6317,6 +6329,7 @@ function getSingleVialDisplay(option) {
 }
 
 function showPage(id) {
+  if (id === 'admin') id = 'account';
   document.querySelectorAll('.page').forEach(function(page) {
     page.classList.remove('active');
   });
@@ -6382,7 +6395,7 @@ function renderSearchResults() {
 
   if (query.length === 0) {
     matches = products.filter(function(product) {
-      return ['R3tatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'CJC-1295 WO/Dac'].includes(product.name);
+      return ['Retatrutide', 'Semaglutide', 'Tirzepatide', 'GHK-CU', 'BPC-157', 'CJC-1295 WO/Dac'].includes(product.name);
     });
   }
 
@@ -6494,6 +6507,12 @@ function updateProductPriceDisplay(product, elementIdPrefix) {
   const doseEl = document.getElementById(elementIdPrefix + 'Dose');
   const qtyWrap = document.getElementById(elementIdPrefix + 'VialQtyWrap');
 
+  const savingsNote = document.getElementById('detailKitSavings');
+  if (savingsNote && currentProduct && currentProduct.name === product.name) {
+    const savings = getSingleVialSavingsPercent(option);
+    savingsNote.hidden = savings <= 0;
+    savingsNote.textContent = savings > 0 ? `The ${getVialCount(option.spec)}-vial kit saves ${savings}% compared with buying the same number of single vials.` : '';
+  }
   const outOfStock = isOptionOutOfStock(product, option);
   const detailAddButton = document.getElementById('productDetailAddButton');
 
@@ -6509,7 +6528,7 @@ function updateProductPriceDisplay(product, elementIdPrefix) {
   }
   if (detailAddButton && currentProduct && currentProduct.name === product.name) {
     detailAddButton.disabled = outOfStock;
-    detailAddButton.textContent = outOfStock ? 'Out of Stock' : 'Save to Cart';
+    detailAddButton.textContent = outOfStock ? 'Out of Stock' : 'Add to Cart';
   }
   if (doseEl) doseEl.textContent = getDoseText(option);
   if (currentProduct && currentProduct.name === product.name) {
@@ -6564,6 +6583,8 @@ function openProduct(productName) {
   document.getElementById('productDetailCategoryKicker').textContent = product.category + ' product';
   document.getElementById('productDetailName').textContent = product.name;
   document.getElementById('productDetailDescription').textContent = product.description;
+  const reportLink = document.getElementById('productReportRequest');
+  if (reportLink) reportLink.href = 'mailto:orders@researchpeps.us?subject=' + encodeURIComponent('Lab report request: ' + product.name) + '&body=' + encodeURIComponent('Hi, please send the available lab report and matching lot information for ' + product.name + '. Thank you.');
 
   document.getElementById('productOptionsBlock').innerHTML = `
     ${renderOptionSelect(product, 'detailOption')}
@@ -6572,7 +6593,7 @@ function openProduct(productName) {
       <span class="variant-pill">${isOptionOutOfStock(product, currentOption) ? 'Out of stock' : formatMoney(getDisplayPriceForProduct(product))}</span>
       <span class="variant-pill">${isOptionOutOfStock(product, currentOption) ? 'Unavailable' : (getSelectedPurchaseType(product) === 'single' ? formatMoney(getSingleVialPrice(currentOption)) + ' each' : '10-vial kit')}</span>
     </div>
-    <div class="bundle-savings-note">Best value: choose the 10-vial kit to save about ${getSingleVialSavingsPercent()}% compared with single-vial pricing.</div>
+    <div id="detailKitSavings" class="bundle-savings-note"></div>
   `;
 
   updateProductPriceDisplay(product, 'detailOption');
@@ -6817,7 +6838,7 @@ const researchCategories = [
     icon: '⚖️',
     description: 'Products grouped for metabolism, body-composition, energy-use, and related analytical research interests.',
     names: [
-      'R3tatrutide', 'Semaglutide', 'Tirzepatide', 'Cagrilintide',
+      'Retatrutide', 'Semaglutide', 'Tirzepatide', 'Cagrilintide',
       'Cagrilintide 5mg + Semaglutide 5mg', 'Retatrutide + Cagrilintide',
       'AOD', '5-amino-1mq', 'MOTS-C', 'Tesamorelin', 'Mazdutide',
       'Survodutide', 'Lemon Bottle', 'L-Carnitine 600mg/ml', 'Adipotide',
@@ -7138,7 +7159,13 @@ function saveJsonStorage(key, value) {
 function loadStorefrontState() {
   cart = loadJsonStorage(CART_STORAGE_KEY, []);
   cart = cart.map(function(item) {
-    if (item.productName) return item;
+    if (item.productName) {
+      const product = getProductByName(item.productName);
+      if (product && product.name !== item.productName) {
+        return { ...item, productName: product.name, key: String(item.key || '').replace(item.productName + '|', product.name + '|') };
+      }
+      return item;
+    }
     return {
       key: item.key,
       productName: item.product ? item.product.name : '',
@@ -7673,6 +7700,8 @@ function renderAccountPage() {
       </div>
     </div>
 
+    ${account.isAdmin ? renderAdminDashboardShell() + '<details class="admin-secondary-tools"><summary>Your personal order history</summary>' : ''}
+
     <div class="account-panel account-history-panel">
       <div>
         <p class="kicker account-panel-kicker">Orders</p>
@@ -7685,7 +7714,7 @@ function renderAccountPage() {
       ${orders.length ? orders.map(renderOrderCard).join('') : ''}
     </div>
 
-    ${account.isAdmin ? renderAdminDashboardShell() : ''}
+    ${account.isAdmin ? '</details>' : ''}
   `;
 
   if (account.isAdmin) {
@@ -7855,14 +7884,20 @@ function renderAdminDashboardShell() {
       <div>
         <p class="kicker account-panel-kicker">Admin</p>
         <h2>Order dashboard</h2>
-        <p class="lead">Search by order number, customer email, customer name, payment method, status, or tracking number. Use this to verify crypto orders, update status, and add tracking details customers can see.</p>
+        <p class="lead">See what was ordered, check payment, and copy shipping details. Newest orders appear first.</p>
       </div>
 
       <div class="admin-toolbar">
-        <input id="adminOrderSearch" class="admin-search-input" placeholder="Search order number, email, name, payment, or status" onkeydown="if(event.key === 'Enter') loadAdminOrders()">
+        <input id="adminOrderSearch" class="admin-search-input" aria-label="Search orders" placeholder="Order #, product, SKU, customer, payment, or tracking" onkeydown="if(event.key === 'Enter') loadAdminOrders()">
         <button class="btn primary" onclick="loadAdminOrders()">Search Orders</button>
       </div>
 
+      <div id="adminOrderFilters" class="admin-order-filters" aria-label="Filter orders by status"></div>
+      <div class="admin-orders-caption"><span id="adminOrderCount"></span><label>Sort <select class="admin-status-select" onchange="adminOrderSort = this.value; renderAdminOrderResults()"><option value="newest">Newest first</option><option value="oldest">Oldest first</option></select></label></div>
+      <div id="adminNotificationStatus" class="admin-notification-status" role="status"></div>
+      <div id="adminDashboardMessage" class="auth-note" role="status" aria-live="polite"></div>
+      <div id="adminOrdersResults" class="admin-results"><div class="admin-empty">Loading orders...</div></div>
+      <details class="admin-secondary-tools"><summary>Email settings, discounts &amp; stock</summary>
       <div class="admin-email-test">
         <input id="adminTestEmail" class="admin-search-input" placeholder="Send test email to address">
         <button class="btn" onclick="sendAdminTestEmail()">Test Email</button>
@@ -7896,10 +7931,8 @@ function renderAdminDashboardShell() {
         </div>
       </div>
 
-      <div id="adminDashboardMessage" class="auth-note"></div>
-      <div id="adminOrdersResults" class="admin-results">
-        <div class="admin-empty">Loading admin orders...</div>
-      </div>
+
+      </details>
     </div>
   `;
 }
@@ -8088,66 +8121,101 @@ function getAdminStatusOptions(currentStatus) {
   return statuses;
 }
 
+let adminOrderFilter = 'all';
+let adminOrderSort = 'newest';
+const adminOrderGroups = [['all', 'All orders'], ['payment', 'Needs payment'], ['ready', 'Ready to ship'], ['shipped', 'Shipped / complete'], ['closed', 'Cancelled / refunded'], ['other', 'Other']];
+
+function adminOrderGroup(order) {
+  const status = String(order.status || '').toLowerCase();
+  if (/cancel|refund/.test(status)) return 'closed';
+  if (/shipped|completed|delivered/.test(status)) return 'shipped';
+  if (/awaiting|pending|unpaid|order submitted/.test(status)) return 'payment';
+  if (/paid|payment received|packed|processing/.test(status)) return 'ready';
+  return 'other';
+}
+
+function selectAdminOrderFilter(value) {
+  adminOrderFilter = value;
+  renderAdminOrderResults();
+}
+
 function renderAdminOrderResults() {
   const results = document.getElementById('adminOrdersResults');
   if (!results) return;
-
-  if (!adminOrders.length) {
-    results.innerHTML = '<div class="admin-empty">No orders found.</div>';
+  const filters = document.getElementById('adminOrderFilters');
+  if (filters) filters.innerHTML = adminOrderGroups.map(([key, label]) => `<button type="button" class="admin-filter ${adminOrderFilter === key ? 'active' : ''}" aria-pressed="${adminOrderFilter === key}" onclick="selectAdminOrderFilter('${key}')">${label} <strong>${key === 'all' ? adminOrders.length : adminOrders.filter(order => adminOrderGroup(order) === key).length}</strong></button>`).join('');
+  const visible = adminOrders.filter(order => adminOrderFilter === 'all' || adminOrderGroup(order) === adminOrderFilter).slice().sort((a, b) => adminOrderSort === 'oldest' ? String(a.createdAt).localeCompare(String(b.createdAt)) : String(b.createdAt).localeCompare(String(a.createdAt)));
+  const count = document.getElementById('adminOrderCount');
+  if (count) count.textContent = `${visible.length} shown · ${adminOrders.length} loaded${adminOrders.length === 500 ? ' (latest 500 matches; narrow your search for older orders)' : ''}`;
+  if (!visible.length) {
+    results.innerHTML = '<div class="admin-empty">No matching orders. Try another filter or search.</div>';
     return;
   }
-
-  results.innerHTML = adminOrders.map(function(order) {
-    const date = order.createdAt ? new Date(order.createdAt).toLocaleString() : '';
+  results.innerHTML = visible.map(function(order) {
     const customer = order.customer || {};
     const shipping = order.shipping || {};
-    const statusOptions = getAdminStatusOptions(order.status).map(function(status) {
-      return `<option value="${escapeForAttribute(status)}" ${status === order.status ? 'selected' : ''}>${escapeHtml(status)}</option>`;
-    }).join('');
     const safeId = String(order.id).replace(/[^a-zA-Z0-9]/g, '');
     const selectId = 'adminStatus' + safeId;
     const trackingId = 'adminTracking' + safeId;
     const carrierId = 'adminCarrier' + safeId;
-
+    const date = order.createdAt ? new Date(order.createdAt).toLocaleString() : '';
+    const items = order.items || [];
+    const quantity = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
+    const notification = order.ownerNotification;
+    const emailLabel = !notification ? 'No notification recorded' : notification.status === 'sent' ? 'Owner email sent' : notification.status === 'retry' ? 'Owner email retrying' : 'Owner email queued';
     return `
-      <article class="admin-order-card">
+      <article class="admin-order-card" data-order-id="${escapeForAttribute(order.id)}">
         <div class="admin-order-head">
           <div>
-            <span class="order-status">${escapeHtml(order.status || 'Order Submitted')}</span>
+            <span class="order-status admin-badge-${adminOrderGroup(order)}">${escapeHtml(order.status || 'Order Submitted')}</span>
             <h3 class="order-id">${escapeHtml(order.id)}</h3>
-            <div class="admin-order-meta">
-              <span><strong>Customer:</strong> ${escapeHtml(customer.name || '—')} • ${escapeHtml(customer.email || '—')}</span>
-              <span><strong>Payment:</strong> ${escapeHtml(order.paymentMethodLabel || order.paymentMethod || '—')} • <strong>Total:</strong> ${escapeHtml(formatMoney(order.total || 0))}</span>
-              <span><strong>Shipping:</strong> ${escapeHtml(shipping.city || '')}${shipping.city ? ', ' : ''}${escapeHtml(shipping.state || '')} ${escapeHtml(shipping.zip || '')} ${escapeHtml(shipping.country || '')}</span>
-              <span><strong>Tracking:</strong> ${escapeHtml(order.trackingCarrier || '—')} ${escapeHtml(order.trackingNumber || '')}</span>
-              <span><strong>Placed:</strong> ${escapeHtml(date)}</span>
-            </div>
+            <div class="admin-order-meta"><strong>${escapeHtml(customer.name || 'No name')}</strong><span>${escapeHtml(customer.email || '')} · ${escapeHtml(date)}</span></div>
           </div>
-          <button class="btn" onclick="copyOrderNumber('${escapeForAttribute(order.id)}')">Copy Order #</button>
+          <div class="admin-order-total"><strong>${escapeHtml(formatMoney(order.total))}</strong><span>${escapeHtml(order.paymentMethodLabel || order.paymentMethod || '')}</span><small>${escapeHtml(emailLabel)}</small></div>
         </div>
-
-        <div class="admin-tracking-grid">
-          <label>
-            Carrier
-            <input id="${carrierId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingCarrier || '')}" placeholder="USPS, UPS, FedEx, etc.">
-          </label>
-          <label>
-            Tracking number
-            <input id="${trackingId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingNumber || '')}" placeholder="Paste tracking number">
-          </label>
+        <div class="admin-items-heading">Items ordered <span>${quantity} ${quantity === 1 ? 'pack' : 'packs'} · ${items.length} ${items.length === 1 ? 'line' : 'lines'}</span></div>
+        <div class="admin-item-list">
+          ${items.map(item => `<div class="admin-item-row"><div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.spec)}</span><small>SKU: ${escapeHtml(item.code)} · ${escapeHtml(formatMoney(item.unitPrice))} each</small></div><div class="admin-item-quantity">Qty ${escapeHtml(item.quantity)}</div><strong class="admin-item-price">${escapeHtml(formatMoney(item.lineTotal))}</strong></div>`).join('') || '<p>No item details recorded.</p>'}
         </div>
-
-        <div class="admin-order-actions">
-          <select id="${selectId}" class="admin-status-select">
-            ${statusOptions}
-          </select>
-          <button class="btn primary" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}', '${trackingId}', '${carrierId}')">Update Order</button>
-          <button class="btn" onclick="sendAdminOrderEmail('${escapeForAttribute(order.id)}')">Send Order Email</button>
+        <div class="admin-detail-grid">
+          <section><h4>Ship to</h4><address>${escapeHtml(customer.name || '')}<br>${escapeHtml(shipping.address || '').replace(/\n/g, '<br>')}<br>${escapeHtml(shipping.city || '')}, ${escapeHtml(shipping.state || '')} ${escapeHtml(shipping.zip || '')}<br>${escapeHtml(shipping.country || '')}</address><p>${escapeHtml(customer.email || '')}<br>${escapeHtml(customer.phone || '')}</p><button class="btn" type="button" onclick="copyAdminShipping('${escapeForAttribute(order.id)}')">Copy shipping details</button></section>
+          <section><h4>Payment breakdown</h4><dl class="admin-payment-totals"><div><dt>Subtotal</dt><dd>${formatMoney(order.subtotal)}</dd></div><div><dt>Shipping</dt><dd>${formatMoney(order.shippingCharge)}</dd></div><div><dt>Tax</dt><dd>${formatMoney(order.tax)}</dd></div><div><dt>Discount${order.discountCode ? ' (' + escapeHtml(order.discountCode) + ')' : ''}</dt><dd>−${formatMoney(order.discount)}</dd></div><div><dt>Total</dt><dd>${formatMoney(order.total)}</dd></div></dl>${adminOrderGroup(order) === 'payment' ? '<p class="admin-payment-warning">Payment has not been confirmed. Verify it before shipping.</p>' : ''}</section>
         </div>
-      </article>
-    `;
+        ${order.notes ? `<div class="admin-order-notes"><strong>Checkout / order notes</strong><p>${escapeHtml(order.notes)}</p></div>` : ''}
+        <details class="admin-fulfillment"><summary>Update status &amp; tracking${order.trackingNumber ? ' · ' + escapeHtml(order.trackingCarrier || '') + ' ' + escapeHtml(order.trackingNumber) : ''}</summary>
+          <div class="admin-tracking-grid"><label>Carrier<input id="${carrierId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingCarrier || '')}" placeholder="USPS, UPS, FedEx"></label><label>Tracking number<input id="${trackingId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingNumber || '')}" placeholder="Paste tracking number"></label></div>
+          <div class="admin-order-actions"><select id="${selectId}" aria-label="Order status" class="admin-status-select">${getAdminStatusOptions(order.status).map(status => `<option value="${escapeForAttribute(status)}" ${status === order.status ? 'selected' : ''}>${escapeHtml(status)}</option>`).join('')}</select><button class="btn primary" type="button" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}', '${trackingId}', '${carrierId}')">Save status &amp; tracking</button></div>
+        </details>
+        <div class="admin-quick-actions"><button class="btn" type="button" onclick="copyOrderNumber('${escapeForAttribute(order.id)}')">Copy order #</button><button class="btn" type="button" onclick="sendAdminOwnerNotification('${escapeForAttribute(order.id)}', this)">Email me this order</button><button class="btn" type="button" onclick="sendAdminOrderEmail('${escapeForAttribute(order.id)}')">Resend customer + owner emails</button></div>
+      </article>`;
   }).join('');
 }
+
+async function copyAdminShipping(orderId) {
+  const order = adminOrders.find(order => order.id === orderId);
+  if (!order) return;
+  const customer = order.customer || {};
+  const shipping = order.shipping || {};
+  const text = [customer.name, shipping.address, `${shipping.city || ''}, ${shipping.state || ''} ${shipping.zip || ''}`, shipping.country, `Phone: ${customer.phone || ''}`, `Email: ${customer.email || ''}`].filter(Boolean).join('\n');
+  const message = document.getElementById('adminDashboardMessage');
+  try { await navigator.clipboard.writeText(text); if (message) message.textContent = 'Shipping details copied for ' + orderId; }
+  catch { if (message) message.textContent = 'Could not copy. Select the shipping details on the order to copy them manually.'; }
+}
+
+async function sendAdminOwnerNotification(orderId, button) {
+  const message = document.getElementById('adminDashboardMessage');
+  if (button) button.disabled = true;
+  if (message) message.textContent = 'Emailing order details…';
+  try {
+    const data = await apiRequest('/api/admin/orders/' + encodeURIComponent(orderId) + '/notify-owner', { method: 'POST' });
+    const order = adminOrders.find(order => order.id === orderId);
+    if (order) order.ownerNotification = data.notification;
+    renderAdminOrderResults();
+    if (message) message.textContent = data.message;
+  } catch (error) { if (message) message.textContent = error.message || 'Could not send notification.'; }
+  finally { if (button) button.disabled = false; }
+}
+
 
 async function loadAdminOrders() {
   const message = document.getElementById('adminDashboardMessage');
@@ -8160,6 +8228,14 @@ async function loadAdminOrders() {
   try {
     const data = await apiRequest('/api/admin/orders?q=' + encodeURIComponent(q), { method: 'GET' });
     adminOrders = data.orders || [];
+    const notice = document.getElementById('adminNotificationStatus');
+    if (notice && data.notifications) {
+      const config = data.notifications;
+      notice.textContent = config.configured ? `Order emails go to ${config.recipient}${config.pending ? ' · ' + config.pending + ' queued / retrying' : ''}.` : `Order emails are queued, but SMTP is not configured. Set up email in Render to deliver notifications to ${config.recipient}.`;
+      notice.classList.toggle('needs-setup', !config.configured);
+      const testEmail = document.getElementById('adminTestEmail');
+      if (testEmail && !testEmail.value) testEmail.value = config.recipient;
+    }
     renderAdminOrderResults();
   } catch (error) {
     adminOrders = [];
@@ -8192,6 +8268,7 @@ async function sendAdminTestEmail() {
 }
 
 async function sendAdminOrderEmail(orderId) {
+  if (!window.confirm('Resend the receipt to the customer and a copy to the owner for ' + orderId + '?')) return;
   const message = document.getElementById('adminDashboardMessage');
   if (message) message.textContent = 'Sending order email for ' + orderId + '...';
 
@@ -8222,7 +8299,7 @@ async function updateAdminOrderStatus(orderId, selectId, trackingId, carrierId) 
     });
 
     adminOrders = adminOrders.map(function(order) {
-      return order.id === orderId ? data.order : order;
+      return order.id === orderId ? { ...data.order, ownerNotification: order.ownerNotification } : order;
     });
     renderAdminOrderResults();
     await initBackendSession();
@@ -9197,6 +9274,8 @@ async function initializeLiveStorefront() {
   } else {
     showCategoryLanding();
   }
+  if (urlParams.get('cart') === 'open') openCart();
+  if (urlParams.get('search') === 'open') toggleSearch();
 }
 
 window.addEventListener('load', initializeLiveStorefront);

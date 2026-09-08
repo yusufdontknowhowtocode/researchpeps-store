@@ -102,10 +102,32 @@ SMTP_SECURE=false
 SMTP_USER=your-smtp-user
 SMTP_PASS=your-smtp-password
 MAIL_FROM="ResearchPeps <orders@yourdomain.com>"
-ORDER_NOTIFY_EMAIL=your@email.com
+ADMIN_ORDER_NOTIFY_EMAIL=ykaymakusa@gmail.com
 ```
 
-If SMTP is blank, orders still work, but email sending is skipped.
+If SMTP is blank, orders still work. Owner notifications stay queued in SQLite until SMTP is configured and the server is running again. Customer receipts still use the existing immediate-send flow.
+
+`ADMIN_ORDER_NOTIFY_EMAIL` defaults to `ykaymakusa@gmail.com`. It is separate from the legacy `ORDER_NOTIFY_EMAIL` / `OWNER_EMAIL` values, which can be used by payment destination fallbacks. Changing the notification address does not change where customers send payment.
+
+## Order dashboard and owner alerts
+
+Open `/admin` and sign in with an account listed in `ADMIN_EMAILS`. Orders appear before stock and promo tools. Search includes product names, sizes, and SKUs as well as customer, shipping, payment, and tracking details. Filter the loaded results by payment/fulfillment status and sort oldest or newest first. Searches return the newest 500 matches; narrow the search to find older orders. All admin API routes remain admin-only.
+
+Each order card includes items, variants/pack sizes, quantities, line prices, full checkout shipping/contact information, notes, payment totals, and tracking controls. “Email me this order” sends only to the configured owner; the separate resend action explicitly resends to the customer too.
+
+Owner emails contain every field collected by the current checkout: name, email, phone, street address, city, state, ZIP, country, notes, payment method, discount code, and research-use confirmation, plus items and totals. No card number or security code is collected or emailed. Card checkout creates a **pending** order alert; verified payment creates a separate **payment confirmed** alert. Manual payments remain unverified until the owner marks them paid. Dashboard changes to Paid / Payment Received also queue a payment-confirmed owner email.
+
+The `owner_order_emails` table is created automatically without replacing existing data. Creation alerts are recorded in the same database transaction as the order. SMTP failures retry automatically with backoff (30 seconds up to one hour); pending jobs survive restarts. Repeated Stripe events are deduplicated, and cannot reset a shipped order to processing. SMTP acceptance is not a guarantee of inbox delivery. A crash after SMTP acceptance but before recording success can result in a duplicate email (at-least-once delivery).
+
+Existing orders are not bulk-emailed on deployment. Use the owner email button for an older order. The dashboard shows whether SMTP is configured and each order's latest notification state.
+
+### Deployment
+
+Deploy the branch through your normal Render workflow and retain the current persistent `DATABASE_PATH` / disk. Set the SMTP variables above using real provider credentials and a permitted sender. Never commit credentials. Set `ADMIN_ORDER_NOTIFY_EMAIL` only if overriding the default recipient. The repository does not verify or modify live Render environment settings. Use the admin Test Email button after deployment to confirm actual delivery.
+
+### Tests
+
+Use Node 20 (the repository runtime), run `npm ci`, then `npm test`. Tests use a temporary SQLite database and mocked SMTP/Stripe; they never place live orders or send real emails.
 
 
 ## Shipping rates
