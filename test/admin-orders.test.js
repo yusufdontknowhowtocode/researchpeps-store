@@ -9,7 +9,7 @@ const sent = []; const sessions = new Map(); let server, db, base, adminCookie, 
 const RealStripe = require('stripe');
 const stripe = new RealStripe('sk_test_local');
 stripe.checkout.sessions.create = async (options) => {
-  const session = { id: 'cs_' + options.metadata.orderId, metadata: options.metadata, currency: 'usd', amount_total: options.line_items.reduce((sum, line) => sum + line.quantity * line.price_data.unit_amount, 0), payment_status: 'unpaid', status: 'open', url: 'https://example.com/checkout' };
+  const session = { id: 'cs_' + options.metadata.orderId, metadata: options.metadata, currency: 'usd', amount_total: options.line_items.reduce((sum, line) => sum + line.quantity * line.price_data.unit_amount, 0), payment_status: 'unpaid', status: 'open', url: 'https://example.com/checkout', createOptions: options };
   sessions.set(session.id, session); return session;
 };
 stripe.checkout.sessions.retrieve = async id => sessions.get(id);
@@ -63,11 +63,26 @@ test('manual order is persisted, fully visible, searchable by product/SKU, and o
   assert.equal(sent.filter(mail => mail.to === 'shipping@example.com').length, before);
   assert.equal((await api('/api/admin/orders/' + order.id + '/notify-owner', 'POST', {}, buyerCookie)).status, 403);
 });
-test('card creation notifies pending; unpaid completion is not paid; verified repeat events do not reset shipped orders', async () => {
+test('card creation backs up checkout details in Stripe; unpaid completion is not paid; verified repeat events do not reset shipped orders', async () => {
   const response = await api('/api/checkout/stripe', 'POST', { ...checkout, paymentMethod: 'stripe' }, buyerCookie);
   assert.equal(response.status, 201, JSON.stringify(response.body));
   const id = response.body.order.id; const session = sessions.get('cs_' + id);
   assert.ok(sent.find(mail => mail.to === 'owner@example.com' && mail.subject.includes(id) && mail.text.includes('Pending Payment')));
+  assert.equal(session.createOptions.customer_email, checkout.customer.email);
+  assert.equal(session.createOptions.client_reference_id, id);
+  assert.equal(session.createOptions.metadata.orderId, id);
+  assert.equal(session.createOptions.payment_intent_data.metadata.orderId, id);
+  assert.deepEqual(session.createOptions.payment_intent_data.shipping, {
+    name: checkout.customer.name,
+    phone: checkout.customer.phone,
+    address: {
+      line1: checkout.shipping.address,
+      city: checkout.shipping.city,
+      state: checkout.shipping.state,
+      postal_code: checkout.shipping.zip,
+      country: 'US'
+    }
+  });
   session.status = 'complete';
   const unpaid = await api('/api/checkout/stripe/confirm', 'POST', { orderId: id }, buyerCookie);
   assert.equal(unpaid.body.order.status, 'Pending Payment');

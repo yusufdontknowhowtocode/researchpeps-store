@@ -1688,16 +1688,38 @@ app.post('/api/checkout/stripe', requireAuth, async (req, res, next) => {
       });
     }
 
+    const stripeMetadata = {
+      orderId: order.id,
+      userId: req.session.userId,
+      discountCode: order.discountCode || ''
+    };
+    const stripeShippingAddress = {
+      line1: order.shipping.address,
+      city: order.shipping.city,
+      state: order.shipping.state,
+      postal_code: order.shipping.zip
+    };
+    const stripeCountryCode = String(getShippingRateEntry(order.shipping.country).code || '').toUpperCase();
+    if (/^[A-Z]{2}$/.test(stripeCountryCode)) {
+      stripeShippingAddress.country = stripeCountryCode;
+    }
+
     const sessionOptions = {
       mode: 'payment',
       line_items: lineItems,
+      customer_email: order.customer.email,
+      client_reference_id: order.id,
       success_url: `${PUBLIC_URL}/?checkout=success&order=${encodeURIComponent(order.id)}`,
       cancel_url: `${PUBLIC_URL}/?checkout=cancel&order=${encodeURIComponent(order.id)}`,
-      metadata: {
-        orderId: order.id,
-        userId: req.session.userId,
-        discountCode: order.discountCode || ''
-      }
+      payment_intent_data: {
+        metadata: stripeMetadata,
+        shipping: {
+          name: order.customer.name,
+          phone: order.customer.phone,
+          address: stripeShippingAddress
+        }
+      },
+      metadata: stripeMetadata
     };
 
     if (order.discount && order.discount > 0) {
