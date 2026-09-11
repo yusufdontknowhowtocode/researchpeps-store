@@ -12,6 +12,7 @@ const helmet = require('helmet');
 const morgan = require('morgan');
 const Stripe = require('stripe');
 const nodemailer = require('nodemailer');
+const { activeProducts, isPurchasableVariant, publicCatalog, productSlug } = require('./lib/catalog');
 const { DEFAULT_OWNER_EMAIL, createOrderNotifier } = require('./lib/order-notifications');
 
 const app = express();
@@ -587,14 +588,7 @@ function isOptionOutOfStock(productName, optionCode) {
 }
 
 function publicProducts() {
-  const stockMap = getProductStockMap();
-  return products.map((product) => ({
-    ...product,
-    options: (product.options || []).map((option) => ({
-      ...option,
-      outOfStock: !!stockMap.get(String(option.code))
-    }))
-  }));
+  return publicCatalog(products, getProductStockMap());
 }
 
 function findProductAndOption(productName, optionCode) {
@@ -1028,6 +1022,12 @@ function validateCartItems(items) {
       throw error;
     }
 
+    if (!isPurchasableVariant(product, option)) {
+      const error = new Error('This product or strength is no longer available. Remove it from your cart.');
+      error.status = 400;
+      throw error;
+    }
+
     if (isOptionOutOfStock(product.name, option.code)) {
       const error = new Error(`${product.name} ${option.spec} is currently out of stock.`);
       error.status = 400;
@@ -1252,6 +1252,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.get('/api/products', (req, res) => {
+  res.set('Cache-Control', 'no-store');
   res.json({ products: publicProducts() });
 });
 
@@ -1967,6 +1968,10 @@ app.get(catalogRoutes, (req, res) => {
 });
 
 app.get('/product/:slug', (req, res) => {
+  const product = activeProducts(products).find(p => productSlug(p.name) === req.params.slug);
+  if (!product || (req.query.option && !product.options.some(o => o.code === req.query.option))) {
+    return res.status(404).send('This product or strength is no longer available. <a href="/catalog">Browse the catalog</a>.');
+  }
   res.sendFile(path.join(__dirname, 'public', 'catalog.html'));
 });
 
