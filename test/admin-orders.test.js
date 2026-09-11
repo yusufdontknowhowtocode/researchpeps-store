@@ -106,3 +106,62 @@ test('card creation backs up checkout details in Stripe; unpaid completion is no
   assert.equal(db.prepare('SELECT status FROM orders WHERE id = ?').get(id).status, 'Shipped');
   assert.equal(sent.filter(mail => mail.to === 'owner@example.com' && mail.subject.includes(id) && mail.subject.startsWith('Payment confirmed')).length, 1);
 });
+
+test('retired variants are absent everywhere and rejected before creating an order or payment session', async () => {
+  const catalog = require('../data/products.json');
+  const publicResponse = await api('/api/products');
+  const published = publicResponse.body.products;
+  assert.equal(catalog.length, 79);
+  assert.equal(catalog.reduce((n, p) => n + p.options.length, 0), 150);
+  assert.equal(published.reduce((n, p) => n + p.options.length, 0), 105);
+  for (const p of published) for (const o of p.options) {
+    assert.ok(!('price' in o));
+    assert.ok(!('availabilityStatus' in o));
+    assert.ok(!('active' in o));
+  }
+  const priorOrders = db.prepare('SELECT * FROM orders ORDER BY id').all();
+  const priorItems = db.prepare('SELECT * FROM order_items ORDER BY id').all();
+  const priorSessions = sessions.size;
+  for (const p of catalog) for (const o of p.options.filter(o => !o.active)) {
+    assert.ok(!published.find(x => x.name === p.name)?.options.some(x => x.code === o.code));
+    for (const endpoint of ['/api/cart/quote', '/api/orders', '/api/checkout/stripe']) {
+      const response = await api(endpoint, 'POST', { ...checkout, items: [{ productName: p.name, optionCode: o.code, quantity: 1, purchaseType: 'kit' }] }, buyerCookie);
+      assert.equal(response.status, 400, p.name + ' ' + o.code + ' ' + endpoint);
+    }
+  }
+  assert.equal(sessions.size, priorSessions);
+  assert.deepEqual(db.prepare('SELECT * FROM orders ORDER BY id').all(), priorOrders);
+  assert.deepEqual(db.prepare('SELECT * FROM order_items ORDER BY id').all(), priorItems);
+  assert.equal((await fetch(base + '/product/igf-des')).status, 404);
+  assert.equal((await fetch(base + '/product/hgh?option=H15')).status, 404);
+  assert.equal((await fetch(base + '/product/retatrutide?option=RT10')).status, 200);
+});
+
+test('historical retired item snapshots remain visible in customer and admin order views', async () => {
+  const response = await api('/api/orders', 'POST', checkout, buyerCookie);
+  const id = response.body.order.id;
+  // Only this disposable fixture is changed to simulate an order placed before retirement.
+  db.prepare('UPDATE order_items SET product_name=?, option_code=?, spec=?, unit_price_cents=?, quantity=?, line_total_cents=? WHERE order_id=?')
+    .run('IGF-DES', 'IGD', 'Historical 2mg*10 vials', 12345, 2, 24690, id);
+  db.prepare('UPDATE orders SET tracking_number=?, tracking_carrier=?, status=? WHERE id=?').run('OLD-TRACKING', 'FedEx', 'Shipped', id);
+  const row = db.prepare('SELECT * FROM orders WHERE id=?').get(id);
+  const item = db.prepare('SELECT * FROM order_items WHERE order_id=?').get(id);
+  for (const endpoint of ['/api/orders', '/api/admin/orders']) {
+    const result = await api(endpoint, 'GET', null, endpoint.includes('/admin/') ? adminCookie : buyerCookie);
+    const old = result.body.orders.find(o => o.id === id);
+    assert.equal(old.items[0].name, item.product_name);
+    assert.equal(old.items[0].spec, item.spec);
+    assert.equal(old.items[0].unitPrice, 123.45);
+    assert.equal(old.items[0].quantity, 2);
+    assert.deepEqual(old.customer, JSON.parse(row.customer_json));
+    assert.deepEqual(old.shipping, JSON.parse(row.shipping_json));
+    assert.equal(old.trackingNumber, row.tracking_number);
+    assert.equal(old.trackingCarrier, row.tracking_carrier);
+    assert.equal(old.status, row.status);
+    assert.equal(old.paymentMethod, row.payment_method);
+    assert.equal(old.createdAt, row.created_at);
+    assert.equal(old.updatedAt, row.updated_at);
+  }
+  assert.deepEqual(db.prepare('SELECT * FROM orders WHERE id=?').get(id), row);
+  assert.deepEqual(db.prepare('SELECT * FROM order_items WHERE order_id=?').get(id), item);
+});
