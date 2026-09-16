@@ -3,3 +3,5 @@ node_modules/
 data/*.sqlite
 data/*.sqlite-*
 .DS_Store
+data/order-sourcing/
+*source-config*.json
