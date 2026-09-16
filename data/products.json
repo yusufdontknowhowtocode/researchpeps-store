@@ -4,7 +4,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Triple-acting research peptide commonly studied for weight loss, appetite control, blood sugar balance, and overall metabolic health.",
+    "description": "Retatrutide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "R3tatrutide"
     ],
@@ -12,57 +12,57 @@
       {
         "code": "RT5",
         "spec": "5mg*10 vials",
-        "kitPrice": 129.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 249.99,
+        "singlePrice": 39.99,
         "active": true
       },
       {
         "code": "RT10",
         "spec": "10mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 39.99,
+        "kitPrice": 359.99,
+        "singlePrice": 54.99,
         "active": true
       },
       {
         "code": "RT15",
         "spec": "15mg*10 vials",
-        "kitPrice": 239.99,
-        "singlePrice": 49.99,
+        "kitPrice": 439.99,
+        "singlePrice": 69.99,
         "active": true
       },
       {
         "code": "RT20",
         "spec": "20mg*10 vials",
-        "kitPrice": 329.99,
-        "singlePrice": 69.99,
+        "kitPrice": 519.99,
+        "singlePrice": 79.99,
         "active": true
       },
       {
         "code": "RT30",
         "spec": "30mg*10 vials",
-        "kitPrice": 419.99,
-        "singlePrice": 89.99,
+        "kitPrice": 649.99,
+        "singlePrice": 99.99,
         "active": true
       },
       {
         "code": "RT40",
         "spec": "40mg*10 vials",
-        "kitPrice": 529.99,
-        "singlePrice": 109.99,
+        "kitPrice": 759.99,
+        "singlePrice": 114.99,
         "active": true
       },
       {
         "code": "RT50",
         "spec": "50mg*10 vials",
-        "kitPrice": 589.99,
-        "singlePrice": 119.99,
+        "kitPrice": 859.99,
+        "singlePrice": 129.99,
         "active": true
       },
       {
         "code": "RT60",
         "spec": "60mg*10 vials",
-        "kitPrice": 669.99,
-        "singlePrice": 139.99,
+        "kitPrice": 949.99,
+        "singlePrice": 144.99,
         "active": true
       }
     ],
@@ -73,42 +73,42 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "GLP-1 research peptide commonly studied for weight loss, appetite control, slower stomach emptying, and blood sugar support.",
+    "description": "Semaglutide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "SM05",
         "spec": "5mg*10 vials",
-        "kitPrice": 79.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 239.99,
+        "singlePrice": 36.99,
         "active": true
       },
       {
         "code": "SM10",
         "spec": "10mg*10 vials",
-        "kitPrice": 129.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 319.99,
+        "singlePrice": 49.99,
         "active": true
       },
       {
         "code": "SM15",
         "spec": "15mg*10 vials",
-        "kitPrice": 139.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 389.99,
+        "singlePrice": 59.99,
         "active": true
       },
       {
         "code": "SM20",
         "spec": "20mg*10 vials",
-        "kitPrice": 209.99,
-        "singlePrice": 39.99,
+        "kitPrice": 439.99,
+        "singlePrice": 69.99,
         "active": true
       },
       {
         "code": "SM30",
         "spec": "30mg*10 vials",
-        "kitPrice": 259.99,
-        "singlePrice": 59.99,
+        "kitPrice": 529.99,
+        "singlePrice": 79.99,
         "active": true
       }
     ],
@@ -119,63 +119,63 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Dual-action research peptide commonly studied for weight loss, appetite control, improved glucose balance, and broader metabolic support.",
+    "description": "Tirzepatide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "TR5",
         "spec": "5mg*10 vials",
-        "kitPrice": 99.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 299.99,
+        "singlePrice": 44.99,
         "active": true
       },
       {
         "code": "TR10",
         "spec": "10mg*10 vials",
-        "kitPrice": 129.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 399.99,
+        "singlePrice": 59.99,
         "active": true
       },
       {
         "code": "TR15",
         "spec": "15mg*10 vials",
-        "kitPrice": 159.99,
-        "singlePrice": 39.99,
+        "kitPrice": 479.99,
+        "singlePrice": 74.99,
         "active": true
       },
       {
         "code": "TR20",
         "spec": "20mg*10 vials",
-        "kitPrice": 179.99,
-        "singlePrice": 39.99,
+        "kitPrice": 549.99,
+        "singlePrice": 84.99,
         "active": true
       },
       {
         "code": "TR30",
         "spec": "30mg*10 vials",
-        "kitPrice": 219.99,
-        "singlePrice": 49.99,
+        "kitPrice": 659.99,
+        "singlePrice": 99.99,
         "active": true
       },
       {
         "code": "TR40",
         "spec": "40mg*10 vials",
-        "kitPrice": 269.99,
-        "singlePrice": 59.99,
+        "kitPrice": 749.99,
+        "singlePrice": 114.99,
         "active": true
       },
       {
         "code": "TR50",
         "spec": "50mg*10 vials",
-        "kitPrice": 339.99,
-        "singlePrice": 69.99,
+        "kitPrice": 829.99,
+        "singlePrice": 129.99,
         "active": true
       },
       {
         "code": "TR60",
         "spec": "60mg*10 vials",
-        "kitPrice": 389.99,
-        "singlePrice": 79.99,
+        "kitPrice": 899.99,
+        "singlePrice": 139.99,
         "active": true
       }
     ],
@@ -186,21 +186,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for focus, memory, mental clarity, and broader cognitive support.",
+    "description": "Semax supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "XA5",
         "spec": "5mg*10 vials",
-        "kitPrice": 99.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 199.99,
+        "singlePrice": 29.99,
         "active": true
       },
       {
         "code": "XA11",
         "spec": "10mg*10 vials",
-        "kitPrice": 129.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 259.99,
+        "singlePrice": 39.99,
         "active": true
       }
     ],
@@ -211,14 +211,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research hormone product commonly studied for growth, recovery, body composition, and performance-related pathways.",
+    "description": "HGH supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "H10",
         "spec": "10iu*10 vials",
-        "kitPrice": 119.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 199.99,
+        "singlePrice": 29.99,
         "active": true
       },
       {
@@ -232,15 +232,15 @@
       {
         "code": "H24",
         "spec": "24iu*10 vials",
-        "kitPrice": 259.99,
-        "singlePrice": 49.99,
+        "kitPrice": 389.99,
+        "singlePrice": 59.99,
         "active": true
       },
       {
         "code": "H36",
         "spec": "36iu*10 vials",
-        "kitPrice": 349.99,
-        "singlePrice": 69.99,
+        "kitPrice": 529.99,
+        "singlePrice": 79.99,
         "active": true
       }
     ],
@@ -251,7 +251,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth factor research peptide commonly studied for muscle growth, recovery, and cell-signaling activity.",
+    "description": "IGF-1LR3 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -265,7 +265,7 @@
       {
         "code": "IG1",
         "spec": "1mg*10 vials",
-        "kitPrice": 429.99,
+        "kitPrice": 569.99,
         "singlePrice": 89.99,
         "active": true
       }
@@ -277,28 +277,28 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for recovery, gut health, tissue repair, and joint support.",
+    "description": "BPC-157 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "BC5",
         "spec": "5mg*10 vials",
-        "kitPrice": 99.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 179.99,
+        "singlePrice": 27.99,
         "active": true
       },
       {
         "code": "BC10",
         "spec": "10mg*10 vials",
-        "kitPrice": 159.99,
-        "singlePrice": 39.99,
+        "kitPrice": 239.99,
+        "singlePrice": 36.99,
         "active": true
       },
       {
         "code": "BC20",
         "spec": "20mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 39.99,
+        "kitPrice": 329.99,
+        "singlePrice": 49.99,
         "active": true
       }
     ],
@@ -309,21 +309,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for recovery, tissue repair, flexibility, and injury-support pathways.",
+    "description": "TB-500 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "BT5",
         "spec": "5mg*10 vials",
-        "kitPrice": 179.99,
-        "singlePrice": 39.99,
+        "kitPrice": 289.99,
+        "singlePrice": 44.99,
         "active": true
       },
       {
         "code": "BT10",
         "spec": "10mg*10 vials",
-        "kitPrice": 219.99,
-        "singlePrice": 49.99,
+        "kitPrice": 409.99,
+        "singlePrice": 64.99,
         "active": true
       }
     ],
@@ -334,21 +334,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Copper peptide researched for skin repair, collagen support, hair-related studies, and overall tissue recovery.",
+    "description": "GHK-CU supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "CU50",
         "spec": "50mg*10 vials",
-        "kitPrice": 69.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 149.99,
+        "singlePrice": 22.99,
         "active": true
       },
       {
         "code": "CU100",
         "spec": "100mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 219.99,
+        "singlePrice": 34.99,
         "active": true
       }
     ],
@@ -359,28 +359,28 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Cellular coenzyme commonly studied for energy production, healthy aging research, and cellular repair pathways.",
+    "description": "NAD+ supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "NJ100",
         "spec": "100mg*10 vials",
-        "kitPrice": 99.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 169.99,
+        "singlePrice": 25.99,
         "active": true
       },
       {
         "code": "NJ500",
         "spec": "500mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 39.99,
+        "kitPrice": 339.99,
+        "singlePrice": 51.99,
         "active": true
       },
       {
         "code": "NJ1000",
         "spec": "1000mg*10 vials",
-        "kitPrice": 299.99,
-        "singlePrice": 59.99,
+        "kitPrice": 459.99,
+        "singlePrice": 69.99,
         "active": true
       }
     ],
@@ -391,21 +391,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep support, and lean-mass related research.",
+    "description": "Ipamorelin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "IP5",
         "spec": "5mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 169.99,
+        "singlePrice": 25.99,
         "active": true
       },
       {
         "code": "IP10",
         "spec": "10mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 39.99,
+        "kitPrice": 239.99,
+        "singlePrice": 36.99,
         "active": true
       }
     ],
@@ -416,7 +416,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and body-composition support.",
+    "description": "CJC-1295 WO/Dac supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "CJC-1295 No DAC",
       "CJC No DAC",
@@ -430,22 +430,22 @@
       {
         "code": "NO DAC",
         "spec": "2mg*10 vials",
-        "kitPrice": 69.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 189.99,
+        "singlePrice": 29.99,
         "active": true
       },
       {
         "code": "CND5",
         "spec": "5mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 39.99,
+        "kitPrice": 289.99,
+        "singlePrice": 44.99,
         "active": true
       },
       {
         "code": "CND10",
         "spec": "10mg*10 vials",
-        "kitPrice": 349.99,
-        "singlePrice": 69.99,
+        "kitPrice": 389.99,
+        "singlePrice": 59.99,
         "active": true
       }
     ],
@@ -456,7 +456,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Peptide blend commonly studied for recovery, sleep support, growth hormone pathways, and body-composition goals.",
+    "description": "CJC-1295 DAC + Ipamorelin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "cjc dac ipamorelin",
       "CJC DAC ipamorelin",
@@ -482,7 +482,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Peptide blend commonly studied for growth hormone support, recovery, sleep quality, and body-composition goals.",
+    "description": "CJC-1295 WO/Dac 5mg + Ipamorelin 5mg supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "cjc no dac ipamorelin",
       "CJC no dac ipa",
@@ -494,7 +494,7 @@
       {
         "code": "CP10",
         "spec": "10mg*10 vials",
-        "kitPrice": 219.99,
+        "kitPrice": 329.99,
         "singlePrice": 49.99,
         "active": true
       }
@@ -506,7 +506,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth hormone releasing peptide commonly studied for recovery, sleep quality, and healthy hormone support.",
+    "description": "Sermorelin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "sermorelin",
       "Semorelin Acetate",
@@ -526,14 +526,14 @@
       {
         "code": "SM05A",
         "spec": "5mg*10 vials",
-        "kitPrice": 159.99,
+        "kitPrice": 259.99,
         "singlePrice": 39.99,
         "active": true
       },
       {
         "code": "SM010A",
         "spec": "10mg*10 vials",
-        "kitPrice": 279.99,
+        "kitPrice": 399.99,
         "singlePrice": 59.99,
         "active": true
       }
@@ -545,7 +545,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth hormone secretagogue commonly studied for appetite increase, hormone release, and recovery support.",
+    "description": "GHRP-2 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "GHRP2",
       "ghrp2",
@@ -555,15 +555,15 @@
       {
         "code": "G25",
         "spec": "5mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 139.99,
+        "singlePrice": 21.99,
         "active": true
       },
       {
         "code": "G210",
         "spec": "10mg*10 vials",
-        "kitPrice": 159.99,
-        "singlePrice": 39.99,
+        "kitPrice": 189.99,
+        "singlePrice": 29.99,
         "active": true
       }
     ],
@@ -574,7 +574,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth hormone secretagogue commonly studied for appetite support, hormone release, and recovery-related effects.",
+    "description": "GHRP-6 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "GHRP-6 Acetate",
       "ghrp-6 acetate",
@@ -585,15 +585,15 @@
       {
         "code": "G65",
         "spec": "5mg*10 vials",
-        "kitPrice": 159.99,
-        "singlePrice": 39.99,
+        "kitPrice": 169.99,
+        "singlePrice": 25.99,
         "active": true
       },
       {
         "code": "G610",
         "spec": "10mg*10 vials",
         "kitPrice": 219.99,
-        "singlePrice": 49.99,
+        "singlePrice": 34.99,
         "active": true
       }
     ],
@@ -604,21 +604,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for weight loss, appetite control, and metabolic health support.",
+    "description": "Cagrilintide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "CGL5",
         "spec": "5mg*10 vials",
-        "kitPrice": 239.99,
-        "singlePrice": 49.99,
+        "kitPrice": 369.99,
+        "singlePrice": 54.99,
         "active": true
       },
       {
         "code": "CGL10",
         "spec": "10mg*10 vials",
-        "kitPrice": 429.99,
-        "singlePrice": 89.99,
+        "kitPrice": 499.99,
+        "singlePrice": 74.99,
         "active": true
       }
     ],
@@ -629,7 +629,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Dual peptide blend commonly studied for weight loss, appetite control, and stronger metabolic support.",
+    "description": "Cagrilintide 5mg + Semaglutide 5mg supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -643,8 +643,8 @@
       {
         "code": "CS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 439.99,
-        "singlePrice": 89.99,
+        "kitPrice": 519.99,
+        "singlePrice": 79.99,
         "active": true
       }
     ],
@@ -655,13 +655,13 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for fat loss, body-composition support, and metabolism-related effects.",
+    "description": "AOD supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "5AD",
         "spec": "5mg*10 vials",
-        "kitPrice": 239.99,
+        "kitPrice": 309.99,
         "singlePrice": 49.99,
         "active": true
       }
@@ -673,21 +673,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research compound commonly studied for fat loss, metabolism, and body-composition support.",
+    "description": "5-amino-1mq supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "5AM",
         "spec": "5mg*10 vials",
-        "kitPrice": 119.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 199.99,
+        "singlePrice": 29.99,
         "active": true
       },
       {
         "code": "50AM",
         "spec": "50mg*10 vials",
-        "kitPrice": 169.99,
-        "singlePrice": 39.99,
+        "kitPrice": 559.99,
+        "singlePrice": 84.99,
         "active": true
       }
     ],
@@ -698,21 +698,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Mitochondrial research peptide commonly studied for metabolism, energy use, insulin sensitivity, and exercise support.",
+    "description": "MOTS-C supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "MS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 149.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 229.99,
+        "singlePrice": 34.99,
         "active": true
       },
       {
         "code": "MS40",
         "spec": "40mg*10 vials",
-        "kitPrice": 429.99,
-        "singlePrice": 89.99,
+        "kitPrice": 549.99,
+        "singlePrice": 84.99,
         "active": true
       }
     ],
@@ -723,7 +723,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth factor research peptide often studied for muscle cell activity, tissue repair, and localized growth signaling.",
+    "description": "IGF-DES supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -742,21 +742,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for stress support, anxiety-related behavior, mood balance, and mental clarity.",
+    "description": "Selank supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "SK5",
         "spec": "5mg*10 vials",
-        "kitPrice": 99.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 199.99,
+        "singlePrice": 29.99,
         "active": true
       },
       {
         "code": "SK11",
         "spec": "10mg*10 vials",
-        "kitPrice": 149.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 259.99,
+        "singlePrice": 39.99,
         "active": true
       }
     ],
@@ -767,21 +767,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth hormone releasing peptide studied for body-composition changes, fat loss research, and hormone-related pathways.",
+    "description": "Tesamorelin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "TSM5",
         "spec": "5mg*10 vials",
-        "kitPrice": 259.99,
+        "kitPrice": 309.99,
         "singlePrice": 49.99,
         "active": true
       },
       {
         "code": "TSM10",
         "spec": "10mg*10 vials",
-        "kitPrice": 429.99,
-        "singlePrice": 89.99,
+        "kitPrice": 449.99,
+        "singlePrice": 69.99,
         "active": true
       }
     ],
@@ -792,7 +792,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide studied for weight loss, appetite control, blood sugar balance, and metabolic health.",
+    "description": "Mazdutide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -819,14 +819,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for weight loss, appetite control, and cardiometabolic health markers.",
+    "description": "Survodutide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "SUR10",
         "spec": "10mg*10 vials",
-        "kitPrice": 619.99,
-        "singlePrice": 129.99,
+        "kitPrice": 1109.99,
+        "singlePrice": 169.99,
         "active": true
       }
     ],
@@ -837,21 +837,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for gut health, inflammation support, and skin-related pathways.",
+    "description": "KPV supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "KPV5",
         "spec": "5mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 199.99,
+        "singlePrice": 29.99,
         "active": true
       },
       {
         "code": "KPV10",
         "spec": "10mg*10 vials",
-        "kitPrice": 139.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 259.99,
+        "singlePrice": 39.99,
         "active": true
       }
     ],
@@ -862,20 +862,20 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for immune support, inflammation balance, and overall immune function.",
+    "description": "Thymosin Alpha-1 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "TA5",
         "spec": "5mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 39.99,
+        "kitPrice": 319.99,
+        "singlePrice": 49.99,
         "active": true
       },
       {
         "code": "TA10",
         "spec": "10mg*10 vials",
-        "kitPrice": 339.99,
+        "kitPrice": 439.99,
         "singlePrice": 69.99,
         "active": true
       }
@@ -887,21 +887,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide mainly studied for hormone signaling, reproductive function, and fertility-related pathways.",
+    "description": "KissPeptin-10 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "KS5",
         "spec": "5mg*10 vials",
-        "kitPrice": 119.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 209.99,
+        "singlePrice": 31.99,
         "active": true
       },
       {
         "code": "KS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 39.99,
+        "kitPrice": 279.99,
+        "singlePrice": 44.99,
         "active": true
       }
     ],
@@ -912,14 +912,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research product often discussed in body-composition and fat-targeting studies, especially around localized fat reduction models.",
+    "description": "Lemon Bottle supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "LB",
         "spec": "10ml*10 vials",
-        "kitPrice": 229.99,
-        "singlePrice": 49.99,
+        "kitPrice": 239.99,
+        "singlePrice": 36.99,
         "active": true
       }
     ],
@@ -930,21 +930,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide studied for inflammation, immune signaling, blood vessel function, and gut-related pathways.",
+    "description": "Vasoactive Intestinal Peptide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "VIP5",
         "spec": "5mg*10 vials",
-        "kitPrice": 179.99,
-        "singlePrice": 39.99,
+        "kitPrice": 499.99,
+        "singlePrice": 74.99,
         "active": true
       },
       {
         "code": "VIP10",
         "spec": "10mg*10 vials",
-        "kitPrice": 339.99,
-        "singlePrice": 69.99,
+        "kitPrice": 679.99,
+        "singlePrice": 104.99,
         "active": true
       }
     ],
@@ -955,7 +955,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Lab supply commonly used for peptide mixing and dilution in research settings.",
+    "description": "Bacteriostatic Water 0.9% supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -982,14 +982,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Peptide blend commonly studied for recovery, tissue repair, joint support, and healing-related research.",
+    "description": "BPC-157 5mg + TB-500 5mg supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "BB10",
         "spec": "10mg*10 vials",
-        "kitPrice": 219.99,
-        "singlePrice": 49.99,
+        "kitPrice": 339.99,
+        "singlePrice": 51.99,
         "active": true
       }
     ],
@@ -1000,14 +1000,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research compound commonly studied for energy use, endurance, metabolism, and exercise-related pathways.",
+    "description": "AICAR supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "AR50",
         "spec": "50mg*10 vials",
-        "kitPrice": 149.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 349.99,
+        "singlePrice": 54.99,
         "active": true
       }
     ],
@@ -1018,21 +1018,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Mitochondrial research peptide studied for cellular energy, oxidative stress, and heart or muscle support pathways.",
+    "description": "SS-31 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "2S10",
         "spec": "10mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 39.99,
+        "kitPrice": 309.99,
+        "singlePrice": 49.99,
         "active": true
       },
       {
         "code": "2S50",
         "spec": "50mg*10 vials",
-        "kitPrice": 659.99,
-        "singlePrice": 129.99,
+        "kitPrice": 749.99,
+        "singlePrice": 114.99,
         "active": true
       }
     ],
@@ -1043,14 +1043,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Antioxidant research compound commonly studied for detox support, oxidative stress, and cellular protection.",
+    "description": "Glutathione supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "GTT",
         "spec": "1500mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 39.99,
+        "kitPrice": 289.99,
+        "singlePrice": 44.99,
         "active": true
       }
     ],
@@ -1061,14 +1061,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research hormone product commonly studied for fertility support and reproductive hormone function.",
+    "description": "HMG supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "G75",
         "spec": "75iu*10 vials",
-        "kitPrice": 139.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 349.99,
+        "singlePrice": 54.99,
         "active": true
       }
     ],
@@ -1079,7 +1079,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research blend commonly studied for metabolism, fat-burning support, energy, and vitamin B12 support.",
+    "description": "Lipo-C with vitamins B12 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1098,21 +1098,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research hormone product commonly studied for fertility, hormone balance, and reproductive support.",
+    "description": "HCG supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "G5K",
         "spec": "5000iu*10 vials",
-        "kitPrice": 199.99,
+        "kitPrice": 269.99,
         "singlePrice": 39.99,
         "active": true
       },
       {
         "code": "G10K",
         "spec": "10000iu*10 vials",
-        "kitPrice": 369.99,
-        "singlePrice": 79.99,
+        "kitPrice": 389.99,
+        "singlePrice": 59.99,
         "active": true
       }
     ],
@@ -1123,14 +1123,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Higher-strength peptide blend commonly studied for recovery, tissue repair, and joint or muscle support.",
+    "description": "BPC-157 10mg + TB-500 10mg supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "BB20",
         "spec": "20mg*10 vials",
-        "kitPrice": 389.99,
-        "singlePrice": 79.99,
+        "kitPrice": 489.99,
+        "singlePrice": 74.99,
         "active": true
       }
     ],
@@ -1141,13 +1141,13 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide studied in longevity and senescence models, especially for aging-related cell pathways.",
+    "description": "FOXO4 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "F410",
         "spec": "10mg*10 vials",
-        "kitPrice": 759.99,
+        "kitPrice": 979.99,
         "singlePrice": 149.99,
         "active": true
       }
@@ -1159,14 +1159,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Antimicrobial research peptide commonly studied for immune defense, skin repair, and inflammation-related pathways.",
+    "description": "LL37 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "LL375",
         "spec": "5mg*10 vials",
-        "kitPrice": 179.99,
-        "singlePrice": 39.99,
+        "kitPrice": 319.99,
+        "singlePrice": 49.99,
         "active": true
       },
       {
@@ -1185,7 +1185,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide mainly studied for pain-signaling pathways and receptor-binding activity.",
+    "description": "Dermorphin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1204,7 +1204,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research compound commonly studied for fat metabolism, energy production, and exercise performance support.",
+    "description": "L-Carnitine 600mg/ml supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1247,7 +1247,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Lab supply commonly used for peptide mixing and reconstitution in research settings.",
+    "description": "Acetic Acid Water 0.6% supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1274,13 +1274,13 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Longer-acting growth hormone releasing peptide studied for recovery, hormone support, and body-composition research.",
+    "description": "CJC-1295 W/Dac supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "CD5",
         "spec": "5mg*10 vials",
-        "kitPrice": 369.99,
+        "kitPrice": 519.99,
         "singlePrice": 79.99,
         "active": true
       }
@@ -1292,14 +1292,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research compound commonly studied for brain support, nerve health, memory, and recovery-related pathways.",
+    "description": "Cerebrolysin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "CBL60",
         "spec": "60mg*10 vials",
-        "kitPrice": 119.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 249.99,
+        "singlePrice": 39.99,
         "active": true
       }
     ],
@@ -1310,21 +1310,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for healthy aging, sleep patterns, and cellular longevity pathways.",
+    "description": "Epithalon supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "ET10",
         "spec": "10mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 169.99,
+        "singlePrice": 25.99,
         "active": true
       },
       {
         "code": "ET50",
         "spec": "50mg*10 vials",
-        "kitPrice": 349.99,
-        "singlePrice": 69.99,
+        "kitPrice": 409.99,
+        "singlePrice": 64.99,
         "active": true
       }
     ],
@@ -1335,14 +1335,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research wellness blend commonly studied for energy support, metabolism, and body-composition goals.",
+    "description": "LC120 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "LC120",
         "spec": "10ml*10 vials",
-        "kitPrice": 139.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 349.99,
+        "singlePrice": 54.99,
         "active": true
       }
     ],
@@ -1353,14 +1353,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Growth hormone secretagogue commonly studied for recovery, muscle support, and hormone-related effects.",
+    "description": "Hexarelin Acetate supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "HX5",
         "spec": "5mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 39.99,
+        "kitPrice": 279.99,
+        "singlePrice": 44.99,
         "active": true
       }
     ],
@@ -1371,7 +1371,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for brain health, memory support, and healthy aging pathways.",
+    "description": "Pinealon supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1385,8 +1385,8 @@
       {
         "code": "PI10",
         "spec": "10mg*10 vials",
-        "kitPrice": 169.99,
-        "singlePrice": 39.99,
+        "kitPrice": 229.99,
+        "singlePrice": 34.99,
         "active": true
       },
       {
@@ -1405,14 +1405,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for skin pigmentation and tanning-related pathways.",
+    "description": "Melanotan supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "MT1",
         "spec": "10mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 199.99,
+        "singlePrice": 29.99,
         "active": true
       }
     ],
@@ -1423,14 +1423,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied in cosmetic and skin-care research for expression lines and wrinkle-related effects.",
+    "description": "Snap-8 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "NPB10",
         "spec": "10mg*10 vials",
-        "kitPrice": 99.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 299.99,
+        "singlePrice": 44.99,
         "active": true
       }
     ],
@@ -1441,21 +1441,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Lab buffer commonly used for dilution, washing, and general peptide research preparation.",
+    "description": "Phosphate Buffered Saline (PBS) supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "WA3",
         "spec": "3ml*10 vials",
-        "kitPrice": 19.990000000000002,
-        "singlePrice": 9.99,
+        "kitPrice": 129.99,
+        "singlePrice": 19.99,
         "active": true
       },
       {
         "code": "WA10",
         "spec": "10ml*10 vials",
-        "kitPrice": 29.990000000000002,
-        "singlePrice": 9.99,
+        "kitPrice": 209.99,
+        "singlePrice": 31.99,
         "active": true
       }
     ],
@@ -1466,21 +1466,21 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide mainly studied for fat loss and body-composition related pathways.",
+    "description": "Adipotide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "AP2",
         "spec": "2mg*10 vials",
-        "kitPrice": 159.99,
-        "singlePrice": 39.99,
+        "kitPrice": 419.99,
+        "singlePrice": 64.99,
         "active": true
       },
       {
         "code": "AP5",
         "spec": "5mg*10 vials",
-        "kitPrice": 349.99,
-        "singlePrice": 69.99,
+        "kitPrice": 639.99,
+        "singlePrice": 99.99,
         "active": true
       }
     ],
@@ -1491,14 +1491,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research blend commonly studied for skin repair, tissue recovery, joint support, and healing-related effects.",
+    "description": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "BBG70",
         "spec": "70mg*10 vials",
-        "kitPrice": 369.99,
-        "singlePrice": 79.99,
+        "kitPrice": 449.99,
+        "singlePrice": 69.99,
         "active": true
       }
     ],
@@ -1509,14 +1509,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for social bonding, mood, stress response, and behavioral pathways.",
+    "description": "Oxytocin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "OT2",
         "spec": "2mg*10 vials",
-        "kitPrice": 59.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 259.99,
+        "singlePrice": 39.99,
         "active": true
       }
     ],
@@ -1527,7 +1527,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Vitamin B12 research product commonly studied for energy support, metabolism, and nutrient-related pathways.",
+    "description": "B12 1mg/ml supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1546,7 +1546,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research hormone commonly studied for sleep support, circadian rhythm balance, and recovery.",
+    "description": "Melatonin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1565,14 +1565,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Advanced peptide blend commonly studied for skin repair, gut support, inflammation balance, and full-body recovery research.",
+    "description": "GHK-CU 50mg + BPC-157 10mg + TB-500 10mg + KPV 10mg supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "KLOW80",
         "spec": "80mg*10 vials",
-        "kitPrice": 449.99,
-        "singlePrice": 89.99,
+        "kitPrice": 469.99,
+        "singlePrice": 69.99,
         "active": true
       }
     ],
@@ -1583,7 +1583,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research compound being explored for metabolism, energy use, and weight-management related pathways.",
+    "description": "SLU-PP-322 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
@@ -1602,14 +1602,14 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for skin pigmentation, tanning response, and melanin-related pathways.",
+    "description": "MT-2 (melanotan 2 acetate) supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "ML10",
         "spec": "10mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 199.99,
+        "singlePrice": 29.99,
         "active": true
       }
     ],
@@ -1620,28 +1620,28 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for sleep support, stress balance, and nervous-system related pathways.",
+    "description": "DSIP supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [],
     "options": [
       {
         "code": "DS5",
         "spec": "5mg*10 vials",
-        "kitPrice": 99.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 319.99,
+        "singlePrice": 49.99,
         "active": true
       },
       {
         "code": "DS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 149.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 599.99,
+        "singlePrice": 89.99,
         "active": true
       },
       {
         "code": "DS15",
         "spec": "15mg*10 vials",
-        "kitPrice": 219.99,
-        "singlePrice": 49.99,
+        "kitPrice": 859.99,
+        "singlePrice": 129.99,
         "active": true
       }
     ],
@@ -1653,7 +1653,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Spray-format research version of Semax for laboratory and analytical research only. Not for human or animal use.",
+    "description": "Semax Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "semax spray",
       "nasal semax"
@@ -1684,7 +1684,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Spray-format research version of Selank for laboratory and analytical research only. Not for human or animal use.",
+    "description": "Selank Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "selank spray",
       "nasal selank"
@@ -1715,7 +1715,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Combined Semax and Selank spray-format research blend for laboratory and analytical research only. Not for human or animal use.",
+    "description": "Semax + Selank Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "semax selank spray",
       "semax + selank",
@@ -1747,7 +1747,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Spray-format research version of Oxytocin for laboratory and analytical research only. Not for human or animal use.",
+    "description": "Oxytocin Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "oxytocin spray",
       "nasal oxytocin"
@@ -1770,7 +1770,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Spray-format research version of DSIP for laboratory and analytical research only. Not for human or animal use.",
+    "description": "DSIP Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "dsip spray",
       "nasal dsip"
@@ -1809,7 +1809,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Spray-format research version of NAD+ for laboratory and analytical research only. Not for human or animal use.",
+    "description": "NAD+ Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "nad nasal",
       "nad spray",
@@ -1849,7 +1849,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Spray-format research version of Vasoactive Intestinal Peptide for laboratory and analytical research only. Not for human or animal use.",
+    "description": "VIP Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "vip spray",
       "nasal vip",
@@ -1881,7 +1881,7 @@
     "page": "peptides",
     "icon": "💧",
     "deliveryFormat": "nasal",
-    "description": "Spray-format CJC-1295 without DAC and Ipamorelin research blend for laboratory and analytical research only. Not for human or animal use.",
+    "description": "CJC-1295 WO/Dac + Ipamorelin Nasal Spray supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "cjc ipamorelin nasal",
       "cjc no dac ipamorelin spray",
@@ -1904,7 +1904,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for receptor signaling, behavioral pathways, and related laboratory research models.",
+    "description": "PT-141 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "PT141",
       "PT 141"
@@ -1913,8 +1913,8 @@
       {
         "code": "P41",
         "spec": "10mg*10 vials",
-        "kitPrice": 139.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 229.99,
+        "singlePrice": 34.99,
         "active": true
       }
     ],
@@ -1925,7 +1925,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for cell-signaling pathways and laboratory research models.",
+    "description": "PNC-27 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "PNC27"
     ],
@@ -1954,7 +1954,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for muscle growth signaling, tissue repair, and recovery-related pathways.",
+    "description": "MGF supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "Mechano Growth Factor"
     ],
@@ -1975,7 +1975,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "PEGylated MGF research peptide commonly studied for muscle growth signaling, tissue repair, and recovery-related pathways.",
+    "description": "PEG MGF supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "PEG-MGF",
       "PEGylated MGF"
@@ -1997,7 +1997,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for immune support, thymus-related pathways, and aging research models.",
+    "description": "Thymalin supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "Thymalin peptide"
     ],
@@ -2005,8 +2005,8 @@
       {
         "code": "TY10",
         "spec": "10mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 19.990000000000002,
+        "kitPrice": 359.99,
+        "singlePrice": 54.99,
         "active": true
       }
     ],
@@ -2017,7 +2017,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Research peptide commonly studied for cognitive, mood, and nervous-system related pathways.",
+    "description": "PE-22-28 supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "PE22-28",
       "PE 22 28"
@@ -2026,8 +2026,8 @@
       {
         "code": "PE10",
         "spec": "10mg*10 vials",
-        "kitPrice": 109.99,
-        "singlePrice": 29.990000000000002,
+        "kitPrice": 269.99,
+        "singlePrice": 39.99,
         "active": true
       }
     ],
@@ -2038,7 +2038,7 @@
     "category": "Peptides",
     "page": "peptides",
     "icon": "🧬",
-    "description": "Dual research blend commonly studied for appetite control, weight-management pathways, and metabolic health markers.",
+    "description": "Retatrutide + Cagrilintide supplied for nonclinical laboratory research only. Not for human or veterinary use.",
     "aliases": [
       "Retatrutide Cagrilintide",
       "Reta Cagri"

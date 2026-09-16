@@ -14,6 +14,7 @@ const Stripe = require('stripe');
 const nodemailer = require('nodemailer');
 const { activeProducts, isPurchasableVariant, publicCatalog, productSlug } = require('./lib/catalog');
 const { DEFAULT_OWNER_EMAIL, createOrderNotifier } = require('./lib/order-notifications');
+const { loadSourceConfig, createSourceStore, sourcingText } = require('./lib/order-sourcing');
 
 const app = express();
 const PORT = Number(process.env.PORT || 3000);
@@ -360,6 +361,10 @@ class BetterSqliteSessionStore extends session.Store {
 }
 
 const products = JSON.parse(fs.readFileSync(path.join(dataDir, 'products.json'), 'utf8'));
+const sourceStore = createSourceStore({
+  directory: path.join(path.dirname(databasePath), 'order-sourcing'),
+  config: loadSourceConfig(process.env.INTERNAL_SOURCING_JSON, products)
+});
 const shippingRatesPath = path.join(dataDir, 'shipping-rates.json');
 const shippingRateConfig = fs.existsSync(shippingRatesPath)
   ? JSON.parse(fs.readFileSync(shippingRatesPath, 'utf8'))
@@ -930,7 +935,7 @@ function publicOrder(row) {
 
 const orderNotifier = createOrderNotifier({
   db, transporter: mailTransporter, from: MAIL_FROM, to: normalizeEmail(ADMIN_ORDER_NOTIFY_EMAIL), publicUrl: PUBLIC_URL,
-  getOrder: (id) => { const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(id); return row ? publicOrder(row) : null; }
+  getOrder: (id) => { const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(id); return row ? { ...publicOrder(row), internalSourcing: sourceStore.read(id) } : null; }
 });
 function flushOwnerNotifications() {
   orderNotifier.flush().catch((error) => console.error('Owner notification worker failed:', error.message));
@@ -1185,6 +1190,9 @@ function createOrderForUser(userId, body, statusOverride) {
     }
   });
 
+  // Persist an immutable owner-only snapshot before committing a new order.
+  // A failed SQL transaction can leave an orphan snapshot, never a changed old order.
+  sourceStore.capture(orderId, timestamp, totals.items);
   insertOrder();
 
   const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
@@ -1926,6 +1934,13 @@ app.get('/api/admin/orders', requireAdmin, (req, res) => {
   }
 
   res.json({ orders: rows.map((row) => ({ ...publicOrder(row), ownerNotification: orderNotifier.latest(row.id) })), notifications: orderNotifier.configuration(), limit: 500 });
+});
+
+app.get('/api/admin/orders/:id/sourcing', requireAdmin, (req, res) => {
+  const order = db.prepare('SELECT id FROM orders WHERE id = ?').get(req.params.id);
+  if (!order) return res.status(404).json({ error: 'Order not found.' });
+  res.set('Cache-Control', 'no-store');
+  res.json({ text: sourcingText(sourceStore.read(order.id)) });
 });
 
 app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {

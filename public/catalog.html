@@ -3920,7 +3920,7 @@ body.age-locked .vial-rotor {
         <h1 id="catalogTitle">Choose a category</h1>
         <p id="catalogLead" class="lead">Select a research category to browse the matching products. This keeps each product group separated instead of showing the full catalog on one page.</p>
       </div>
-      <div id="catalogNotice" class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, which is the best value and saves about 56% compared with buying the same vials one at a time.</div>
+      <div id="catalogNotice" class="notice"><strong>Bundle savings:</strong> Catalog cards show the single-vial price. Open any product to choose the 10-vial kit, and see its exact savings compared with buying the same number of single vials.</div>
       <div id="peptideCatalogGrid" class="grid"></div>
     </div>
   </section>
@@ -5149,10 +5149,10 @@ function renderProductCard(product, indexPrefix) {
 const researchCategories = [
   {
     key: 'nootropics',
-    title: 'Nootropics Research',
-    kicker: 'Cognitive research',
+    title: 'Neuroscience Research',
+    kicker: 'Neuroscience research',
     icon: '🧠',
-    description: 'Materials organized around focus, cognition, sleep, mood, and nervous-system research categories.',
+    description: 'Materials cataloged for nonclinical neuroscience and analytical laboratory research.',
     names: [
       'Semax', 'Selank', 'Pinealon', 'Cerebrolysin', 'DSIP', 'Oxytocin',
       'Vasoactive Intestinal Peptide', 'Snap-8', 'PE-22-28'
@@ -5163,7 +5163,7 @@ const researchCategories = [
     title: 'Metabolic Research',
     kicker: 'Metabolic research',
     icon: '⚖️',
-    description: 'Products grouped for metabolism, body-composition, energy-use, and related analytical research interests.',
+    description: 'Materials cataloged for nonclinical metabolic and biochemical laboratory research.',
     names: [
       'Retatrutide', 'Semaglutide', 'Tirzepatide', 'Cagrilintide',
       'Cagrilintide 5mg + Semaglutide 5mg', 'Retatrutide + Cagrilintide',
@@ -5174,10 +5174,10 @@ const researchCategories = [
   },
   {
     key: 'recovery',
-    title: 'Recovery Research',
-    kicker: 'Recovery research',
+    title: 'Peptide & Protein Research',
+    kicker: 'Peptide research',
     icon: '🛡️',
-    description: 'Catalog group for recovery, repair, performance, tissue, and inflammation-related research areas.',
+    description: 'Peptide and protein materials cataloged for nonclinical laboratory research.',
     names: [
       'BPC-157', 'TB-500', 'GHK-CU', 'KPV', 'Thymosin Alpha-1',
       'BPC-157 5mg + TB-500 5mg', 'BPC-157 10mg + TB-500 10mg',
@@ -5201,10 +5201,10 @@ const researchCategories = [
   },
   {
     key: 'longevity',
-    title: 'Longevity & Cellular Research',
+    title: 'Cellular Research',
     kicker: 'Cellular research',
     icon: '⏳',
-    description: 'Products grouped for healthy-aging, cellular support, antioxidant, and wellness-oriented research topics.',
+    description: 'Materials cataloged for nonclinical cellular and biochemical laboratory research.',
     names: [
       'NAD+', 'FOXO4', 'Epithalon', 'B12 1mg/ml', 'Melatonin',
       'Thymalin', 'MT-2 (melanotan 2 acetate)', 'Melanotan'
@@ -6466,6 +6466,17 @@ function selectAdminOrderFilter(value) {
   renderAdminOrderResults();
 }
 
+async function loadAdminSourcing(details, orderId) {
+  if (!details.open || details.dataset.loaded === 'true') return;
+  const target = details.querySelector('pre');
+  target.textContent = 'Loading saved sourcing estimate…';
+  try {
+    const result = await apiRequest('/api/admin/orders/' + encodeURIComponent(orderId) + '/sourcing');
+    target.textContent = result.text;
+    details.dataset.loaded = 'true';
+  } catch (error) { target.textContent = 'Unable to load sourcing. Close and reopen to retry.'; }
+}
+
 function renderAdminOrderResults() {
   const results = document.getElementById('adminOrdersResults');
   if (!results) return;
@@ -6509,6 +6520,7 @@ function renderAdminOrderResults() {
           <section><h4>Payment breakdown</h4><dl class="admin-payment-totals"><div><dt>Subtotal</dt><dd>${formatMoney(order.subtotal)}</dd></div><div><dt>Shipping</dt><dd>${formatMoney(order.shippingCharge)}</dd></div><div><dt>Tax</dt><dd>${formatMoney(order.tax)}</dd></div><div><dt>Discount${order.discountCode ? ' (' + escapeHtml(order.discountCode) + ')' : ''}</dt><dd>−${formatMoney(order.discount)}</dd></div><div><dt>Total</dt><dd>${formatMoney(order.total)}</dd></div></dl>${adminOrderGroup(order) === 'payment' ? '<p class="admin-payment-warning">Payment has not been confirmed. Verify it before shipping.</p>' : ''}</section>
         </div>
         ${order.notes ? `<div class="admin-order-notes"><strong>Checkout / order notes</strong><p>${escapeHtml(order.notes)}</p></div>` : ''}
+        <details class="admin-fulfillment" ontoggle="loadAdminSourcing(this, '${escapeForAttribute(order.id)}')"><summary>Internal sourcing snapshot</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Open to load the saved sourcing estimate.</pre></details>
         <details class="admin-fulfillment"><summary>Update status &amp; tracking${order.trackingNumber ? ' · ' + escapeHtml(order.trackingCarrier || '') + ' ' + escapeHtml(order.trackingNumber) : ''}</summary>
           <div class="admin-tracking-grid"><label>Carrier<input id="${carrierId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingCarrier || '')}" placeholder="USPS, UPS, FedEx"></label><label>Tracking number<input id="${trackingId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingNumber || '')}" placeholder="Paste tracking number"></label></div>
           <div class="admin-order-actions"><select id="${selectId}" aria-label="Order status" class="admin-status-select">${getAdminStatusOptions(order.status).map(status => `<option value="${escapeForAttribute(status)}" ${status === order.status ? 'selected' : ''}>${escapeHtml(status)}</option>`).join('')}</select><button class="btn primary" type="button" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}', '${trackingId}', '${carrierId}')">Save status &amp; tracking</button></div>

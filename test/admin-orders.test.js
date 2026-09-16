@@ -14,6 +14,8 @@ stripe.checkout.sessions.create = async (options) => {
 };
 stripe.checkout.sessions.retrieve = async id => sessions.get(id);
 Object.assign(process.env, { NODE_ENV: 'test', SESSION_SECRET: 'test-session-secret-not-for-production', DATABASE_PATH: path.join(tempDir, 'test.sqlite'), ADMIN_EMAILS: 'admin@example.com', SMTP_HOST: 'fake.local', MAIL_FROM: 'orders@example.com', ADMIN_ORDER_NOTIFY_EMAIL: 'owner@example.com', STRIPE_SECRET_KEY: 'sk_test_local', STRIPE_WEBHOOK_SECRET: 'whsec_test_only', PUBLIC_URL: 'https://example.com', PAYPAL_PAYMENT_EMAIL: 'payments@example.com' });
+const sourceFixtures = Object.fromEntries(require('../data/products.json').filter(p=>p.active).flatMap(p=>p.options.filter(o=>o.active).map(o=>[o.code,{productName:p.name,spec:o.spec,vialsPerKit:10,preferred:{source:'PRIVATE_TEST_SOURCE',code:'PRIVATE_SUPPLIER_CODE',supplierCost:100,shipping:30,landedCost:130},fallback:null}])));
+process.env.INTERNAL_SOURCING_JSON = JSON.stringify({version:'integration-fixture',variants:sourceFixtures});
 const originalLoad = Module._load;
 Module._load = function(name, ...args) {
   if (name === 'stripe') return function() { return stripe; };
@@ -58,9 +60,20 @@ test('manual order is persisted, fully visible, searchable by product/SKU, and o
   assert.equal(search.body.orders[0].ownerNotification.status, 'sent');
   const customer = sent.find(mail => mail.to === 'shipping@example.com' && mail.subject.includes(order.id));
   assert.ok(customer); assert.ok(customer.text.includes('payments@example.com'));
+  assert.ok(owner.text.includes('PRIVATE_TEST_SOURCE'));
+  assert.ok(owner.text.includes('Supplier cost / kit: $100.00'));
+  assert.ok(!JSON.stringify(customer).includes('PRIVATE_TEST_SOURCE'));
+  assert.ok(!JSON.stringify(response.body).includes('PRIVATE_TEST_SOURCE'));
+  assert.ok(!JSON.stringify(currentCatalog.body).includes('PRIVATE_TEST_SOURCE'));
+  const snapshotPath = path.join(tempDir, 'order-sourcing', order.id + '.json');
+  assert.ok(fs.existsSync(snapshotPath));
+  assert.equal((await api('/api/admin/orders/' + order.id + '/sourcing', 'GET', null, buyerCookie)).status, 403);
+  assert.ok((await api('/api/admin/orders/' + order.id + '/sourcing', 'GET', null, adminCookie)).body.text.includes('PRIVATE_TEST_SOURCE'));
+  const savedSnapshot = fs.readFileSync(snapshotPath, 'utf8');
   const before = sent.filter(mail => mail.to === 'shipping@example.com').length;
   assert.equal((await api('/api/admin/orders/' + order.id + '/notify-owner', 'POST', {}, adminCookie)).status, 200);
   assert.equal(sent.filter(mail => mail.to === 'shipping@example.com').length, before);
+  assert.equal(fs.readFileSync(snapshotPath, 'utf8'), savedSnapshot);
   assert.equal((await api('/api/admin/orders/' + order.id + '/notify-owner', 'POST', {}, buyerCookie)).status, 403);
 });
 test('card creation backs up checkout details in Stripe; unpaid completion is not paid; verified repeat events do not reset shipped orders', async () => {
@@ -69,6 +82,7 @@ test('card creation backs up checkout details in Stripe; unpaid completion is no
   const id = response.body.order.id; const session = sessions.get('cs_' + id);
   assert.ok(sent.find(mail => mail.to === 'owner@example.com' && mail.subject.includes(id) && mail.text.includes('Pending Payment')));
   assert.equal(session.createOptions.customer_email, checkout.customer.email);
+  assert.ok(!JSON.stringify(session.createOptions).includes('PRIVATE_TEST_SOURCE'));
   assert.equal(session.createOptions.client_reference_id, id);
   assert.equal(session.createOptions.metadata.orderId, id);
   assert.equal(session.createOptions.payment_intent_data.metadata.orderId, id);
