@@ -12,57 +12,57 @@
       {
         "code": "RT5",
         "spec": "5mg*10 vials",
-        "kitPrice": 249.99,
-        "singlePrice": 39.99,
+        "kitPrice": 154.99,
+        "singlePrice": 16.49,
         "active": true
       },
       {
         "code": "RT10",
         "spec": "10mg*10 vials",
-        "kitPrice": 359.99,
-        "singlePrice": 54.99,
+        "kitPrice": 214.99,
+        "singlePrice": 22.99,
         "active": true
       },
       {
         "code": "RT15",
         "spec": "15mg*10 vials",
-        "kitPrice": 439.99,
-        "singlePrice": 69.99,
+        "kitPrice": 264.99,
+        "singlePrice": 27.99,
         "active": true
       },
       {
         "code": "RT20",
         "spec": "20mg*10 vials",
-        "kitPrice": 519.99,
-        "singlePrice": 79.99,
+        "kitPrice": 319.99,
+        "singlePrice": 33.99,
         "active": true
       },
       {
         "code": "RT30",
         "spec": "30mg*10 vials",
-        "kitPrice": 649.99,
-        "singlePrice": 99.99,
+        "kitPrice": 349.99,
+        "singlePrice": 36.99,
         "active": true
       },
       {
         "code": "RT40",
         "spec": "40mg*10 vials",
-        "kitPrice": 759.99,
-        "singlePrice": 114.99,
+        "kitPrice": 389.99,
+        "singlePrice": 41.49,
         "active": true
       },
       {
         "code": "RT50",
         "spec": "50mg*10 vials",
-        "kitPrice": 859.99,
-        "singlePrice": 129.99,
+        "kitPrice": 594.99,
+        "singlePrice": 62.99,
         "active": true
       },
       {
         "code": "RT60",
         "spec": "60mg*10 vials",
-        "kitPrice": 949.99,
-        "singlePrice": 144.99,
+        "kitPrice": 474.99,
+        "singlePrice": 50.49,
         "active": true
       }
     ],
@@ -79,36 +79,36 @@
       {
         "code": "SM05",
         "spec": "5mg*10 vials",
-        "kitPrice": 239.99,
-        "singlePrice": 36.99,
+        "kitPrice": 99.99,
+        "singlePrice": 10.99,
         "active": true
       },
       {
         "code": "SM10",
         "spec": "10mg*10 vials",
-        "kitPrice": 319.99,
-        "singlePrice": 49.99,
+        "kitPrice": 219.99,
+        "singlePrice": 23.49,
         "active": true
       },
       {
         "code": "SM15",
         "spec": "15mg*10 vials",
-        "kitPrice": 389.99,
-        "singlePrice": 59.99,
+        "kitPrice": 159.99,
+        "singlePrice": 16.99,
         "active": true
       },
       {
         "code": "SM20",
         "spec": "20mg*10 vials",
-        "kitPrice": 439.99,
-        "singlePrice": 69.99,
+        "kitPrice": 179.99,
+        "singlePrice": 18.99,
         "active": true
       },
       {
         "code": "SM30",
         "spec": "30mg*10 vials",
-        "kitPrice": 529.99,
-        "singlePrice": 79.99,
+        "kitPrice": 234.99,
+        "singlePrice": 24.99,
         "active": true
       }
     ],
@@ -125,57 +125,57 @@
       {
         "code": "TR5",
         "spec": "5mg*10 vials",
-        "kitPrice": 299.99,
-        "singlePrice": 44.99,
+        "kitPrice": 199.99,
+        "singlePrice": 21.49,
         "active": true
       },
       {
         "code": "TR10",
         "spec": "10mg*10 vials",
-        "kitPrice": 399.99,
-        "singlePrice": 59.99,
+        "kitPrice": 134.99,
+        "singlePrice": 14.49,
         "active": true
       },
       {
         "code": "TR15",
         "spec": "15mg*10 vials",
-        "kitPrice": 479.99,
-        "singlePrice": 74.99,
+        "kitPrice": 169.99,
+        "singlePrice": 17.99,
         "active": true
       },
       {
         "code": "TR20",
         "spec": "20mg*10 vials",
-        "kitPrice": 549.99,
-        "singlePrice": 84.99,
+        "kitPrice": 194.99,
+        "singlePrice": 20.99,
         "active": true
       },
       {
         "code": "TR30",
         "spec": "30mg*10 vials",
-        "kitPrice": 659.99,
-        "singlePrice": 99.99,
+        "kitPrice": 234.99,
+        "singlePrice": 24.99,
         "active": true
       },
       {
         "code": "TR40",
         "spec": "40mg*10 vials",
-        "kitPrice": 749.99,
-        "singlePrice": 114.99,
+        "kitPrice": 299.99,
+        "singlePrice": 31.99,
         "active": true
       },
       {
         "code": "TR50",
         "spec": "50mg*10 vials",
-        "kitPrice": 829.99,
-        "singlePrice": 129.99,
+        "kitPrice": 374.99,
+        "singlePrice": 39.99,
         "active": true
       },
       {
         "code": "TR60",
         "spec": "60mg*10 vials",
-        "kitPrice": 899.99,
-        "singlePrice": 139.99,
+        "kitPrice": 389.99,
+        "singlePrice": 41.49,
         "active": true
       }
     ],
@@ -192,15 +192,15 @@
       {
         "code": "XA5",
         "spec": "5mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 29.99,
+        "kitPrice": 129.99,
+        "singlePrice": 13.99,
         "active": true
       },
       {
         "code": "XA11",
         "spec": "10mg*10 vials",
-        "kitPrice": 259.99,
-        "singlePrice": 39.99,
+        "kitPrice": 169.99,
+        "singlePrice": 17.99,
         "active": true
       }
     ],
@@ -217,8 +217,8 @@
       {
         "code": "H10",
         "spec": "10iu*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 29.99,
+        "kitPrice": 134.99,
+        "singlePrice": 14.49,
         "active": true
       },
       {
@@ -232,15 +232,15 @@
       {
         "code": "H24",
         "spec": "24iu*10 vials",
-        "kitPrice": 389.99,
-        "singlePrice": 59.99,
+        "kitPrice": 234.99,
+        "singlePrice": 24.99,
         "active": true
       },
       {
         "code": "H36",
         "spec": "36iu*10 vials",
-        "kitPrice": 529.99,
-        "singlePrice": 79.99,
+        "kitPrice": 364.99,
+        "singlePrice": 38.49,
         "active": true
       }
     ],
@@ -265,8 +265,8 @@
       {
         "code": "IG1",
         "spec": "1mg*10 vials",
-        "kitPrice": 569.99,
-        "singlePrice": 89.99,
+        "kitPrice": 389.99,
+        "singlePrice": 41.49,
         "active": true
       }
     ],
@@ -283,22 +283,22 @@
       {
         "code": "BC5",
         "spec": "5mg*10 vials",
-        "kitPrice": 179.99,
-        "singlePrice": 27.99,
+        "kitPrice": 109.99,
+        "singlePrice": 11.99,
         "active": true
       },
       {
         "code": "BC10",
         "spec": "10mg*10 vials",
-        "kitPrice": 239.99,
-        "singlePrice": 36.99,
+        "kitPrice": 164.99,
+        "singlePrice": 17.49,
         "active": true
       },
       {
         "code": "BC20",
         "spec": "20mg*10 vials",
-        "kitPrice": 329.99,
-        "singlePrice": 49.99,
+        "kitPrice": 179.99,
+        "singlePrice": 18.99,
         "active": true
       }
     ],
@@ -315,15 +315,15 @@
       {
         "code": "BT5",
         "spec": "5mg*10 vials",
-        "kitPrice": 289.99,
-        "singlePrice": 44.99,
+        "kitPrice": 194.99,
+        "singlePrice": 20.99,
         "active": true
       },
       {
         "code": "BT10",
         "spec": "10mg*10 vials",
-        "kitPrice": 409.99,
-        "singlePrice": 64.99,
+        "kitPrice": 279.99,
+        "singlePrice": 29.49,
         "active": true
       }
     ],
@@ -340,15 +340,15 @@
       {
         "code": "CU50",
         "spec": "50mg*10 vials",
-        "kitPrice": 149.99,
-        "singlePrice": 22.99,
+        "kitPrice": 99.99,
+        "singlePrice": 10.99,
         "active": true
       },
       {
         "code": "CU100",
         "spec": "100mg*10 vials",
-        "kitPrice": 219.99,
-        "singlePrice": 34.99,
+        "kitPrice": 144.99,
+        "singlePrice": 15.49,
         "active": true
       }
     ],
@@ -365,22 +365,22 @@
       {
         "code": "NJ100",
         "spec": "100mg*10 vials",
-        "kitPrice": 169.99,
-        "singlePrice": 25.99,
+        "kitPrice": 109.99,
+        "singlePrice": 11.99,
         "active": true
       },
       {
         "code": "NJ500",
         "spec": "500mg*10 vials",
-        "kitPrice": 339.99,
-        "singlePrice": 51.99,
+        "kitPrice": 169.99,
+        "singlePrice": 17.99,
         "active": true
       },
       {
         "code": "NJ1000",
         "spec": "1000mg*10 vials",
-        "kitPrice": 459.99,
-        "singlePrice": 69.99,
+        "kitPrice": 199.99,
+        "singlePrice": 21.49,
         "active": true
       }
     ],
@@ -397,15 +397,15 @@
       {
         "code": "IP5",
         "spec": "5mg*10 vials",
-        "kitPrice": 169.99,
-        "singlePrice": 25.99,
+        "kitPrice": 109.99,
+        "singlePrice": 11.99,
         "active": true
       },
       {
         "code": "IP10",
         "spec": "10mg*10 vials",
-        "kitPrice": 239.99,
-        "singlePrice": 36.99,
+        "kitPrice": 159.99,
+        "singlePrice": 16.99,
         "active": true
       }
     ],
@@ -430,22 +430,22 @@
       {
         "code": "NO DAC",
         "spec": "2mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 29.99,
+        "kitPrice": 104.99,
+        "singlePrice": 11.49,
         "active": true
       },
       {
         "code": "CND5",
         "spec": "5mg*10 vials",
-        "kitPrice": 289.99,
-        "singlePrice": 44.99,
+        "kitPrice": 194.99,
+        "singlePrice": 20.99,
         "active": true
       },
       {
         "code": "CND10",
         "spec": "10mg*10 vials",
-        "kitPrice": 389.99,
-        "singlePrice": 59.99,
+        "kitPrice": 264.99,
+        "singlePrice": 27.99,
         "active": true
       }
     ],
@@ -494,8 +494,8 @@
       {
         "code": "CP10",
         "spec": "10mg*10 vials",
-        "kitPrice": 329.99,
-        "singlePrice": 49.99,
+        "kitPrice": 224.99,
+        "singlePrice": 23.99,
         "active": true
       }
     ],
@@ -526,15 +526,15 @@
       {
         "code": "SM05A",
         "spec": "5mg*10 vials",
-        "kitPrice": 259.99,
-        "singlePrice": 39.99,
+        "kitPrice": 174.99,
+        "singlePrice": 18.49,
         "active": true
       },
       {
         "code": "SM010A",
         "spec": "10mg*10 vials",
-        "kitPrice": 399.99,
-        "singlePrice": 59.99,
+        "kitPrice": 274.99,
+        "singlePrice": 28.99,
         "active": true
       }
     ],
@@ -555,15 +555,15 @@
       {
         "code": "G25",
         "spec": "5mg*10 vials",
-        "kitPrice": 139.99,
-        "singlePrice": 21.99,
+        "kitPrice": 89.99,
+        "singlePrice": 9.49,
         "active": true
       },
       {
         "code": "G210",
         "spec": "10mg*10 vials",
-        "kitPrice": 189.99,
-        "singlePrice": 29.99,
+        "kitPrice": 124.99,
+        "singlePrice": 13.49,
         "active": true
       }
     ],
@@ -585,15 +585,15 @@
       {
         "code": "G65",
         "spec": "5mg*10 vials",
-        "kitPrice": 169.99,
-        "singlePrice": 25.99,
+        "kitPrice": 89.99,
+        "singlePrice": 9.49,
         "active": true
       },
       {
         "code": "G610",
         "spec": "10mg*10 vials",
-        "kitPrice": 219.99,
-        "singlePrice": 34.99,
+        "kitPrice": 124.99,
+        "singlePrice": 13.49,
         "active": true
       }
     ],
@@ -610,15 +610,15 @@
       {
         "code": "CGL5",
         "spec": "5mg*10 vials",
-        "kitPrice": 369.99,
-        "singlePrice": 54.99,
+        "kitPrice": 249.99,
+        "singlePrice": 26.49,
         "active": true
       },
       {
         "code": "CGL10",
         "spec": "10mg*10 vials",
-        "kitPrice": 499.99,
-        "singlePrice": 74.99,
+        "kitPrice": 344.99,
+        "singlePrice": 36.49,
         "active": true
       }
     ],
@@ -643,8 +643,8 @@
       {
         "code": "CS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 519.99,
-        "singlePrice": 79.99,
+        "kitPrice": 354.99,
+        "singlePrice": 37.49,
         "active": true
       }
     ],
@@ -661,8 +661,8 @@
       {
         "code": "5AD",
         "spec": "5mg*10 vials",
-        "kitPrice": 309.99,
-        "singlePrice": 49.99,
+        "kitPrice": 209.99,
+        "singlePrice": 22.49,
         "active": true
       }
     ],
@@ -679,15 +679,15 @@
       {
         "code": "5AM",
         "spec": "5mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 29.99,
+        "kitPrice": 134.99,
+        "singlePrice": 14.49,
         "active": true
       },
       {
         "code": "50AM",
         "spec": "50mg*10 vials",
-        "kitPrice": 559.99,
-        "singlePrice": 84.99,
+        "kitPrice": 184.99,
+        "singlePrice": 19.99,
         "active": true
       }
     ],
@@ -704,15 +704,15 @@
       {
         "code": "MS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 229.99,
-        "singlePrice": 34.99,
+        "kitPrice": 154.99,
+        "singlePrice": 16.49,
         "active": true
       },
       {
         "code": "MS40",
         "spec": "40mg*10 vials",
-        "kitPrice": 549.99,
-        "singlePrice": 84.99,
+        "kitPrice": 374.99,
+        "singlePrice": 39.99,
         "active": true
       }
     ],
@@ -748,15 +748,15 @@
       {
         "code": "SK5",
         "spec": "5mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 29.99,
+        "kitPrice": 129.99,
+        "singlePrice": 13.99,
         "active": true
       },
       {
         "code": "SK11",
         "spec": "10mg*10 vials",
-        "kitPrice": 259.99,
-        "singlePrice": 39.99,
+        "kitPrice": 169.99,
+        "singlePrice": 17.99,
         "active": true
       }
     ],
@@ -773,15 +773,15 @@
       {
         "code": "TSM5",
         "spec": "5mg*10 vials",
-        "kitPrice": 309.99,
-        "singlePrice": 49.99,
+        "kitPrice": 209.99,
+        "singlePrice": 22.49,
         "active": true
       },
       {
         "code": "TSM10",
         "spec": "10mg*10 vials",
-        "kitPrice": 449.99,
-        "singlePrice": 69.99,
+        "kitPrice": 304.99,
+        "singlePrice": 32.49,
         "active": true
       }
     ],
@@ -825,8 +825,8 @@
       {
         "code": "SUR10",
         "spec": "10mg*10 vials",
-        "kitPrice": 1109.99,
-        "singlePrice": 169.99,
+        "kitPrice": 774.99,
+        "singlePrice": 81.99,
         "active": true
       }
     ],
@@ -843,15 +843,15 @@
       {
         "code": "KPV5",
         "spec": "5mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 29.99,
+        "kitPrice": 129.99,
+        "singlePrice": 13.99,
         "active": true
       },
       {
         "code": "KPV10",
         "spec": "10mg*10 vials",
-        "kitPrice": 259.99,
-        "singlePrice": 39.99,
+        "kitPrice": 154.99,
+        "singlePrice": 16.49,
         "active": true
       }
     ],
@@ -868,15 +868,15 @@
       {
         "code": "TA5",
         "spec": "5mg*10 vials",
-        "kitPrice": 319.99,
-        "singlePrice": 49.99,
+        "kitPrice": 214.99,
+        "singlePrice": 22.99,
         "active": true
       },
       {
         "code": "TA10",
         "spec": "10mg*10 vials",
-        "kitPrice": 439.99,
-        "singlePrice": 69.99,
+        "kitPrice": 299.99,
+        "singlePrice": 31.99,
         "active": true
       }
     ],
@@ -893,15 +893,15 @@
       {
         "code": "KS5",
         "spec": "5mg*10 vials",
-        "kitPrice": 209.99,
-        "singlePrice": 31.99,
+        "kitPrice": 139.99,
+        "singlePrice": 14.99,
         "active": true
       },
       {
         "code": "KS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 279.99,
-        "singlePrice": 44.99,
+        "kitPrice": 179.99,
+        "singlePrice": 18.99,
         "active": true
       }
     ],
@@ -918,8 +918,8 @@
       {
         "code": "LB",
         "spec": "10ml*10 vials",
-        "kitPrice": 239.99,
-        "singlePrice": 36.99,
+        "kitPrice": 159.99,
+        "singlePrice": 16.99,
         "active": true
       }
     ],
@@ -936,15 +936,15 @@
       {
         "code": "VIP5",
         "spec": "5mg*10 vials",
-        "kitPrice": 499.99,
-        "singlePrice": 74.99,
+        "kitPrice": 344.99,
+        "singlePrice": 36.49,
         "active": true
       },
       {
         "code": "VIP10",
         "spec": "10mg*10 vials",
-        "kitPrice": 679.99,
-        "singlePrice": 104.99,
+        "kitPrice": 439.99,
+        "singlePrice": 46.49,
         "active": true
       }
     ],
@@ -988,8 +988,8 @@
       {
         "code": "BB10",
         "spec": "10mg*10 vials",
-        "kitPrice": 339.99,
-        "singlePrice": 51.99,
+        "kitPrice": 229.99,
+        "singlePrice": 24.49,
         "active": true
       }
     ],
@@ -1006,8 +1006,8 @@
       {
         "code": "AR50",
         "spec": "50mg*10 vials",
-        "kitPrice": 349.99,
-        "singlePrice": 54.99,
+        "kitPrice": 239.99,
+        "singlePrice": 25.49,
         "active": true
       }
     ],
@@ -1024,15 +1024,15 @@
       {
         "code": "2S10",
         "spec": "10mg*10 vials",
-        "kitPrice": 309.99,
-        "singlePrice": 49.99,
+        "kitPrice": 209.99,
+        "singlePrice": 22.49,
         "active": true
       },
       {
         "code": "2S50",
         "spec": "50mg*10 vials",
-        "kitPrice": 749.99,
-        "singlePrice": 114.99,
+        "kitPrice": 519.99,
+        "singlePrice": 54.99,
         "active": true
       }
     ],
@@ -1049,8 +1049,8 @@
       {
         "code": "GTT",
         "spec": "1500mg*10 vials",
-        "kitPrice": 289.99,
-        "singlePrice": 44.99,
+        "kitPrice": 194.99,
+        "singlePrice": 20.99,
         "active": true
       }
     ],
@@ -1067,8 +1067,8 @@
       {
         "code": "G75",
         "spec": "75iu*10 vials",
-        "kitPrice": 349.99,
-        "singlePrice": 54.99,
+        "kitPrice": 239.99,
+        "singlePrice": 25.49,
         "active": true
       }
     ],
@@ -1104,15 +1104,15 @@
       {
         "code": "G5K",
         "spec": "5000iu*10 vials",
-        "kitPrice": 269.99,
-        "singlePrice": 39.99,
+        "kitPrice": 179.99,
+        "singlePrice": 18.99,
         "active": true
       },
       {
         "code": "G10K",
         "spec": "10000iu*10 vials",
-        "kitPrice": 389.99,
-        "singlePrice": 59.99,
+        "kitPrice": 264.99,
+        "singlePrice": 27.99,
         "active": true
       }
     ],
@@ -1129,8 +1129,8 @@
       {
         "code": "BB20",
         "spec": "20mg*10 vials",
-        "kitPrice": 489.99,
-        "singlePrice": 74.99,
+        "kitPrice": 334.99,
+        "singlePrice": 35.49,
         "active": true
       }
     ],
@@ -1147,8 +1147,8 @@
       {
         "code": "F410",
         "spec": "10mg*10 vials",
-        "kitPrice": 979.99,
-        "singlePrice": 149.99,
+        "kitPrice": 684.99,
+        "singlePrice": 72.49,
         "active": true
       }
     ],
@@ -1165,8 +1165,8 @@
       {
         "code": "LL375",
         "spec": "5mg*10 vials",
-        "kitPrice": 319.99,
-        "singlePrice": 49.99,
+        "kitPrice": 214.99,
+        "singlePrice": 22.99,
         "active": true
       },
       {
@@ -1280,8 +1280,8 @@
       {
         "code": "CD5",
         "spec": "5mg*10 vials",
-        "kitPrice": 519.99,
-        "singlePrice": 79.99,
+        "kitPrice": 354.99,
+        "singlePrice": 37.49,
         "active": true
       }
     ],
@@ -1298,8 +1298,8 @@
       {
         "code": "CBL60",
         "spec": "60mg*10 vials",
-        "kitPrice": 249.99,
-        "singlePrice": 39.99,
+        "kitPrice": 169.99,
+        "singlePrice": 17.99,
         "active": true
       }
     ],
@@ -1316,15 +1316,15 @@
       {
         "code": "ET10",
         "spec": "10mg*10 vials",
-        "kitPrice": 169.99,
-        "singlePrice": 25.99,
+        "kitPrice": 109.99,
+        "singlePrice": 11.99,
         "active": true
       },
       {
         "code": "ET50",
         "spec": "50mg*10 vials",
-        "kitPrice": 409.99,
-        "singlePrice": 64.99,
+        "kitPrice": 279.99,
+        "singlePrice": 29.49,
         "active": true
       }
     ],
@@ -1341,8 +1341,8 @@
       {
         "code": "LC120",
         "spec": "10ml*10 vials",
-        "kitPrice": 349.99,
-        "singlePrice": 54.99,
+        "kitPrice": 244.99,
+        "singlePrice": 25.99,
         "active": true
       }
     ],
@@ -1359,8 +1359,8 @@
       {
         "code": "HX5",
         "spec": "5mg*10 vials",
-        "kitPrice": 279.99,
-        "singlePrice": 44.99,
+        "kitPrice": 184.99,
+        "singlePrice": 19.99,
         "active": true
       }
     ],
@@ -1385,8 +1385,8 @@
       {
         "code": "PI10",
         "spec": "10mg*10 vials",
-        "kitPrice": 229.99,
-        "singlePrice": 34.99,
+        "kitPrice": 154.99,
+        "singlePrice": 16.49,
         "active": true
       },
       {
@@ -1411,8 +1411,8 @@
       {
         "code": "MT1",
         "spec": "10mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 29.99,
+        "kitPrice": 134.99,
+        "singlePrice": 14.49,
         "active": true
       }
     ],
@@ -1429,8 +1429,8 @@
       {
         "code": "NPB10",
         "spec": "10mg*10 vials",
-        "kitPrice": 299.99,
-        "singlePrice": 44.99,
+        "kitPrice": 199.99,
+        "singlePrice": 21.49,
         "active": true
       }
     ],
@@ -1447,15 +1447,15 @@
       {
         "code": "WA3",
         "spec": "3ml*10 vials",
-        "kitPrice": 129.99,
-        "singlePrice": 19.99,
+        "kitPrice": 79.99,
+        "singlePrice": 8.49,
         "active": true
       },
       {
         "code": "WA10",
         "spec": "10ml*10 vials",
-        "kitPrice": 209.99,
-        "singlePrice": 31.99,
+        "kitPrice": 84.99,
+        "singlePrice": 8.99,
         "active": true
       }
     ],
@@ -1472,15 +1472,15 @@
       {
         "code": "AP2",
         "spec": "2mg*10 vials",
-        "kitPrice": 419.99,
-        "singlePrice": 64.99,
+        "kitPrice": 289.99,
+        "singlePrice": 30.99,
         "active": true
       },
       {
         "code": "AP5",
         "spec": "5mg*10 vials",
-        "kitPrice": 639.99,
-        "singlePrice": 99.99,
+        "kitPrice": 434.99,
+        "singlePrice": 45.99,
         "active": true
       }
     ],
@@ -1497,8 +1497,8 @@
       {
         "code": "BBG70",
         "spec": "70mg*10 vials",
-        "kitPrice": 449.99,
-        "singlePrice": 69.99,
+        "kitPrice": 304.99,
+        "singlePrice": 32.49,
         "active": true
       }
     ],
@@ -1515,8 +1515,8 @@
       {
         "code": "OT2",
         "spec": "2mg*10 vials",
-        "kitPrice": 259.99,
-        "singlePrice": 39.99,
+        "kitPrice": 174.99,
+        "singlePrice": 18.49,
         "active": true
       }
     ],
@@ -1571,8 +1571,8 @@
       {
         "code": "KLOW80",
         "spec": "80mg*10 vials",
-        "kitPrice": 469.99,
-        "singlePrice": 69.99,
+        "kitPrice": 319.99,
+        "singlePrice": 33.99,
         "active": true
       }
     ],
@@ -1608,8 +1608,8 @@
       {
         "code": "ML10",
         "spec": "10mg*10 vials",
-        "kitPrice": 199.99,
-        "singlePrice": 29.99,
+        "kitPrice": 134.99,
+        "singlePrice": 14.49,
         "active": true
       }
     ],
@@ -1626,22 +1626,22 @@
       {
         "code": "DS5",
         "spec": "5mg*10 vials",
-        "kitPrice": 319.99,
-        "singlePrice": 49.99,
+        "kitPrice": 129.99,
+        "singlePrice": 13.99,
         "active": true
       },
       {
         "code": "DS10",
         "spec": "10mg*10 vials",
-        "kitPrice": 599.99,
-        "singlePrice": 89.99,
+        "kitPrice": 309.99,
+        "singlePrice": 32.99,
         "active": true
       },
       {
         "code": "DS15",
         "spec": "15mg*10 vials",
-        "kitPrice": 859.99,
-        "singlePrice": 129.99,
+        "kitPrice": 594.99,
+        "singlePrice": 62.99,
         "active": true
       }
     ],
@@ -1913,8 +1913,8 @@
       {
         "code": "P41",
         "spec": "10mg*10 vials",
-        "kitPrice": 229.99,
-        "singlePrice": 34.99,
+        "kitPrice": 154.99,
+        "singlePrice": 16.49,
         "active": true
       }
     ],
@@ -2005,8 +2005,8 @@
       {
         "code": "TY10",
         "spec": "10mg*10 vials",
-        "kitPrice": 359.99,
-        "singlePrice": 54.99,
+        "kitPrice": 249.99,
+        "singlePrice": 26.49,
         "active": true
       }
     ],
@@ -2026,8 +2026,8 @@
       {
         "code": "PE10",
         "spec": "10mg*10 vials",
-        "kitPrice": 269.99,
-        "singlePrice": 39.99,
+        "kitPrice": 179.99,
+        "singlePrice": 18.99,
         "active": true
       }
     ],

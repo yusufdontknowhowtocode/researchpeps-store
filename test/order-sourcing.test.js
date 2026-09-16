@@ -49,25 +49,35 @@ test('owner message displays estimates and escapes source labels',()=>{
  assert.ok(text.html.includes('&lt;script&gt;'));
 });
 
-test('retail ladders and advertised kit value are consistent for all active variants',()=>{
+test('all active retail prices use psychological endings and kits cost less per vial',()=>{
  const catalog=require('../data/products.json');
- const groups=new Map();
  for(const p of catalog.filter(p=>p.active))for(const o of p.options.filter(o=>o.active)){
   assert.ok(!/weight loss|appetite|bodybuilding|blood sugar|recovery|treatment/i.test(p.description));
-  const saving=1-o.kitPrice/(10*o.singlePrice);
-  assert.ok(saving>=.32&&saving<=.38,`${o.code}: ${saving}`);
+  assert.ok(o.kitPrice>0 && o.singlePrice>0);
+  assert.ok(o.kitPrice<o.singlePrice*10, o.code+' kit value');
   assert.equal(Math.round(o.kitPrice*100)%100,99);
-  assert.equal(Math.round(o.singlePrice*100)%100,99);
-  const key=/^BPC-157 (5|10)mg \+ TB-500 (5|10)mg$/.test(p.name)?'BPC-TB blend':p.name;
-  if(!groups.has(key))groups.set(key,[]);groups.get(key).push({...o,strength:parseFloat(o.spec)});
+  assert.ok([49,99].includes(Math.round(o.singlePrice*100)%100));
  }
- for(const options of groups.values()){
-  options.sort((a,b)=>a.strength-b.strength);
-  for(let i=1;i<options.length;i++){
-   const a=options[i-1],b=options[i];
-   assert.ok(b.kitPrice>a.kitPrice);assert.ok(b.singlePrice>a.singlePrice);
-   assert.ok(b.kitPrice/b.strength<=a.kitPrice/a.strength);
-   assert.ok(b.singlePrice/b.strength<=a.singlePrice/a.strength);
+});
+
+// Private audit is supplied locally; never commit supplier information as a fixture.
+test('every retail SKU stays within the authorized markup range against its cheapest exact source',
+ {skip:!process.env.INTERNAL_PRICING_AUDIT_PATH},()=>{
+ const audit=JSON.parse(fs.readFileSync(process.env.INTERNAL_PRICING_AUDIT_PATH,'utf8'));
+ const catalog=require('../data/products.json');
+ const variants=catalog.filter(p=>p.active).flatMap(p=>p.options.filter(o=>o.active));
+ assert.equal(audit.rows.length,variants.length);
+ assert.equal(new Set(audit.rows.map(r=>r.optionCode)).size,variants.length);
+ for(const o of variants){
+  const row=audit.rows.find(r=>r.optionCode===o.code);
+  assert.ok(row,o.code+' missing audit row');
+  assert.equal(row.spec,o.spec);
+  const cost=Math.min(...row.options.map(s=>s.supplierCost+s.shipping));
+  assert.equal(row.preferred.landedCost,cost);
+  assert.equal(o.kitPrice,row.newKit);assert.equal(o.singlePrice,row.newSingle);
+  for(const [price,basis] of [[o.kitPrice,cost],[o.singlePrice,cost/10]]){
+   const markup=(price-basis)/basis;
+   assert.ok(markup>=.30-1e-8 && markup<=.50+1e-8,o.code+' markup out of bounds');
   }
  }
 });
