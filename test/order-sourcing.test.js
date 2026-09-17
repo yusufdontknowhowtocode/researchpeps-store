@@ -49,7 +49,7 @@ test('owner message displays estimates and escapes source labels',()=>{
  assert.ok(text.html.includes('&lt;script&gt;'));
 });
 
-test('all active retail prices use psychological endings and kits cost less per vial',()=>{
+test('all active retail prices preserve the single inventory-risk floor and make kits better value',()=>{
  const catalog=require('../data/products.json');
  for(const p of catalog.filter(p=>p.active))for(const o of p.options.filter(o=>o.active)){
   assert.ok(!/weight loss|appetite|bodybuilding|blood sugar|recovery|treatment/i.test(p.description));
@@ -61,7 +61,7 @@ test('all active retail prices use psychological endings and kits cost less per 
 });
 
 // Private audit is supplied locally; never commit supplier information as a fixture.
-test('every retail SKU stays within the authorized markup range against its cheapest exact source',
+test('every retail SKU matches the gross-margin audit and full-kit inventory-risk pricing',
  {skip:!process.env.INTERNAL_PRICING_AUDIT_PATH},()=>{
  const audit=JSON.parse(fs.readFileSync(process.env.INTERNAL_PRICING_AUDIT_PATH,'utf8'));
  const catalog=require('../data/products.json');
@@ -75,9 +75,21 @@ test('every retail SKU stays within the authorized markup range against its chea
   const cost=Math.min(...row.options.map(s=>s.supplierCost+s.shipping));
   assert.equal(row.preferred.landedCost,cost);
   assert.equal(o.kitPrice,row.newKit);assert.equal(o.singlePrice,row.newSingle);
-  for(const [price,basis] of [[o.kitPrice,cost],[o.singlePrice,cost/10]]){
-   const markup=(price-basis)/basis;
-   assert.ok(markup>=.30-1e-8 && markup<=.50+1e-8,o.code+' markup out of bounds');
+  const margin=(o.kitPrice-cost)/o.kitPrice;
+  assert.ok(margin>=.38 && margin<=.42,o.code+' kit gross margin outside rounding tolerance');
+  assert.ok(Math.abs(o.kitPrice-cost/.60)<=2.51,o.code+' kit not rounded from actual cost');
+  assert.ok(o.singlePrice>=row.previousSingle,o.code+' previous single lowered');
+  assert.ok(o.singlePrice>=cost*.5,o.code+' single below full-kit cost floor');
+  const floor=cost*.5;
+  if(row.previousSingle>=floor) assert.equal(o.singlePrice,row.previousSingle);
+  else assert.ok(o.singlePrice>=floor && o.singlePrice-floor<5,o.code+' unnecessary single increase');
+ }
+ for(const family of new Set(audit.rows.map(r=>r.family))){
+  const rows=audit.rows.filter(r=>r.family===family).sort((a,b)=>a.strength-b.strength);
+  for(let i=1;i<rows.length;i++) if(rows[i].newKit<rows[i-1].newKit){
+   const a=rows[i-1],b=rows[i];
+   assert.ok(b.preferred.landedCost<a.preferred.landedCost,'Unexplained strength-price inversion');
+   assert.ok(audit.inversions.some(x=>x.lowerCode===a.optionCode && x.higherCode===b.optionCode && x.reason),'Unflagged cost inversion');
   }
  }
 });
