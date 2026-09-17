@@ -151,6 +151,26 @@ test('retired variants are absent everywhere and rejected before creating an ord
   assert.equal((await fetch(base + '/product/retatrutide?option=RT10')).status, 200);
 });
 
+test('all single and kit cart quotes use the current retail prices without rewriting stored orders', async () => {
+  const catalog = require('../data/products.json');
+  const expected = catalog.filter(p => p.active).flatMap(p => p.options.filter(o => o.active).flatMap(o =>
+    ['single', 'kit'].map(purchaseType => ({ productName: p.name, optionCode: o.code, purchaseType, vialQuantity: 1, quantity: 1, retail: purchaseType === 'single' ? o.singlePrice : o.kitPrice }))));
+  const ordersBefore = db.prepare('SELECT * FROM orders ORDER BY id').all();
+  const itemsBefore = db.prepare('SELECT * FROM order_items ORDER BY id').all();
+  const sessionsBefore = sessions.size;
+  const response = await api('/api/cart/quote', 'POST', { paymentMethod: 'paypal', items: expected.map(({retail, ...item}) => ({ ...item, unitPrice: 0.01 })) });
+  assert.equal(response.status, 200, JSON.stringify(response.body));
+  assert.equal(response.body.items.length, 210);
+  for (let i = 0; i < expected.length; i++) {
+    assert.equal(response.body.items[i].optionCode, expected[i].optionCode);
+    assert.equal(response.body.items[i].unitPrice, expected[i].retail);
+    assert.equal(response.body.items[i].lineTotal, expected[i].retail);
+  }
+  assert.equal(sessions.size, sessionsBefore);
+  assert.deepEqual(db.prepare('SELECT * FROM orders ORDER BY id').all(), ordersBefore);
+  assert.deepEqual(db.prepare('SELECT * FROM order_items ORDER BY id').all(), itemsBefore);
+});
+
 test('historical retired item snapshots remain visible in customer and admin order views', async () => {
   const response = await api('/api/orders', 'POST', checkout, buyerCookie);
   const id = response.body.order.id;
