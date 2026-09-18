@@ -15,10 +15,12 @@ test('immutable persisted sourcing survives changed configuration and restarts; 
   const first=createSourceStore({directory,config:loadSourceConfig(raw(100),products)});
   first.capture('RP_FIX','2026-09-16T00:00:00Z',[line]);
   const before=fs.readFileSync(path.join(directory,'RP_FIX.json'),'utf8');
-  const second=createSourceStore({directory,config:loadSourceConfig(raw(500),products)});
+  const changed=JSON.parse(raw(500));changed.model='Standard shipment allocation; actual procurement may differ.';
+  const second=createSourceStore({directory,config:loadSourceConfig(JSON.stringify(changed),products)});
   assert.equal(second.read('RP_FIX').items[0].preferred.landedCost,130);
   assert.equal(second.read('RP_FIX').items[0].allocatedLandedCost,78);
   assert.equal(second.read('RP_FIX').items[0].vialCount,6);
+  assert.match(second.read('RP_FIX').estimateBasis,/Independent one-kit/);
   assert.throws(()=>second.capture('RP_FIX','2027-01-01',[line]),{code:'EEXIST'});
   assert.equal(fs.readFileSync(path.join(directory,'RP_FIX.json'),'utf8'),before);
   assert.equal(second.read('RP_OLD'),null);
@@ -29,6 +31,7 @@ test('immutable persisted sourcing survives changed configuration and restarts; 
   second.capture('RP_KIT','now',[{...line,purchaseType:'kit',quantity:2}]);
   assert.equal(second.read('RP_KIT').items[0].vialCount,20);
   assert.equal(second.read('RP_KIT').items[0].allocatedLandedCost,1060);
+  assert.equal(second.read('RP_KIT').estimateBasis,changed.model);
  } finally {fs.rmSync(directory,{recursive:true,force:true});}
 });
 
@@ -60,6 +63,23 @@ test('all active retail prices preserve the single inventory-risk floor and make
  }
 });
 
+test('all product families have strictly increasing single and kit strength ladders',()=>{
+ const catalog=require('../data/products.json');
+ const families=new Map();
+ for(const p of catalog.filter(p=>p.active)){
+  const family=/^BPC-157 (5|10)mg \+ TB-500 (5|10)mg$/.test(p.name)?'BPC / TB blend':p.name;
+  const rows=families.get(family)||[];
+  rows.push(...p.options.filter(o=>o.active).map(o=>({...o,strength:Number(o.spec.match(/^[\d.]+/)[0])})));
+  families.set(family,rows);
+ }
+ for(const rows of families.values()){
+  rows.sort((a,b)=>a.strength-b.strength);
+  for(let i=1;i<rows.length;i++)for(const field of ['singlePrice','kitPrice']){
+   assert.ok(rows[i][field]>=rows[i-1][field]*1.05,`${rows[i-1].code} / ${rows[i].code} ${field}: insufficient strength separation`);
+  }
+ }
+});
+
 // Private audit is supplied locally; never commit supplier information as a fixture.
 test('every retail SKU matches the gross-margin audit and full-kit inventory-risk pricing',
  {skip:!process.env.INTERNAL_PRICING_AUDIT_PATH},()=>{
@@ -76,20 +96,27 @@ test('every retail SKU matches the gross-margin audit and full-kit inventory-ris
   assert.equal(row.preferred.landedCost,cost);
   assert.equal(o.kitPrice,row.newKit);assert.equal(o.singlePrice,row.newSingle);
   const margin=(o.kitPrice-cost)/o.kitPrice;
-  assert.ok(margin>=.38 && margin<=.42,o.code+' kit gross margin outside rounding tolerance');
-  assert.ok(Math.abs(o.kitPrice-cost/.60)<=2.51,o.code+' kit not rounded from actual cost');
+  assert.equal(audit.standardKitsPerShipment,5);
+  for(const source of row.options){
+   assert.equal(source.shipping,audit.shippingAllocation[source.source],o.code+' shipment allocation');
+   assert.equal(source.landedCost,source.supplierCost+source.shipping);
+  }
+  const exception=margin<.35 || margin>.45;
+  assert.equal(row.marginException,exception,o.code+' margin exception flag');
+  assert.ok(margin>=.30 && margin<=.55,o.code+' margin outside permitted commercial band');
+  if(exception) assert.ok(audit.marginExceptions.some(e=>e.code===o.code && e.reason),o.code+' missing private margin explanation');
+  assert.ok(row.savings>=.5,o.code+' insufficient kit value');
   assert.ok(o.singlePrice>=row.previousSingle,o.code+' previous single lowered');
   assert.ok(o.singlePrice>=cost*.5,o.code+' single below full-kit cost floor');
-  const floor=cost*.5;
-  if(row.previousSingle>=floor) assert.equal(o.singlePrice,row.previousSingle);
-  else assert.ok(o.singlePrice>=floor && o.singlePrice-floor<5,o.code+' unnecessary single increase');
+  assert.equal(row.singleFloor,cost*.5);
  }
  for(const family of new Set(audit.rows.map(r=>r.family))){
   const rows=audit.rows.filter(r=>r.family===family).sort((a,b)=>a.strength-b.strength);
-  for(let i=1;i<rows.length;i++) if(rows[i].newKit<rows[i-1].newKit){
+  for(let i=1;i<rows.length;i++){
    const a=rows[i-1],b=rows[i];
-   assert.ok(b.preferred.landedCost<a.preferred.landedCost,'Unexplained strength-price inversion');
-   assert.ok(audit.inversions.some(x=>x.lowerCode===a.optionCode && x.higherCode===b.optionCode && x.reason),'Unflagged cost inversion');
+   assert.ok(b.newKit>=a.newKit*1.05,'Kit retail inversion or insufficient separation');
+   assert.ok(b.newSingle>=a.newSingle*1.05,'Single retail inversion or insufficient separation');
   }
  }
+ assert.deepEqual(audit.retailInversions,[]);
 });
