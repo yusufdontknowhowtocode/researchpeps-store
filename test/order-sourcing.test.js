@@ -24,7 +24,7 @@ test('immutable persisted sourcing survives changed configuration and restarts; 
   assert.throws(()=>second.capture('RP_FIX','2027-01-01',[line]),{code:'EEXIST'});
   assert.equal(fs.readFileSync(path.join(directory,'RP_FIX.json'),'utf8'),before);
   assert.equal(second.read('RP_OLD'),null);
-  assert.match(sourcingText(null),/no snapshot recorded/);
+  assert.match(sourcingText(null),/No sourcing snapshot/);
   assert.throws(()=>second.capture('../escape','now',[line]),/Invalid order identifier/);
   assert.deepEqual(fs.readdirSync(directory),['RP_FIX.json']);
   assert.equal(fs.statSync(path.join(directory,'RP_FIX.json')).mode & 0o777,0o400);
@@ -44,10 +44,10 @@ test('configuration rejects missing coverage, spec mismatch and bad arithmetic w
 });
 
 test('owner message displays estimates and escapes source labels',()=>{
- const text=ownerMessage({id:'RP1',items:[],internalSourcing:{capturedAt:'now',sourceVersion:'fixture',estimateBasis:'No automatic procurement',items:[{productName:'Fixture',orderedSpec:'10mg',optionCode:'FIX10',vialCount:10,allocatedLandedCost:130,preferred:{source:'<script>bad</script>',code:'CODE',supplierCost:100,shipping:30,landedCost:130},fallback:null}]}},{from:'test@example.com',to:'owner@example.com',publicUrl:'https://example.com'});
- assert.match(text.text,/Supplier cost \/ kit: \$100.00/);
- assert.match(text.text,/Inbound assumption \/ kit: \$30.00/);
- assert.match(text.text,/no second exact catalog source/);
+ const text=ownerMessage({id:'RP1',items:[],internalSourcing:{capturedAt:'now',sourceVersion:'fixture',estimateBasis:'No automatic procurement',items:[{productName:'Fixture',orderedSpec:'10mg',optionCode:'FIX10',vialCount:10,quantity:1,purchaseType:'kit',allocatedLandedCost:130,preferred:{source:'<script>bad</script>',code:'CODE',supplierCost:100,shipping:30,landedCost:130},fallback:null}]}},{from:'test@example.com',to:'owner@example.com',publicUrl:'https://example.com'});
+ assert.match(text.text,/Supplier kit price: \$100.00/);
+ assert.match(text.text,/Saved standard allocation \$30.00/);
+ assert.match(text.text,/No additional exact catalog source/);
  assert.ok(!text.html.includes('<script>'));
  assert.ok(text.html.includes('&lt;script&gt;'));
 });

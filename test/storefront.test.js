@@ -48,3 +48,22 @@ test('catalog fetch failure does not revive an embedded or previous catalog', as
   assert.equal(await context.loadProductStockStatus(), false);
   assert.equal(context.products.length, 0);
 });
+
+test('admin card shows complete items, the four fulfillment actions and direct-order search',()=>{
+ const elements={adminOrdersResults:{},adminOrderFilters:{},adminOrderCount:{}};
+ const context={document:{getElementById:id=>elements[id]},adminOrders:[{id:'RP-FIX',status:'Paid - Processing',customer:{name:'Fixture',email:'fixture@example.com'},shipping:{address:'123 St\nUnit 4'},items:[{name:'Fixture material',spec:'1 vial • 10mg each',code:'X',quantity:2,unitPrice:50,lineTotal:100}],total:115}],adminOrderFilter:'all',adminOrderSort:'newest',adminOrderGroups:[['all','All']],URLSearchParams,window:{location:{search:'?order=RP-FIX'}},formatMoney:n=>'$'+Number(n||0).toFixed(2)};
+ vm.createContext(context);
+ for(const name of ['escapeHtml','escapeForAttribute','adminOrderGroup','getAdminStatusOptions','adminPackLabel','renderAdminOrderResults','renderAdminDashboardShell'])vm.runInContext(source(name),context);
+ context.renderAdminOrderResults();
+ for(const text of ['Fixture material','1 vial • 10mg each','Single vial purchase','Qty 2','$50.00','$100.00','COPY SHIPPING ADDRESS','COPY ORDER #','SOURCE RECOMMENDATION','ADD TRACKING'])assert.ok(elements.adminOrdersResults.innerHTML.includes(text),text);
+ assert.ok(context.renderAdminDashboardShell().includes('value="RP-FIX"'));
+ assert.equal(context.adminPackLabel({spec:'10mg*10 vials'}),'10-vial kit');
+});
+
+test('copy shipping address preserves multiline address without adding contact metadata',async()=>{
+ let copied;
+ const context={adminOrders:[{id:'RP-FIX',customer:{name:'Fixture Buyer',email:'private@example.com',phone:'555'},shipping:{address:'123 St\nUnit 4',city:'Lansdale',state:'PA',zip:'19446',country:'United States'}}],navigator:{clipboard:{writeText:async text=>{copied=text;}}},document:{getElementById:()=>({})}};
+ vm.createContext(context);vm.runInContext(source('copyAdminShipping'),context);
+ await context.copyAdminShipping('RP-FIX');
+ assert.equal(copied,'Fixture Buyer\n123 St\nUnit 4\nLansdale, PA 19446\nUnited States');
+});

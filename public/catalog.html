@@ -6215,7 +6215,7 @@ function renderAdminDashboardShell() {
       </div>
 
       <div class="admin-toolbar">
-        <input id="adminOrderSearch" class="admin-search-input" aria-label="Search orders" placeholder="Order #, product, SKU, customer, payment, or tracking" onkeydown="if(event.key === 'Enter') loadAdminOrders()">
+        <input id="adminOrderSearch" value="${escapeForAttribute(new URLSearchParams(window.location.search).get('order') || '')}" class="admin-search-input" aria-label="Search orders" placeholder="Order #, product, SKU, customer, payment, or tracking" onkeydown="if(event.key === 'Enter') loadAdminOrders()">
         <button class="btn primary" onclick="loadAdminOrders()">Search Orders</button>
       </div>
 
@@ -6436,6 +6436,7 @@ function getAdminStatusOptions(currentStatus) {
     'Awaiting USDC (Solana) Payment',
     'Payment Received - Processing',
     'Paid - Processing',
+    'Paid - Crypto Verified',
     'Packed',
     'Shipped',
     'Shipped - Tracking Added',
@@ -6477,6 +6478,20 @@ async function loadAdminSourcing(details, orderId) {
   } catch (error) { target.textContent = 'Unable to load sourcing. Close and reopen to retry.'; }
 }
 
+function adminPackLabel(item) {
+  if (/^\d+ vials?\s*•/.test(item.spec || '')) return 'Single vial purchase';
+  if (/[*x×]\s*10\s*vials?/i.test(item.spec || '')) return '10-vial kit';
+  return 'See saved pack specification';
+}
+
+function openAdminOrderSection(safeId, section) {
+  const details = document.getElementById((section === 'source' ? 'adminSource' : 'adminFulfillment') + safeId);
+  if (!details) return;
+  details.open = true;
+  details.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  if (section === 'tracking') document.getElementById('adminTracking' + safeId)?.focus();
+}
+
 function renderAdminOrderResults() {
   const results = document.getElementById('adminOrdersResults');
   if (!results) return;
@@ -6500,7 +6515,7 @@ function renderAdminOrderResults() {
     const items = order.items || [];
     const quantity = items.reduce((sum, item) => sum + Number(item.quantity || 0), 0);
     const notification = order.ownerNotification;
-    const emailLabel = !notification ? 'No notification recorded' : notification.status === 'sent' ? 'Owner email sent' : notification.status === 'retry' ? 'Owner email retrying' : 'Owner email queued';
+    const emailLabel = !notification ? 'Fulfillment email waits for payment confirmation' : notification.status === 'sent' ? 'Owner email sent' : notification.status === 'retry' ? 'Owner email retrying' : 'Owner email queued';
     return `
       <article class="admin-order-card" data-order-id="${escapeForAttribute(order.id)}">
         <div class="admin-order-head">
@@ -6513,19 +6528,20 @@ function renderAdminOrderResults() {
         </div>
         <div class="admin-items-heading">Items ordered <span>${quantity} ${quantity === 1 ? 'pack' : 'packs'} · ${items.length} ${items.length === 1 ? 'line' : 'lines'}</span></div>
         <div class="admin-item-list">
-          ${items.map(item => `<div class="admin-item-row"><div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.spec)}</span><small>SKU: ${escapeHtml(item.code)} · ${escapeHtml(formatMoney(item.unitPrice))} each</small></div><div class="admin-item-quantity">Qty ${escapeHtml(item.quantity)}</div><strong class="admin-item-price">${escapeHtml(formatMoney(item.lineTotal))}</strong></div>`).join('') || '<p>No item details recorded.</p>'}
+          ${items.map(item => `<div class="admin-item-row"><div><strong>${escapeHtml(item.name)}</strong><span>${escapeHtml(item.spec)} · ${escapeHtml(adminPackLabel(item))}</span><small>SKU: ${escapeHtml(item.code)} · ${escapeHtml(formatMoney(item.unitPrice))} each</small></div><div class="admin-item-quantity">Qty ${escapeHtml(item.quantity)}</div><strong class="admin-item-price">${escapeHtml(formatMoney(item.lineTotal))}</strong></div>`).join('') || '<p>No item details recorded.</p>'}
         </div>
+        <div class="admin-quick-actions"><button class="btn" type="button" onclick="copyAdminShipping('${escapeForAttribute(order.id)}')">COPY SHIPPING ADDRESS</button><button class="btn" type="button" onclick="copyOrderNumber('${escapeForAttribute(order.id)}')">COPY ORDER #</button><button class="btn" type="button" onclick="openAdminOrderSection('${safeId}', 'source')">SOURCE RECOMMENDATION</button><button class="btn" type="button" onclick="openAdminOrderSection('${safeId}', 'tracking')">ADD TRACKING</button></div>
         <div class="admin-detail-grid">
-          <section><h4>Ship to</h4><address>${escapeHtml(customer.name || '')}<br>${escapeHtml(shipping.address || '').replace(/\n/g, '<br>')}<br>${escapeHtml(shipping.city || '')}, ${escapeHtml(shipping.state || '')} ${escapeHtml(shipping.zip || '')}<br>${escapeHtml(shipping.country || '')}</address><p>${escapeHtml(customer.email || '')}<br>${escapeHtml(customer.phone || '')}</p><button class="btn" type="button" onclick="copyAdminShipping('${escapeForAttribute(order.id)}')">Copy shipping details</button></section>
+          <section><h4>Ship to</h4><address>${escapeHtml(customer.name || '')}<br>${escapeHtml(shipping.address || '').replace(/\n/g, '<br>')}<br>${escapeHtml(shipping.city || '')}, ${escapeHtml(shipping.state || '')} ${escapeHtml(shipping.zip || '')}<br>${escapeHtml(shipping.country || '')}</address><p>${escapeHtml(customer.email || '')}<br>${escapeHtml(customer.phone || '')}</p><button class="btn" type="button" onclick="copyAdminShipping('${escapeForAttribute(order.id)}')">COPY SHIPPING ADDRESS</button></section>
           <section><h4>Payment breakdown</h4><dl class="admin-payment-totals"><div><dt>Subtotal</dt><dd>${formatMoney(order.subtotal)}</dd></div><div><dt>Shipping</dt><dd>${formatMoney(order.shippingCharge)}</dd></div><div><dt>Tax</dt><dd>${formatMoney(order.tax)}</dd></div><div><dt>Discount${order.discountCode ? ' (' + escapeHtml(order.discountCode) + ')' : ''}</dt><dd>−${formatMoney(order.discount)}</dd></div><div><dt>Total</dt><dd>${formatMoney(order.total)}</dd></div></dl>${adminOrderGroup(order) === 'payment' ? '<p class="admin-payment-warning">Payment has not been confirmed. Verify it before shipping.</p>' : ''}</section>
         </div>
         ${order.notes ? `<div class="admin-order-notes"><strong>Checkout / order notes</strong><p>${escapeHtml(order.notes)}</p></div>` : ''}
-        <details class="admin-fulfillment" ontoggle="loadAdminSourcing(this, '${escapeForAttribute(order.id)}')"><summary>Internal sourcing snapshot</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Open to load the saved sourcing estimate.</pre></details>
-        <details class="admin-fulfillment"><summary>Update status &amp; tracking${order.trackingNumber ? ' · ' + escapeHtml(order.trackingCarrier || '') + ' ' + escapeHtml(order.trackingNumber) : ''}</summary>
+        <details id="adminSource${safeId}" class="admin-fulfillment" ontoggle="loadAdminSourcing(this, '${escapeForAttribute(order.id)}')"><summary>SOURCE RECOMMENDATION</summary><pre style="white-space:pre-wrap;overflow-wrap:anywhere">Open to load the saved sourcing estimate.</pre></details>
+        <details id="adminFulfillment${safeId}" class="admin-fulfillment"><summary>ADD TRACKING / UPDATE STATUS${order.trackingNumber ? ' · ' + escapeHtml(order.trackingCarrier || '') + ' ' + escapeHtml(order.trackingNumber) : ''}</summary>
           <div class="admin-tracking-grid"><label>Carrier<input id="${carrierId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingCarrier || '')}" placeholder="USPS, UPS, FedEx"></label><label>Tracking number<input id="${trackingId}" class="admin-tracking-input" value="${escapeForAttribute(order.trackingNumber || '')}" placeholder="Paste tracking number"></label></div>
           <div class="admin-order-actions"><select id="${selectId}" aria-label="Order status" class="admin-status-select">${getAdminStatusOptions(order.status).map(status => `<option value="${escapeForAttribute(status)}" ${status === order.status ? 'selected' : ''}>${escapeHtml(status)}</option>`).join('')}</select><button class="btn primary" type="button" onclick="updateAdminOrderStatus('${escapeForAttribute(order.id)}', '${selectId}', '${trackingId}', '${carrierId}')">Save status &amp; tracking</button></div>
         </details>
-        <div class="admin-quick-actions"><button class="btn" type="button" onclick="copyOrderNumber('${escapeForAttribute(order.id)}')">Copy order #</button><button class="btn" type="button" onclick="sendAdminOwnerNotification('${escapeForAttribute(order.id)}', this)">Email me this order</button><button class="btn" type="button" onclick="sendAdminOrderEmail('${escapeForAttribute(order.id)}')">Resend customer + owner emails</button></div>
+        <div class="admin-quick-actions"><button class="btn" type="button" onclick="sendAdminOwnerNotification('${escapeForAttribute(order.id)}', this)">Retry fulfillment email</button><button class="btn" type="button" onclick="sendAdminOrderEmail('${escapeForAttribute(order.id)}')">Resend customer receipt</button></div>
       </article>`;
   }).join('');
 }
@@ -6535,9 +6551,9 @@ async function copyAdminShipping(orderId) {
   if (!order) return;
   const customer = order.customer || {};
   const shipping = order.shipping || {};
-  const text = [customer.name, shipping.address, `${shipping.city || ''}, ${shipping.state || ''} ${shipping.zip || ''}`, shipping.country, `Phone: ${customer.phone || ''}`, `Email: ${customer.email || ''}`].filter(Boolean).join('\n');
+  const text = [customer.name, shipping.address, `${shipping.city || ''}, ${shipping.state || ''} ${shipping.zip || ''}`, shipping.country].filter(Boolean).join('\n');
   const message = document.getElementById('adminDashboardMessage');
-  try { await navigator.clipboard.writeText(text); if (message) message.textContent = 'Shipping details copied for ' + orderId; }
+  try { await navigator.clipboard.writeText(text); if (message) message.textContent = 'Shipping address copied for ' + orderId; }
   catch { if (message) message.textContent = 'Could not copy. Select the shipping details on the order to copy them manually.'; }
 }
 
@@ -6570,7 +6586,7 @@ async function loadAdminOrders() {
     const notice = document.getElementById('adminNotificationStatus');
     if (notice && data.notifications) {
       const config = data.notifications;
-      notice.textContent = config.configured ? `Order emails go to ${config.recipient}${config.pending ? ' · ' + config.pending + ' queued / retrying' : ''}.` : `Order emails are queued, but SMTP is not configured. Set up email in Render to deliver notifications to ${config.recipient}.`;
+      notice.textContent = config.configured ? `Paid-order fulfillment emails go to ${config.recipient}${config.pending ? ' · ' + config.pending + ' queued / retrying' : ''}.` : `Paid-order fulfillment emails are queued, but SMTP is not configured. Set up email in Render to deliver notifications to ${config.recipient}.`;
       notice.classList.toggle('needs-setup', !config.configured);
       const testEmail = document.getElementById('adminTestEmail');
       if (testEmail && !testEmail.value) testEmail.value = config.recipient;

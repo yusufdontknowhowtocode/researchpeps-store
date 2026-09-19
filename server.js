@@ -13,7 +13,7 @@ const morgan = require('morgan');
 const Stripe = require('stripe');
 const nodemailer = require('nodemailer');
 const { activeProducts, isPurchasableVariant, publicCatalog, productSlug } = require('./lib/catalog');
-const { DEFAULT_OWNER_EMAIL, createOrderNotifier } = require('./lib/order-notifications');
+const { DEFAULT_OWNER_EMAIL, createOrderNotifier, isPaymentConfirmedStatus } = require('./lib/order-notifications');
 const { loadSourceConfig, createSourceStore, sourcingText } = require('./lib/order-sourcing');
 
 const app = express();
@@ -956,8 +956,8 @@ function confirmStripePayment(session) {
       db.prepare('UPDATE orders SET status = ?, stripe_session_id = ?, updated_at = ? WHERE id = ?')
         .run('Paid - Processing', session.id, nowIso(), orderId);
     }
-    orderNotifier.enqueue(orderId, 'paid');
-    return !wasPaid;
+    const queued = orderNotifier.enqueue(orderId, 'paid');
+    return !wasPaid && queued;
   })();
 }
 
@@ -1168,8 +1168,6 @@ function createOrderForUser(userId, body, statusOverride) {
       timestamp,
       timestamp
     );
-
-    orderNotifier.enqueue(orderId, 'created');
 
     for (const item of totals.items) {
       db.prepare(`
@@ -1873,14 +1871,14 @@ app.post('/api/admin/orders/:id/send-email', requireAdmin, async (req, res, next
     const cryptoPayment = isCryptoPaymentMethod(order.paymentMethod) ? getCryptoPayment(order.paymentMethod, order.id) : null;
     const manualPayment = getManualPayment(order.paymentMethod, order.id);
     const emailResult = await sendOrderEmails(order, cryptoPayment, null, manualPayment);
-    orderNotifier.enqueue(order.id, 'resend-' + crypto.randomUUID());
+    orderNotifier.enqueue(order.id, 'paid');
     await orderNotifier.flush();
     emailResult.ownerSent = orderNotifier.latest(order.id)?.status === 'sent';
 
     const parts = [];
     if (emailResult.customerSent) parts.push(`customer receipt to ${emailResult.customerEmail}`);
     if (emailResult.ownerSent) parts.push(`owner notification to ${emailResult.notifyEmail}`);
-    if (!emailResult.ownerSent) parts.push('owner notification queued for retry');
+    if (!emailResult.ownerSent) parts.push(isPaymentConfirmedStatus(order.status) ? 'owner notification queued for retry' : 'internal fulfillment email waits for confirmed payment');
     if (emailResult.customerSameAsOwner) parts.push('customer receipt skipped because checkout email matches owner notification email');
 
     res.json({ ok: true, message: `Order email processed for ${order.id}: ${parts.join('; ') || 'no recipients configured'}.` });
@@ -1896,11 +1894,14 @@ app.post('/api/admin/orders/:id/notify-owner', requireAdmin, async (req, res, ne
   try {
     const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
     if (!row) return res.status(404).json({ error: 'Order not found.' });
+    const notification = orderNotifier.latest(row.id);
+    if (notification?.status === 'sent') return res.json({ notification, message:'Fulfillment email already sent; no duplicate created.' });
+    if (!isPaymentConfirmedStatus(row.status) && !notification) return res.status(409).json({ error:'Confirm payment before sending the internal fulfillment email.' });
     if (!mailTransporter) return res.status(503).json({ error: 'Email is not configured. Add the SMTP settings in Render first.' });
     // Retry an unsent job instead of creating duplicate notifications.
-    const pending = db.prepare("SELECT id FROM owner_order_emails WHERE order_id = ? AND status != 'sent' ORDER BY id DESC LIMIT 1").get(row.id);
+    const pending = db.prepare("SELECT id FROM owner_order_emails WHERE order_id = ? AND event = 'paid' AND status IN ('pending','retry') LIMIT 1").get(row.id);
     if (pending) db.prepare('UPDATE owner_order_emails SET next_attempt_at = 0 WHERE id = ?').run(pending.id);
-    else orderNotifier.enqueue(row.id, 'resend-' + crypto.randomUUID());
+    else orderNotifier.enqueue(row.id, 'paid');
     await orderNotifier.flush();
     res.json({ notification: orderNotifier.latest(row.id), message: orderNotifier.latest(row.id)?.status === 'sent' ? 'Order details emailed to ' + ADMIN_ORDER_NOTIFY_EMAIL : 'Notification queued. Failed delivery will retry automatically.' });
   } catch (error) { next(error); }
@@ -1953,16 +1954,18 @@ app.patch('/api/admin/orders/:id/status', requireAdmin, (req, res) => {
   const row = db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id);
   if (!row) return res.status(404).json({ error: 'Order not found.' });
 
-  db.prepare(`
-    UPDATE orders
-    SET status = ?, tracking_number = ?, tracking_carrier = ?, updated_at = ?
-    WHERE id = ?
-  `).run(status, trackingNumber, trackingCarrier, nowIso(), req.params.id);
-
-  if (['Paid - Processing', 'Payment Received - Processing'].includes(status)) {
-    orderNotifier.enqueue(row.id, 'paid');
-    flushOwnerNotifications();
-  }
+  db.transaction(() => {
+    db.prepare(`
+      UPDATE orders
+      SET status = ?, tracking_number = ?, tracking_carrier = ?, updated_at = ?
+      WHERE id = ?
+    `).run(status,
+      req.body.trackingNumber === undefined ? row.tracking_number : trackingNumber,
+      req.body.trackingCarrier === undefined ? row.tracking_carrier : trackingCarrier,
+      nowIso(), req.params.id);
+    if (isPaymentConfirmedStatus(status)) orderNotifier.enqueue(row.id, 'paid');
+  })();
+  if (isPaymentConfirmedStatus(status)) flushOwnerNotifications();
 
   res.json({ order: publicOrder(db.prepare('SELECT * FROM orders WHERE id = ?').get(req.params.id)) });
 });
