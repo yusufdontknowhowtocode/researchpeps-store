@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const path = require('path');
 const Database = require('better-sqlite3');
+const { DEFAULT_OWNER_EMAIL } = require('../lib/order-notifications');
 
 const orderId = process.argv[2];
 const txHash = process.argv[3] || '';
@@ -16,7 +17,7 @@ const databasePath =
   process.env.DATABASE_PATH ||
   path.join(__dirname, '..', 'data', 'researchpeps.sqlite');
 
-const db = new Database(databasePath);
+const db = new Database(databasePath, { fileMustExist: true });
 const order = db.prepare('SELECT * FROM orders WHERE id = ?').get(orderId);
 
 if (!order) {
@@ -32,6 +33,7 @@ const newNotes = [order.notes, verificationNote]
   .filter(Boolean)
   .join('\n');
 
+db.transaction(() => {
 db.prepare(`
   UPDATE orders
   SET status = ?, notes = ?, updated_at = ?
@@ -42,6 +44,12 @@ db.prepare(`
   new Date().toISOString(),
   orderId
 );
+// The running application's existing durable outbox delivers this once.
+// This command never sends email directly or rewrites a sourcing snapshot.
+db.prepare('INSERT OR IGNORE INTO owner_order_emails (order_id, event, recipient) VALUES (?, ?, ?)')
+  .run(orderId, 'paid', String(process.env.ADMIN_ORDER_NOTIFY_EMAIL || DEFAULT_OWNER_EMAIL).trim().toLowerCase());
+})();
+db.close();
 
 console.log(`Order ${orderId} marked as Paid - Crypto Verified.`);
 if (txHash) console.log(`TX hash saved: ${txHash}`);
